@@ -27,3 +27,7 @@
 *.i*86
 *.x86_64
 *.hex
+
+# Ficheiros de projecto do netbeans
+
+/nbproject
