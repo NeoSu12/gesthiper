@@ -28,6 +28,18 @@
 *.x86_64
 *.hex
 
-# Ficheiros de projecto do netbeans
+#Ficheiros temporarios
+*~
+*.swp
 
-/nbproject
+# Ficheiros de projecto do netbeans
+/nbproject/
+/dist/
+/build/
+.dep.inc
+
+# Makefile do netbeans. 
+# Usar a 'makefile' (note-se que esta tudo em minusculas) 
+# para correr o make pelo terminal.
+/Makefile
+
