@@ -4,13 +4,16 @@
 typedef struct compra COMPRA;
 
 typedef char * cod_cliente_t;
-typedef float preco_unit_t;
+typedef double preco_unit_t;
 typedef unsigned short quantidade_t;
 typedef char promo_t;
 typedef char * cod_produto_t;
 typedef unsigned short mes_t;
 
-COMPRA *incializa_compra();
+COMPRA *incializa_compra(void);
+COMPRA *incializa_compra_duh(cod_cliente_t, preco_unit_t, quantidade_t, promo_t, cod_produto_t, mes_t);
+void liberta_compra(COMPRA *);
+
 
 /*Get's*/
 cod_cliente_t get_cod_cliente(COMPRA *);

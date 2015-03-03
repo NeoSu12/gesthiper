@@ -1,18 +1,47 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "compra.h"
 
+#define NBYTES_CLIENTE sizeof(char)*(5+1)
+#define NBYTES_PRODUTO sizeof(char)*(6+1)
+
 struct compra{
-    char *cod_cliente;
-    float preco_unit;
-    unsigned short quantidade;
-    char ispromo;
-    char *cod_produto;
-    unsigned char mes;
+    cod_cliente_t cod_cliente;
+    preco_unit_t preco_unit;
+    quantidade_t quantidade;
+    promo_t promo;
+    cod_produto_t cod_produto;
+    mes_t mes;
 };
 
 COMPRA *incializa_compra(){
-    return (COMPRA *) malloc(sizeof(COMPRA));
+    COMPRA *compra = (COMPRA *) malloc(sizeof(COMPRA));
+    compra->cod_cliente = (cod_cliente_t) malloc(NBYTES_CLIENTE);
+    compra->cod_produto = (cod_produto_t) malloc(NBYTES_PRODUTO);
+    return compra;
+}
+
+COMPRA *incializa_compra_duh(cod_cliente_t cod_cliente,preco_unit_t preco_unit,
+    quantidade_t quantidade, promo_t promo, cod_produto_t cod_produto, mes_t mes){
+    
+    COMPRA *compra = (COMPRA *) malloc(sizeof(COMPRA));
+    compra->cod_cliente = (cod_cliente_t) malloc(NBYTES_CLIENTE);
+    compra->cod_produto = (cod_produto_t) malloc(NBYTES_PRODUTO);
+    strncpy(compra->cod_cliente,cod_cliente,NBYTES_CLIENTE);
+    strncpy(compra->cod_produto,cod_produto,NBYTES_PRODUTO);
+    compra->preco_unit= preco_unit;
+    compra->quantidade= quantidade;
+    compra->promo = promo;
+    compra->mes=mes;
+    
+    return compra;
+}
+
+void liberta_compra(COMPRA *compra){
+    free(compra->cod_cliente);
+    free(compra->cod_produto);
+    free(compra);
 }
 
 /*Get's*/
@@ -29,7 +58,7 @@ quantidade_t get_quantidade(COMPRA *comp){
 }
 
 promo_t get_promo(COMPRA *comp){
-    return comp->ispromo;
+    return comp->promo;
 }
 
 cod_produto_t get_cod_produto(COMPRA *comp){
@@ -54,7 +83,7 @@ void set_quantidade(COMPRA *comp, quantidade_t qtd){
 }
 
 void set_promo(COMPRA *comp,promo_t promo){
-    comp->ispromo=promo;
+    comp->promo=promo;
 }
 
 void set_cod_produto(COMPRA *comp,cod_produto_t prod){

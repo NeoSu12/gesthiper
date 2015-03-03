@@ -5,6 +5,11 @@
 #include "erros.h"
 #include "compra.h"
 
+#define LINHA_CLIENTE_MAX 20
+#define LINHA_PRODUTO_MAX 20
+#define LINHA_COMPRA_MAX 30
+
+
 void ler_ficheiros(FILE *, FILE *, FILE *);
 void le_clientes(FILE *);
 void le_produtos(FILE *);
@@ -51,9 +56,9 @@ int main(int argc, char** argv) {
     
     ler_ficheiros(f_clientes, f_produtos, f_compras);
     
-    close(f_clientes);
-    close(f_produtos);
-    close(f_compras);
+    fclose(f_clientes);
+    fclose(f_produtos);
+    fclose(f_compras);
     return (EXIT_SUCCESS);
 }
 
@@ -64,37 +69,42 @@ void ler_ficheiros(FILE *f_cli, FILE *f_prod, FILE *f_comp){
 }
 
 void le_clientes(FILE *f_cli){
-    char *cliente = (char *) malloc(sizeof(char)*10);
+    char *cliente = (char *) malloc(sizeof(char)*LINHA_CLIENTE_MAX);
     int clientes_validos = 0,total_linhas_clientes=0;
-    while(!feof(f_cli) && !ferror(f_cli)){
-        fscanf(f_cli, "%s\n",cliente);
+    
+    while(fgets(cliente, LINHA_CLIENTE_MAX,f_cli)!=NULL){
+        cliente[strlen(cliente)-1] = '\0';
         if(cliente_valido(cliente)!=-1) clientes_validos++;
         printf("%s\n",cliente);
         total_linhas_clientes++;
     }
+    
     printf("Leitura Clientes: %d\\%d\n",clientes_validos,total_linhas_clientes);
     free(cliente);
 }
 
 void le_produtos(FILE *f_prod){
-    char *produto = (char *) malloc(sizeof(char)*10);
+    char *produto = (char *) malloc(sizeof(char)*LINHA_PRODUTO_MAX);
     int produtos_validos = 0,total_linhas_produtos=0;
-    while(!feof(f_prod) && !ferror(f_prod)){
-        fscanf(f_prod, "%s\n",produto);
+    
+    while(fgets(produto, LINHA_PRODUTO_MAX,f_prod)!=NULL){
+        produto[strlen(produto)-1] = '\0';
         if(produto_valido(produto)!=-1) produtos_validos++;
         printf("%s\n",produto);
         total_linhas_produtos++;
     }
+    
     printf("Leitura Produto: %d\\%d\n",produtos_validos,total_linhas_produtos);
     free(produto);
 }
 
 void le_compras(FILE *f_comp){
-    char *compra = (char *) malloc(sizeof(char)*30);
+    char *compra = (char *) malloc(sizeof(char)*LINHA_COMPRA_MAX);
     int compras_validas = 0,total_linhas_compras=0;
     
-    while(!feof(f_comp) && !ferror(f_comp)){
-        fscanf(f_comp, "%s\n",compra);
+    while(fgets(compra, LINHA_COMPRA_MAX,f_comp)!=NULL){
+        compra[strlen(compra)-1] = '\0';
+        
         if(compra_valida(compra)!=-1) compras_validas++;
         printf("%s\n",compra);
         total_linhas_compras++;

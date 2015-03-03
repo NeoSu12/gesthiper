@@ -2,18 +2,19 @@
 # ser usada para correr no terminal.
 
 objects = main.o erros.o compra.o
+flags = -ansi -pedantic -Wall -O2
 
 gesthiper : $(objects)
-	gcc -o gesthiper $(objects)
+	gcc $(flags) -o gesthiper $(objects)
 
 main.o : main.c erros.h compra.h
-	gcc -c main.c 
+	gcc $(flags) -c main.c 
 
 erros.o : erros.c erros.h
-	gcc -c erros.c
+	gcc $(flags) -c erros.c
 
 compra.o : compra.c compra.h
-	gcc -c compra.c
+	gcc $(flags) -c compra.c
 
 
 .PHONY : clean
