@@ -29,6 +29,48 @@
 #include <string.h>
 #include "avl.h"
 
+#ifndef LIBAVL_ALLOCATOR
+#define LIBAVL_ALLOCATOR
+/* Memory allocator. */
+struct libavl_allocator
+  {
+    void *(*libavl_malloc) (struct libavl_allocator *, size_t libavl_size);
+    void (*libavl_free) (struct libavl_allocator *, void *libavl_block);
+  };
+#endif
+
+
+/* Tree data structure. */
+struct avl_table
+  {
+    struct avl_node *avl_root;          /* Tree's root. */
+    avl_comparison_func *avl_compare;   /* Comparison function. */
+    void *avl_param;                    /* Extra argument to |avl_compare|. */
+    struct libavl_allocator *avl_alloc; /* Memory allocator. */
+    size_t avl_count;                   /* Number of items in tree. */
+    unsigned long avl_generation;       /* Generation number. */
+  };
+
+/* An AVL tree node. */
+struct avl_node
+  {
+    struct avl_node *avl_link[2];  /* Subtrees. */
+    void *avl_data;                /* Pointer to data. */
+    signed char avl_balance;       /* Balance factor. */
+  };
+
+/* AVL traverser structure. */
+struct avl_traverser
+  {
+    struct avl_table *avl_table;        /* Tree being traversed. */
+    struct avl_node *avl_node;          /* Current node in tree. */
+    struct avl_node *avl_stack[AVL_MAX_HEIGHT];
+                                        /* All the nodes above |avl_node|. */
+    size_t avl_height;                  /* Number of nodes in |avl_parent|. */
+    unsigned long avl_generation;       /* Generation number. */
+  };
+
+
 /* Creates and returns a new table
    with comparison function |compare| using parameter |param|
    and memory allocator |allocator|.

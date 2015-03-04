@@ -7,7 +7,7 @@
 
 #define LINHA_CLIENTE_MAX 20
 #define LINHA_PRODUTO_MAX 20
-#define LINHA_COMPRA_MAX 30
+#define LINHA_COMPRA_MAX 40
 
 void ler_ficheiros(FILE *, FILE *, FILE *);
 void le_clientes(FILE *);
@@ -169,8 +169,8 @@ int produto_valido(char *prod){
 }
 
 int compra_valida(COMPRA *compra){
-    return cliente_valido(get_cod_cliente(compra)) 
-            && produto_valido(get_cod_produto(compra))
+    return (cliente_valido(get_cod_cliente(compra)) != -1) 
+            && (produto_valido(get_cod_produto(compra)) != -1)
             && get_mes(compra)>=1 && get_mes(compra) <= 12
             && get_preco_unit(compra) >= 0
             && (get_promo(compra)=='N' || get_promo(compra)=='P');
