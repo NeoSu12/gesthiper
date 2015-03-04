@@ -22,7 +22,7 @@ COMPRA *incializa_compra(){
     return compra;
 }
 
-COMPRA *incializa_compra_duh(cod_cliente_t cod_cliente,preco_unit_t preco_unit,
+COMPRA *inicializa_compra(cod_cliente_t cod_cliente,preco_unit_t preco_unit,
     quantidade_t quantidade, promo_t promo, cod_produto_t cod_produto, mes_t mes){
     
     COMPRA *compra = (COMPRA *) malloc(sizeof(COMPRA));
@@ -38,7 +38,7 @@ COMPRA *incializa_compra_duh(cod_cliente_t cod_cliente,preco_unit_t preco_unit,
     return compra;
 }
 
-void liberta_compra(COMPRA *compra){
+void free_compra(COMPRA *compra){
     free(compra->cod_cliente);
     free(compra->cod_produto);
     free(compra);
@@ -71,7 +71,7 @@ mes_t get_mes(COMPRA *comp){
 
 /* Set's*/
 void set_cod_cliente(COMPRA *comp, cod_cliente_t cod){
-    comp->cod_cliente=cod;
+    strncpy(comp->cod_cliente,cod,NBYTES_CLIENTE);
 }
 
 void set_preco_unit(COMPRA *comp, preco_unit_t p_unit){
@@ -87,7 +87,7 @@ void set_promo(COMPRA *comp,promo_t promo){
 }
 
 void set_cod_produto(COMPRA *comp,cod_produto_t prod){
-    comp->cod_produto=prod;
+    strncpy(comp->cod_produto,prod,NBYTES_PRODUTO);
 }
 
 void set_mes(COMPRA *comp, mes_t mes){

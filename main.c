@@ -9,14 +9,14 @@
 #define LINHA_PRODUTO_MAX 20
 #define LINHA_COMPRA_MAX 30
 
-
 void ler_ficheiros(FILE *, FILE *, FILE *);
 void le_clientes(FILE *);
 void le_produtos(FILE *);
 void le_compras(FILE *);
 int cliente_valido(char *);
 int produto_valido(char *);
-int compra_valida(char *);
+int compra_valida(COMPRA *);
+void mostra_compra(COMPRA *);
 
 int main(int argc, char** argv) {
 
@@ -99,19 +99,43 @@ void le_produtos(FILE *f_prod){
 }
 
 void le_compras(FILE *f_comp){
-    char *compra = (char *) malloc(sizeof(char)*LINHA_COMPRA_MAX);
+    char *linha_compra = (char *) malloc(sizeof(char)*LINHA_COMPRA_MAX);
+    COMPRA *compra = incializa_compra();
     int compras_validas = 0,total_linhas_compras=0;
+    char *delim = " ";
+    char *token;
     
-    while(fgets(compra, LINHA_COMPRA_MAX,f_comp)!=NULL){
-        compra[strlen(compra)-1] = '\0';
+    while(fgets(linha_compra, LINHA_COMPRA_MAX,f_comp)!=NULL){
+        linha_compra[strlen(linha_compra)-1] = '\0';
+        /*Produto*/
+        token = strtok(linha_compra,delim);
+        set_cod_produto(compra,token);
+        /*Preco*/
+        token = strtok(NULL,delim);
+        set_preco_unit(compra,atof(token));
+        /*Quantidade*/
+        token = strtok(NULL,delim);
+        set_quantidade(compra,atoi(token));
+        /*Promo*/
+        token = strtok(NULL,delim);
+        set_promo(compra,token[0]);
+        /*Cliente*/
+        token = strtok(NULL,delim);
+        set_cod_cliente(compra,token);
+        /*Mes*/
+        token = strtok(NULL,delim);
+        set_mes(compra,atoi(token));
         
-        if(compra_valida(compra)!=-1) compras_validas++;
-        printf("%s\n",compra);
+        if(compra_valida(compra)){
+            compras_validas++;
+            mostra_compra(compra);
+        }
         total_linhas_compras++;
     }
     
     printf("Leitura Compras: %d\\%d\n",compras_validas,total_linhas_compras);
-    free(compra);
+    free_compra(compra);
+    free(linha_compra);
 }
 
 
@@ -144,6 +168,19 @@ int produto_valido(char *prod){
     return res;
 }
 
-int compra_valida(char* compra){
-    return 0;
+int compra_valida(COMPRA *compra){
+    return cliente_valido(get_cod_cliente(compra)) 
+            && produto_valido(get_cod_produto(compra))
+            && get_mes(compra)>=1 && get_mes(compra) <= 12
+            && get_preco_unit(compra) >= 0
+            && (get_promo(compra)=='N' || get_promo(compra)=='P');
+}
+
+void mostra_compra(COMPRA *compra){
+    printf("Produto: %s | ",get_cod_produto(compra));
+    printf("Preco: %.2f | ",get_preco_unit(compra));
+    printf("Quantidade: %d | ",get_quantidade(compra));
+    printf("Promo: %c | ",get_promo(compra));
+    printf("Cliente: %s | ",get_cod_cliente(compra));
+    printf("Mes: %d\n",get_mes(compra));
 }
