@@ -10,8 +10,8 @@ typedef char promo_t;
 typedef char * cod_produto_t;
 typedef unsigned short mes_t;
 
-COMPRA *incializa_compra(void);
-COMPRA *inicializa_compra(cod_cliente_t, preco_unit_t, quantidade_t, promo_t, cod_produto_t, mes_t);
+COMPRA *inicializa_compra(void);
+COMPRA *inicializa_compra_completo(cod_cliente_t, preco_unit_t, quantidade_t, promo_t, cod_produto_t, mes_t);
 void free_compra(COMPRA *);
 
 

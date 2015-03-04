@@ -100,7 +100,7 @@ void le_produtos(FILE *f_prod){
 
 void le_compras(FILE *f_comp){
     char *linha_compra = (char *) malloc(sizeof(char)*LINHA_COMPRA_MAX);
-    COMPRA *compra = incializa_compra();
+    COMPRA *compra = inicializa_compra();
     int compras_validas = 0,total_linhas_compras=0;
     char *delim = " ";
     char *token;
@@ -178,9 +178,9 @@ int compra_valida(COMPRA *compra){
 
 void mostra_compra(COMPRA *compra){
     printf("Produto: %s | ",get_cod_produto(compra));
-    printf("Preco: %.2f | ",get_preco_unit(compra));
-    printf("Quantidade: %d | ",get_quantidade(compra));
+    printf("Preco: %5.2f | ",get_preco_unit(compra));
+    printf("Quantidade: %2d | ",get_quantidade(compra));
     printf("Promo: %c | ",get_promo(compra));
     printf("Cliente: %s | ",get_cod_cliente(compra));
-    printf("Mes: %d\n",get_mes(compra));
+    printf("Mes: %2d\n",get_mes(compra));
 }

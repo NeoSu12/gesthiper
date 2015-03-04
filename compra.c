@@ -15,14 +15,14 @@ struct compra{
     mes_t mes;
 };
 
-COMPRA *incializa_compra(){
+COMPRA *inicializa_compra(){
     COMPRA *compra = (COMPRA *) malloc(sizeof(COMPRA));
     compra->cod_cliente = (cod_cliente_t) malloc(NBYTES_CLIENTE);
     compra->cod_produto = (cod_produto_t) malloc(NBYTES_PRODUTO);
     return compra;
 }
 
-COMPRA *inicializa_compra(cod_cliente_t cod_cliente,preco_unit_t preco_unit,
+COMPRA *inicializa_compra_completo(cod_cliente_t cod_cliente,preco_unit_t preco_unit,
     quantidade_t quantidade, promo_t promo, cod_produto_t cod_produto, mes_t mes){
     
     COMPRA *compra = (COMPRA *) malloc(sizeof(COMPRA));
