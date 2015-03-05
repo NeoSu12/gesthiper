@@ -183,9 +183,10 @@ void mostra_compra(COMPRA *compra){
     printf("Promo: %c | ",get_promo(compra));
     printf("Cliente: %s | ",get_cod_cliente(compra));
     printf("Mes: %2d\n",get_mes(compra));
+
 }
 
-// Interface do utilizador
+// Interface utilizador
 
 void interface(){
 
