@@ -31,6 +31,7 @@
 #Ficheiros temporarios
 *~
 *.swp
+*.swo
 
 #Executavel do projecto
 #Usar o make para compilar sempre que necessario
