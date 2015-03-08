@@ -241,7 +241,10 @@ while (r[0]!=48 || r[0]!=49 || r[0]!=50 || r[0]!=51 || r[0]!=113 || r[0]!=81){
             printf("[ERRO] Falha de Leitura\n\n");
     }
 }
-if (r[0]==48) interface();
+if (r[0]==48){
+     printf("\033[2J\033[1;1H");
+     interface();
+}
 if (r[0]==49) listaprodutos_2(); /* Valor temporario !! */
 if (r[0]==50) naocomprados_4(); /* Valor temporario !! */
 if (r[0]==51) quemcomprou_8(); /*Valor temporario !! */
@@ -262,7 +265,10 @@ while (r[0]!=48 || r[0]!=49 || r[0]!=50 || r[0]!=51 || r[0]!=52 || r[0]!=53 || r
             printf("[ERRO] Falha de Leitura\n\n");
     }
 }
-if (r[0]==48) interface();
+if (r[0]==48){
+     printf("\033[2J\033[1;1H");
+     interface();
+}
 if (r[0]==49) ; /* Valor temporario !!     listaclientes_6();*/
 if (r[0]==50) ; /* Valor temporario !!     quantosprodutos_5();*/
 if (r[0]==51) ; /* Valor temporario !!     maiscomprados_9();*/
@@ -285,12 +291,16 @@ while (r[0]!=48 || r[0]!=49 || r[0]!=50 || r[0]!=51 || r[0]!=52 || r[0]!=53 || r
             printf("[ERRO] Falha de Leitura\n\n");
     }
 }
-if (r[0]==48) interface();
+if (r[0]==48){
+     printf("\033[2J\033[1;1H");
+     interface();
+}
 if (r[0]==49) ; /* Valor temporario !!     numerovendas_3();*/
 if (r[0]==50) ; /* Valor temporario !!     numerocompras_7();*/
 if (r[0]==51) ; /* Valor temporario !!     maisvendidos_12();*/
 if (r[0]==52) ; /* Valor temporario !!     cliproignorados_14();*/
 if (r[0]==53) ; /* Valor temporario !!     infogeral_11();*/
+printf("\033[2J\033[1;1H");
 return;
 }
 
