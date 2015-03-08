@@ -29,20 +29,21 @@ void mostra_compra(COMPRA *);
 
 void interface(){
     char r;
-    printf("%s -----------------------------------\n|%sGESTHIPER%s                          |\n|                                   |\n|   1 - Produtos                    |\n|   2 - Clientes                    |\n|   3 - Compras/Contabilidade       |\n|                                   |\n| BEM-VINDO                Q - %sSair%s |\n -----------------------------------\n%s", WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
+    printf("\033[2J\033[1;1H%s -----------------------------------\n|%sGESTHIPER%s                          |\n|                                   |\n|   1 - Produtos                    |\n|   2 - Clientes                    |\n|   3 - Compras/Contabilidade       |\n|                                   |\n| BEM-VINDO                Q - %sSair%s |\n -----------------------------------\n%s", WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
 while (r!=49 || r!=50 || r!=51 || r!=113 || r!=81){
     printf("O que procura(?): ");
     if (scanf(" %c", &r) == 1){
-       if (r==49) return; /* Valor temporario !!     faceprodutos();*/
-       if (r==50) return; /* Valor temporario !!     faceclientes();*/
-       if (r==51) return; /* Valor temporario !!     facecompras();*/
-       if (r==113 || r==81) return;
+       if (r==49) break; /* Valor temporario !!     faceprodutos();*/
+       if (r==50) break; /* Valor temporario !!     faceclientes();*/
+       if (r==51) break; /* Valor temporario !!     facecompras();*/
+       if (r==113 || r==81) break;
        printf("\n[ERRO] Valor invalido\n\n");
     }
     else {
             printf("[ERRO] Falha de Leitura\n\n");
     }
 }
+return;
 }
 
 int main(int argc, char** argv) {
