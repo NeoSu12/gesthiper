@@ -9,6 +9,13 @@
 #define LINHA_PRODUTO_MAX 20
 #define LINHA_COMPRA_MAX 40
 
+#define NORMAL  "\x1B[0m"
+#define RED  "\x1B[31m"
+#define GREEN  "\x1B[32m"
+#define YELLOW  "\x1B[33m"
+#define BLUE  "\x1B[34m"
+#define WHITE  "\x1B[37m"
+
 void ler_ficheiros(FILE *, FILE *, FILE *);
 void le_clientes(FILE *);
 void le_produtos(FILE *);
@@ -17,6 +24,26 @@ int cliente_valido(char *);
 int produto_valido(char *);
 int compra_valida(COMPRA *);
 void mostra_compra(COMPRA *);
+
+/* Interface utilizador */
+
+void interface(){
+    char r;
+    printf("%s -----------------------------------\n|%sGESTHIPER%s                          |\n|                                   |\n|   1 - Produtos                    |\n|   2 - Clientes                    |\n|   3 - Compras/Contabilidade       |\n|                                   |\n| BEM-VINDO                Q - %sSair%s |\n -----------------------------------\n%s", WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
+while (r!=49 || r!=50 || r!=51 || r!=113 || r!=81){
+    printf("O que procura(?): ");
+    if (scanf(" %c", &r) == 1){
+       if (r==49) return; /* Valor temporario !!     faceprodutos();*/
+       if (r==50) return; /* Valor temporario !!     faceclientes();*/
+       if (r==51) return; /* Valor temporario !!     facecompras();*/
+       if (r==113 || r==81) return;
+       printf("\n[ERRO] Valor invalido\n\n");
+    }
+    else {
+            printf("[ERRO] Falha de Leitura\n\n");
+    }
+}
+}
 
 int main(int argc, char** argv) {
 
@@ -54,8 +81,10 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
-    ler_ficheiros(f_clientes, f_produtos, f_compras);
+    /*ler_ficheiros(f_clientes, f_produtos, f_compras);*/
     
+    interface();
+
     fclose(f_clientes);
     fclose(f_produtos);
     fclose(f_compras);
@@ -183,11 +212,5 @@ void mostra_compra(COMPRA *compra){
     printf("Promo: %c | ",get_promo(compra));
     printf("Cliente: %s | ",get_cod_cliente(compra));
     printf("Mes: %2d\n",get_mes(compra));
-
-}
-
-// Interface utilizador
-
-void interface(){
 
 }

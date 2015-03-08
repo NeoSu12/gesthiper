@@ -14,9 +14,9 @@ int compara(const void *, const void *, void *);
 int calcula_indice(char);
 
 CATALOGO *inicializa(int tam){
+    int i=0;
     CATALOGO *res = (CATALOGO *) malloc(sizeof(CATALOGO));
     res->tam=tam;
-    int i=0;
     for(i=0;i<=26;i++){
         res->indices[i] = avl_create(compara,NULL,NULL);
     }
@@ -26,7 +26,7 @@ CATALOGO *inicializa(int tam){
 void free_catalogo(CATALOGO *cat){
     int i=0;
     for(i=0;i<=26;i++){
-        avl_destroy(cat->indices[i], destroy_item);
+        avl_destroy(cat->indices[i], destroy_item); /* Existe aqui um erro :/ */
     }
 }
 
