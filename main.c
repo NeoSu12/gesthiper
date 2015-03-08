@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
-    /*ler_ficheiros(f_clientes, f_produtos, f_compras);*/
+    /*ler_ficheiros(f_clientes, f_produtos, f_compras);*/ 
     
     interface();
 
