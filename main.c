@@ -16,6 +16,14 @@
 #define BLUE  "\x1B[34m"
 #define WHITE  "\x1B[37m"
 
+void interface();
+void faceprodutos();
+void faceclientes();
+void facecompras();
+void listaprodutos_2();
+void naocomprados_4();
+void quemcomprou_8();
+
 void ler_ficheiros(FILE *, FILE *, FILE *);
 void le_clientes(FILE *);
 void le_produtos(FILE *);
@@ -24,27 +32,6 @@ int cliente_valido(char *);
 int produto_valido(char *);
 int compra_valida(COMPRA *);
 void mostra_compra(COMPRA *);
-
-/* Interface utilizador */
-
-void interface(){
-    char r;
-    printf("\033[2J\033[1;1H%s -----------------------------------\n|%sGESTHIPER%s                          |\n|                                   |\n|   1 - Produtos                    |\n|   2 - Clientes                    |\n|   3 - Compras/Contabilidade       |\n|                                   |\n| BEM-VINDO                Q - %sSair%s |\n -----------------------------------\n%s", WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
-while (r!=49 || r!=50 || r!=51 || r!=113 || r!=81){
-    printf("O que procura(?): ");
-    if (scanf(" %c", &r) == 1){
-       if (r==49) break; /* Valor temporario !!     faceprodutos();*/
-       if (r==50) break; /* Valor temporario !!     faceclientes();*/
-       if (r==51) break; /* Valor temporario !!     facecompras();*/
-       if (r==113 || r==81) break;
-       printf("\n[ERRO] Valor invalido\n\n");
-    }
-    else {
-            printf("[ERRO] Falha de Leitura\n\n");
-    }
-}
-return;
-}
 
 int main(int argc, char** argv) {
 
@@ -214,4 +201,148 @@ void mostra_compra(COMPRA *compra){
     printf("Cliente: %s | ",get_cod_cliente(compra));
     printf("Mes: %2d\n",get_mes(compra));
 
+}
+
+/* Interface utilizador */
+
+void interface(){
+    char r;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|%sGESTHIPER%s                                 |\n|                                          |\n|   1 - Produtos                           |\n|   2 - Clientes                           |\n|   3 - Compras/Contabilidade              |\n|                                          |\n| BEM-VINDO                       Q - %sSair%s |\n ------------------------------------------\n%s", WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
+while (r!=49 || r!=50 || r!=51 || r!=113 || r!=81){
+    printf("//O que procura(?): ");
+    if (scanf(" %c", &r) == 1){
+       if (r==49 || r==50 || r==51 || r==113 || r==81) break;
+       else printf("\n[ERRO] Valor invalido\n\n");
+    }
+    else{
+            printf("[ERRO] Falha de Leitura\n\n");
+    }
+}
+if (r==49) faceprodutos();
+if (r==50) faceclientes();
+if (r==51) facecompras();
+return;
+}
+
+void faceprodutos(){
+    char r;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|%s*1* %sPRODUTOS%s                              |\n|                                          |\n|   1 - Listar produtos (2)                |\n|   2 - Nao comprados (4)                  |\n|   3 - Quem comprou? (8)                  |\n|                                          |\n|  0 - Voltar                     Q - %sSair%s |\n ------------------------------------------\n%s", WHITE, YELLOW, BLUE, WHITE, RED, WHITE, NORMAL);
+while (r!=48 || r!=49 || r!=50 || r!=51 || r!=113 || r!=81){
+    printf("//Que deseja fazer(?): ");
+    if (scanf(" %c", &r) == 1){
+         if (r==48 || r==49 || r==50 || r==51 || r==113 || r==81) break;
+         printf("\n[ERRO] Valor invalido\n\n");
+    }
+    else{
+            printf("[ERRO] Falha de Leitura\n\n");
+    }
+}
+if (r==48) interface();
+if (r==49) listaprodutos_2(); /* Valor temporario !! */
+if (r==50) naocomprados_4(); /* Valor temporario !! */
+if (r==51) quemcomprou_8(); /*Valor temporario !! */
+return ;
+}
+
+void faceclientes(){
+    char r;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|%s*2* %sCLIENTES%s                              |\n|                                          |\n|   1 - Listar clientes (6)                |\n|   2 - Quantos produtos? (5)              |\n|   3 - Mais comprados (9)                 |\n|   4 - Clientes do ano! (10)              |\n|   5 - Top 3 produtos (13)                |\n", WHITE, YELLOW, BLUE, WHITE);
+    printf("|                                          |\n|  0 - Voltar                     Q - %sSair%s |\n ------------------------------------------\n%s", RED, WHITE, NORMAL);
+while (r!=48 || r!=49 || r!=50 || r!=51 || r!=52 || r!=53 || r!=81 || r!=113){
+    printf("//Que deseja fazer(?): ");
+    if (scanf(" %c", &r) == 1){
+       if (r==48 || r==49 || r==50 || r==51 || r==52 || r==53 || r==81 || r==113) break;
+       else printf("\n[ERRO] Valor invalido\n\n");
+    }
+    else{
+            printf("[ERRO] Falha de Leitura\n\n");
+    }
+}
+if (r==48) interface();
+if (r==49) ; /* Valor temporario !!     listaclientes_6();*/
+if (r==50) ; /* Valor temporario !!     quantosprodutos_5();*/
+if (r==51) ; /* Valor temporario !!     maiscomprados_9();*/
+if (r==52) ; /* Valor temporario !!     clientesdoano_10();*/
+if (r==53) ; /* Valor temporario !!     top3produtos_13();*/
+return;
+}
+
+void facecompras(){
+    char r;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|%s*3* %sCONTABILIDADE%s                         |\n|                                          |\n|   1 - Numero vendas (3)                  |\n|   2 - Numero compras (7)                 |\n|   3 - 'N' produtos mais vendidos (12)    |\n|   4 - Clientes/Produtos ignorados (14)   |\n|   5 - Informacao geral (11)              |\n", WHITE, YELLOW, BLUE, WHITE);
+    printf("|                                          |\n|  0 - Voltar                     Q - %sSair%s |\n ------------------------------------------\n%s", RED, WHITE, NORMAL);
+while (r!=48 || r!=49 || r!=50 || r!=51 || r!=52 || r!=53 || r!=81 || r!=113){
+    printf("//Que deseja fazer(?): ");
+    if (scanf(" %c", &r) == 1){
+       if (r==48 || r==49 || r==50 || r==51 || r==52 || r==53 || r==81 || r==113) break;
+       else printf("\n[ERRO] Valor invalido\n\n");
+    }
+    else{
+            printf("[ERRO] Falha de Leitura\n\n");
+    }
+}
+if (r==48) interface();
+if (r==49) ; /* Valor temporario !!     numerovendas_3();*/
+if (r==50) ; /* Valor temporario !!     numerocompras_7();*/
+if (r==51) ; /* Valor temporario !!     maisvendidos_12();*/
+if (r==52) ; /* Valor temporario !!     cliproignorados_14();*/
+if (r==53) ; /* Valor temporario !!     infogeral_11();*/
+return;
+}
+
+void listaprodutos_2(){
+    char r;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|%sGESTHIPER%s                                 |\n|                                          |\n|                                          |\n|             %sLISTAR PRODUTOS%s              |\n|                                          |\n|                                          |\n|  1 - Iniciar                             |\n|  0 - Voltar                     Q - %sSair%s |\n ------------------------------------------\n%s", WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+while (r!=48 || r!=49 || r!=81 || r!=113){
+    printf("//Que deseja fazer(?): ");
+    if (scanf(" %c", &r) == 1){
+       if (r==48 || r==49 || r==81 || r==113) break;
+       else printf("\n[ERRO] Valor invalido\n\n");
+    }
+    else{
+            printf("[ERRO] Falha de Leitura\n\n");
+    }
+}
+if (r==48) faceprodutos();
+if (r==49) printf("//Insira a letra: \n"); /* lista os produtos temporario!!*/
+return;
+}
+
+void naocomprados_4(){
+    char r;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|%sGESTHIPER%s                                 |\n|                                          |\n|                                          |\n|             %sNAO COMPRADOS%s                |\n|                                          |\n|                                          |\n|  1 - Iniciar                             |\n|  0 - Voltar                     Q - %sSair%s |\n ------------------------------------------\n%s", WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+while (r!=48 || r!=49 || r!=81 || r!=113){
+    printf("//Que deseja fazer(?): ");
+    if (scanf(" %c", &r) == 1){
+       if (r==48 || r==49 || r==81 || r==113) break;
+       else printf("\n[ERRO] Valor invalido\n\n");
+    }
+    else{
+            printf("[ERRO] Falha de Leitura\n\n");
+    }
+}
+if (r==48) faceprodutos();
+if (r==49){
+    printf("//Insira codigo do cliente: \n"); /* mostra tabela blah blah temporario!!*/
+    printf("//Deseja guardar a informacao(?): \n"); /* temporario!!*/
+}
+return;
+}
+
+void quemcomprou_8(){
+    char r;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|%sGESTHIPER%s                                 |\n|                                          |\n|                                          |\n|             %sQUEM COMPROU?%s                |\n|                                          |\n|                                          |\n|  1 - Iniciar                             |\n|  0 - Voltar                     Q - %sSair%s |\n ------------------------------------------\n%s", WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+while (r!=48 || r!=49 || r!=81 || r!=113){
+    printf("//Que deseja fazer(?): ");
+    if (scanf(" %c", &r) == 1){
+       if (r==48 || r==49 || r==81 || r==113) break;
+       else printf("\n[ERRO] Valor invalido\n\n");
+    }
+    else{
+            printf("[ERRO] Falha de Leitura\n\n");
+    }
+}
+if (r==48) faceprodutos();
+if (r==49) printf("//Insira codigo de produto: \n"); /* mostra info blah blah temporario!!*/
+return;
 }
