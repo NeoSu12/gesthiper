@@ -69,8 +69,12 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
-    /*ler_ficheiros(f_clientes, f_produtos, f_compras);*/ 
-    
+    ler_ficheiros(f_clientes, f_produtos, f_compras);
+    switch (argc) {
+        case 1: printf("\nFicheiros lidos: FichClientes.txt FichProdutos.txt Compras.txt\n\n"); break;
+        case 2: printf("\nFicheiros lidos: miniClientes.txt miniProdutos.txt miniCompras.txt\n\n"); break;
+        case 4: printf("\nFicheiros lidos: %s %s %s\n\n", argv[1], argv[2], argv[3]); break;
+    }
     interface();
 
     fclose(f_clientes);
@@ -207,7 +211,7 @@ void mostra_compra(COMPRA *compra){
 
 void interface(){
     char r[50];
-    printf("\033[2J\033[1;1H%s ------------------------------------------\n|%sGESTHIPER%s                                 |\n|                                          |\n|   1 - Produtos                           |\n|   2 - Clientes                           |\n|   3 - Compras/Contabilidade              |\n|                                          |\n| BEM-VINDO                       Q - %sSair%s |\n ------------------------------------------\n%s", WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
+    printf("%s ------------------------------------------\n|%sGESTHIPER%s                                 |\n|                                          |\n|   1 - Produtos                           |\n|   2 - Clientes                           |\n|   3 - Compras/Contabilidade              |\n|                                          |\n| BEM-VINDO                       Q - %sSair%s |\n ------------------------------------------\n%s", WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
 while (r[0]!=49 || r[0]!=50 || r[0]!=51 || r[0]!=113 || r[0]!=81){
     printf("//O que procura(?): ");
     if (scanf("%s", r ) == 1){

@@ -23,12 +23,12 @@ CATALOGO *inicializa(int tam){
     return res;
 }
 
-void free_catalogo(CATALOGO *cat){
+/*void free_catalogo(CATALOGO *cat){
     int i=0;
     for(i=0;i<=26;i++){
-        avl_destroy(cat->indices[i], destroy_item);   /* Existe aqui um erro :/ */
+        avl_destroy(cat->indices[i], destroy_item);   Existe aqui um erro :/ 
     }
-}
+}*/
 
 void insere_item(CATALOGO *cat, char *str){
     int ind = calcula_indice(str[0]);
