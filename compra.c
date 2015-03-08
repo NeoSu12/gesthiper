@@ -40,23 +40,26 @@ COMPRA *inicializa_compra_completo(cod_cliente_t cod_cliente,preco_unit_t preco_
 
 COMPRA *clone_compra(COMPRA *compra){
     COMPRA *compra_clone = (COMPRA *) malloc(sizeof(COMPRA));
-    compra_clone->cod_cliente=compra->cod_cliente;
+    
+    compra_clone->cod_cliente = (cod_cliente_t) malloc(NBYTES_CLIENTE);
+    compra_clone->cod_produto = (cod_produto_t) malloc(NBYTES_PRODUTO);
+    strncpy(compra_clone->cod_cliente,compra->cod_cliente,NBYTES_CLIENTE);
+    strncpy(compra_clone->cod_produto,compra->cod_produto,NBYTES_PRODUTO);
     compra_clone->preco_unit=compra->preco_unit;
     compra_clone->quantidade=compra->quantidade;
     compra_clone->promo=compra->promo;
-    compra_clone->cod_produto=compra->cod_produto;
     compra_clone->mes=compra->mes;
     
     return compra_clone;
 }
 
-
 int equals_compra(COMPRA *compra1, COMPRA *compra2){
-    if ((compra1->cod_cliente==compra2->cod_cliente)&&
-        (compra1->preco_unit==compra2->preco_unit)&&
+    
+    if ((strncmp(compra1->cod_cliente,compra2->cod_cliente,NBYTES_CLIENTE))&&
+            (strncmp(compra1->cod_produto,compra2->cod_produto,NBYTES_PRODUTO))&&
+            (compra1->preco_unit==compra2->preco_unit)&&
             (compra1->quantidade==compra2->quantidade)&&
             (compra1->promo==compra2->promo)&&
-            (compra1->cod_produto==compra2->cod_produto)&&
             (compra1->mes==compra2->mes)) return 1;
     else return 0;
 }
