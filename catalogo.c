@@ -26,7 +26,7 @@ CATALOGO *inicializa(int tam){
 void free_catalogo(CATALOGO *cat){
     int i=0;
     for(i=0;i<=26;i++){
-        avl_destroy(cat->indices[i], destroy_item);  /* Existe aqui um erro :/ */
+        avl_destroy(cat->indices[i], destroy_item);   /* Existe aqui um erro :/ */
     }
 }
 
