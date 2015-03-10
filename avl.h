@@ -46,7 +46,7 @@ void avl_free (struct libavl_allocator *, void *);
 
 typedef struct avl_table ARVORE;
 typedef struct avl_node NODO;
-typedef struct avl_traverser ITERADOR;
+typedef struct avl_traverser TRAVERSER;
 
 
 /* Table functions. */
