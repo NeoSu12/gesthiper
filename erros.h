@@ -4,7 +4,9 @@
 typedef enum erro {
     ERRO_ARGS,
     ERRO_ABIR_FICH,
-    ERRO_FLAG_DESCONHECIDA
+    ERRO_FLAG_DESCONHECIDA,
+    ERRO_NENHUMA_OPCAO,
+    ERRO_OPCAO_INVALIDA
 } ERRO;
 
 void error_msg(ERRO, void *);

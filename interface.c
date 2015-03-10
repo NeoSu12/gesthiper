@@ -4,6 +4,7 @@
 #include <string.h>
 #include "interface.h"
 #include "queries.h"
+#include "erros.h"
 
 #define NORMAL  "\x1B[0m"
 #define RED  "\x1B[31m"
@@ -18,7 +19,7 @@ void facecompras();
 
 void interface() {
     char *r;
-    int sair = 0;
+    int sair = 0, leitura;
     printf("%s ------------------------------------------\n|"
             "%sGESTHIPER%s                                 |\n|"
             "                                          |\n|"
@@ -34,7 +35,7 @@ void interface() {
     while (sair == 0) {
         r = (char *) malloc(sizeof(char)*50);
         printf("//O que procura(?): ");
-        scanf("%s", r);
+        leitura=scanf("%s", r);
         
         switch (toupper(r[0])) {
             case '1': faceprodutos();break;
@@ -45,7 +46,8 @@ void interface() {
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.\n"); 
+                if(leitura==0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
+                else error_msg(ERRO_OPCAO_INVALIDA, NULL);
                 break;
         }
         free(r);
@@ -56,7 +58,7 @@ void interface() {
 
 void faceprodutos() {
     char *r;
-    int sair=0;
+    int sair=0, leitura;
     
     printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
             "%s*1* %sPRODUTOS%s                              |\n|"
@@ -73,7 +75,7 @@ void faceprodutos() {
     while (sair == 0) {
         r = (char *) malloc(sizeof(char)*50);
         printf("//O que procura(?): ");
-        scanf("%s", r);
+        leitura = scanf("%s", r);
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
                       interface();break;
@@ -85,7 +87,8 @@ void faceprodutos() {
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.\n"); 
+                if(leitura==0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
+                else error_msg(ERRO_OPCAO_INVALIDA, NULL);
                 break;
         }
         free(r);
@@ -95,7 +98,7 @@ void faceprodutos() {
 
 void faceclientes() {
     char r[50];
-    int sair = 0;
+    int sair = 0, leitura;
     printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
             "%s*2* %sCLIENTES%s                              |\n|"
             "                                                      |\n|"
@@ -111,7 +114,7 @@ void faceclientes() {
         while (sair == 0) {
 
         printf("//O que procura(?): ");
-        scanf("%s", r);
+        leitura = scanf("%s", r);
         
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
@@ -126,7 +129,8 @@ void faceclientes() {
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.\n"); 
+                if(leitura==0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
+                else error_msg(ERRO_OPCAO_INVALIDA, NULL); 
                 break;
         }
     }
@@ -135,7 +139,7 @@ void faceclientes() {
 
 void facecompras() {
     char r[50];
-    int sair = 0;
+    int sair = 0, leitura;
     printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
             "%s*3* %sCONTABILIDADE%s                         |\n|"
             "                                                |\n|"
@@ -152,7 +156,7 @@ void facecompras() {
     while (sair == 0) {
 
         printf("//O que procura(?): ");
-        scanf("%s", r);
+        leitura = scanf("%s", r);
 
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
@@ -167,7 +171,8 @@ void facecompras() {
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.\n");
+                if(leitura==0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
+                else error_msg(ERRO_OPCAO_INVALIDA, NULL);
                 break;
         }
     }

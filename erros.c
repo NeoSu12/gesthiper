@@ -5,6 +5,7 @@
 void msg_erro_args(ERRO, char *);
 void msg_erro_abrir_fich(ERRO, void *);
 void msg_erro_flag_desconhecida(ERRO, void *);
+void msg_erro_opcao_invalida(ERRO,void *);
 
 void error_msg(ERRO erro, void *param) {
     fprintf(stderr, "ERRO[%d]: ",erro);
@@ -12,6 +13,8 @@ void error_msg(ERRO erro, void *param) {
         case ERRO_ARGS: msg_erro_args(erro, param);
         case ERRO_ABIR_FICH: msg_erro_abrir_fich(erro,param);
         case ERRO_FLAG_DESCONHECIDA: msg_erro_flag_desconhecida(erro,param);
+        case ERRO_NENHUMA_OPCAO: msg_erro_nenhuma_opcao(erro,param);
+        case ERRO_OPCAO_INVALIDA: msg_erro_opcao_invalida(erro,param);
         default:;
     }
 }
@@ -35,3 +38,12 @@ void msg_erro_flag_desconhecida(ERRO erro, void *param){
     fprintf(stderr, "FLAGS Válidas:\n");
     fprintf(stderr, "\t--mini : Abre ficheiros mais pequenos de dados.\n");
 }
+
+void msg_erro_nenhuma_opcao(ERRO erro,void *param){
+     fprintf(stderr, "Nao foi seleccionada nenhuma opcao.\n");
+ }
+
+void msg_erro_opcao_invalida(ERRO erro,void *param){
+    fprintf(stderr, "A opcao escolhida e invalida.\n");
+}
+
