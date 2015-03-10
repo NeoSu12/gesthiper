@@ -6,6 +6,7 @@
 #include "interface.h"
 #include "erros.h"
 #include "compra.h"
+#include "catalogo.h"
 
 #define LINHA_CLIENTE_MAX 20
 #define LINHA_PRODUTO_MAX 20
@@ -78,40 +79,44 @@ int le_ficheiros(int argc, char **argv) {
 
 void le_clientes(FILE *f_cli, char *nf) {
     int clientes_validos = 0, total_linhas_clientes = 0;
-    time_t tempo_i, tempo_f;
     clock_t ci, cf;
     char *cliente;
-
+    CATALOGO *clientes = inicializa_catalogo(6);
+    
     ci = clock();
-    tempo_i = time(NULL);
     cliente = (char *) malloc(sizeof (char)*LINHA_CLIENTE_MAX);
 
     while (fgets(cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
+        
         cliente[strlen(cliente) - 1] = '\0';
-        if (cliente_valido(cliente) != -1) clientes_validos++;
+        
+        if (cliente_valido(cliente) != -1){
+            insere_item(clientes,cliente);
+            clientes_validos++;
+        }
+        
         /* printf("%s\n",cliente); */
         total_linhas_clientes++;
     }
-    tempo_f = time(NULL);
+    
     cf = clock();
 
     printf("-----CLIENTES-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d\n", clientes_validos);
     printf("Linhas lidas: %d\n", total_linhas_clientes);
-    printf("Leitura em %f segundos.\n", difftime(tempo_f, tempo_i));
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
+    
+    free(clientes);
     free(cliente);
 }
 
 void le_produtos(FILE *f_prod, char *nf) {
     int produtos_validos = 0, total_linhas_produtos = 0;
-    time_t tempo_i, tempo_f;
     clock_t ci, cf;
     char *produto;
 
     ci = clock();
-    tempo_i = time(NULL);
     produto = (char *) malloc(sizeof (char)*LINHA_PRODUTO_MAX);
 
     while (fgets(produto, LINHA_PRODUTO_MAX, f_prod) != NULL) {
@@ -120,26 +125,24 @@ void le_produtos(FILE *f_prod, char *nf) {
         /* printf("%s\n",produto); */
         total_linhas_produtos++;
     }
+    
     cf = clock();
-    tempo_f = time(NULL);
+    
     printf("-----PRODUTOS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d\n", produtos_validos);
     printf("Linhas lidas: %d\n", total_linhas_produtos);
-    printf("Leitura em %f segundos.\n", difftime(tempo_f, tempo_i));
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
     free(produto);
 }
 
 void le_compras(FILE *f_comp, char *nf) {
     int compras_validas = 0, total_linhas_compras = 0;
-    time_t tempo_i, tempo_f;
     clock_t ci, cf;
     char *linha_compra, *delim, *token;
     COMPRA *compra;
 
     ci = clock();
-    tempo_i = time(NULL);
     linha_compra = (char *) malloc(sizeof (char)*LINHA_COMPRA_MAX);
     compra = inicializa_compra();
     delim = " ";
@@ -172,12 +175,10 @@ void le_compras(FILE *f_comp, char *nf) {
         total_linhas_compras++;
     }
     cf = clock();
-    tempo_f = time(NULL);
     printf("------COMPRAS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d\n", compras_validas);
     printf("Linhas lidas: %d\n", total_linhas_compras);
-    printf("Leitura em %f segundos.\n", difftime(tempo_f, tempo_i));
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
 
     free_compra(compra);
