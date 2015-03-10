@@ -80,13 +80,10 @@ int le_ficheiros(int argc, char **argv) {
 void le_clientes(FILE *f_cli, char *nf) {
     int clientes_validos = 0, total_linhas_clientes = 0;
     clock_t ci, cf;
-    char *cliente, *cliente2;
-    ITERADOR *it;
-    CATALOGO *clientes = inicializa_catalogo(5);
+    char *cliente;
     
     ci = clock();
     cliente = (char *) malloc(sizeof (char)*LINHA_CLIENTE_MAX);
-    cliente2 = (char *) malloc(sizeof (char)*LINHA_CLIENTE_MAX);
 
     while (fgets(cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
         
@@ -101,15 +98,7 @@ void le_clientes(FILE *f_cli, char *nf) {
         total_linhas_clientes++;
     }
     
-    it = inicializa_iterador_letra(clientes,'c');
-    printf("----------");
-    printf("Nomes comecados por B:");
-    while((cliente2 = iterador_next(it)) != NULL){
-        printf("%s\n",cliente2);
-    }
-    printf("----------");
-    
-    
+   
     cf = clock();
     
     

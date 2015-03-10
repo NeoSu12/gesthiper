@@ -17,7 +17,7 @@ void faceclientes();
 void facecompras();
 
 void interface() {
-    char r[50];
+    char *r;
     int sair = 0, leitura;
     printf("%s ------------------------------------------\n|"
             "%sGESTHIPER%s                                 |\n|"
@@ -32,9 +32,9 @@ void interface() {
 
 
     while (sair == 0) {
-
+        r = (char *) malloc(sizeof(char)*50);
         printf("//O que procura(?): ");
-        leitura = scanf("%s", r);
+        scanf("%s", r);
         
         switch (toupper(r[0])) {
             case '1': faceprodutos();break;
@@ -45,17 +45,17 @@ void interface() {
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                if(leitura!=0) sair = 1;
-                else fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida."); 
+                fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.\n"); 
                 break;
         }
+        free(r);
     }
 
 
 }
 
 void faceprodutos() {
-    char r[50];
+    char *r;
     int sair=0,leitura;
     
     printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
@@ -71,10 +71,9 @@ void faceprodutos() {
     
     
     while (sair == 0) {
-
+        r = (char *) malloc(sizeof(char)*50);
         printf("//O que procura(?): ");
-        leitura = scanf("%s", r);
-        
+        scanf("%s", r);
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
                       interface();break;
@@ -86,10 +85,10 @@ void faceprodutos() {
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                if(leitura!=0) sair = 1;
-                else fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida."); 
+                fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.\n"); 
                 break;
         }
+        free(r);
     }
     
 }
@@ -112,7 +111,7 @@ void faceclientes() {
         while (sair == 0) {
 
         printf("//O que procura(?): ");
-        leitura = scanf("%s", r);
+        scanf("%s", r);
         
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
@@ -127,8 +126,7 @@ void faceclientes() {
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                if(leitura!=0) sair = 1;
-                else fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida."); 
+                fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.\n"); 
                 break;
         }
     }
@@ -154,7 +152,7 @@ void facecompras() {
     while (sair == 0) {
 
         printf("//O que procura(?): ");
-        leitura = scanf("%s", r);
+        scanf("%s", r);
 
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
@@ -169,8 +167,7 @@ void facecompras() {
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                if (leitura != 0) sair = 1;
-                else fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.");
+                fprintf(stderr, "[ERRO] Nao foi possivel ler a opcao escolhida.\n");
                 break;
         }
     }
