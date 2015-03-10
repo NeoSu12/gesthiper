@@ -65,6 +65,7 @@ void *avl_assert_delete (struct avl_table *, void *);
 
 #define avl_count(table) ((size_t) (table)->avl_count)
 
+TRAVERSER *avl_t_alloc();
 /* Table traverser functions. */
 void avl_t_init (struct avl_traverser *, struct avl_table *);
 void *avl_t_first (struct avl_traverser *, struct avl_table *);

@@ -92,6 +92,7 @@ int calcula_indice(char c){
 
 ITERADOR *inicializa_iterador_null(CATALOGO *cat){
     ITERADOR *it = (ITERADOR *) malloc(sizeof(ITERADOR));
+    it->tr = avl_t_alloc();
     avl_t_init(it->tr,cat->indices[0]);
     it->ind = 0;
     it->c=cat;
@@ -101,18 +102,20 @@ ITERADOR *inicializa_iterador_null(CATALOGO *cat){
 
 ITERADOR *inicializa_iterador_inicio(CATALOGO *cat){
     ITERADOR *it = (ITERADOR *) malloc(sizeof(ITERADOR));
+    it->tr = avl_t_alloc();
     avl_t_first(it->tr,cat->indices[0]);
     it->ind=0;
     return it;
 }
 
 ITERADOR *inicializa_iterador_elem(CATALOGO *cat, char *st) {
-    ITERADOR *it = (ITERADOR *) malloc(sizeof(ITERADOR));
-    it->c=cat;
     int indice;
+    ITERADOR *it = (ITERADOR *) malloc(sizeof(ITERADOR));
+    it->tr = avl_t_alloc();
+    it->c=cat;
 
     if (st != NULL) {
-        indice = calcula_indice(*st);
+        indice = calcula_indice(toupper(*st));
         avl_t_find(it->tr, cat->indices[indice], st);
         it->ind = indice;
     }else{
@@ -123,10 +126,10 @@ ITERADOR *inicializa_iterador_elem(CATALOGO *cat, char *st) {
 }
 
 ITERADOR *inicializa_iterador_letra(CATALOGO *cat, char c) {
-    ITERADOR *it = (ITERADOR *) malloc(sizeof (ITERADOR));
     int indice;
-
-    indice = calcula_indice(c);
+    ITERADOR *it = (ITERADOR *) malloc(sizeof (ITERADOR));
+    it->tr = avl_t_alloc();
+    indice = calcula_indice(toupper(c));
     avl_t_first(it->tr, cat->indices[indice]);
     it->ind = indice;
     it->c=cat;
@@ -134,8 +137,12 @@ ITERADOR *inicializa_iterador_letra(CATALOGO *cat, char c) {
 }
 
 char *iterador_next(ITERADOR *it){
+    return avl_t_next(it->tr);
+}
+
+
+char *iterador_next__(ITERADOR *it){
     char *res;
-    int indice = it->ind;
     int sair=0;
     
     while(sair==0){
@@ -148,6 +155,6 @@ char *iterador_next(ITERADOR *it){
             avl_t_first(it->tr,it->c->indices[it->ind]);
         }
     }
-    
+    return res;
     }
        

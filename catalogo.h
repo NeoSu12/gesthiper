@@ -14,6 +14,7 @@ ITERADOR *inicializa_iterador_inicio(CATALOGO *);
 ITERADOR *inicializa_iterador_letra(CATALOGO *, char);
 ITERADOR *inicializa_iterador_elem(CATALOGO *, char *);
 char *iterador_next(ITERADOR *);
+char *iterador_next__(ITERADOR *it);
 
 
 #endif	/* CATALOGO_H */
