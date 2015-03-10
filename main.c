@@ -90,7 +90,6 @@ void le_clientes(FILE *f_cli, char *nf) {
         cliente[strlen(cliente) - 1] = '\0';
         
         if (cliente_valido(cliente) != -1){
-            insere_item(clientes,cliente);
             clientes_validos++;
         }
         
@@ -108,7 +107,6 @@ void le_clientes(FILE *f_cli, char *nf) {
     printf("Linhas lidas: %d\n", total_linhas_clientes);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
     
-    free(clientes);
     free(cliente);
 }
 

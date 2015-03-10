@@ -70,15 +70,14 @@ void free_catalogo(CATALOGO cat){
         avl_destroy(cat.indices[i], free_string);
     }
     
-    free(cat);
 }
 
-int calcula_indice(char c){
+int calcula_indice(char l){
     int res=0;
-    char cl = toupper(c);
+    char letra = toupper(l);
     
-    if(isalpha(cl)){
-        res = cl -'A';
+    if(isalpha(letra)){
+        res = letra -'A';
     }else{
         res = 26;
     }
@@ -95,7 +94,7 @@ ITERADOR inicializa_iterador_null(CATALOGO cat){
     it->tr = avl_t_alloc();
     avl_t_init(it->tr,cat.indices[0]);
     it->ind = 0;
-    it->c=cat;
+    it->c=&cat;
     return *it;
 }
 
@@ -112,7 +111,7 @@ ITERADOR inicializa_iterador_elem(CATALOGO cat, char *st) {
     int indice;
     ITERADOR *it = (ITERADOR *) malloc(sizeof(ITERADOR));
     it->tr = avl_t_alloc();
-    it->c=cat;
+    it->c=&cat;
 
     if (st != NULL) {
         indice = calcula_indice(toupper(*st));
@@ -132,7 +131,7 @@ ITERADOR inicializa_iterador_letra(CATALOGO cat, char c) {
     indice = calcula_indice(toupper(c));
     avl_t_first(it->tr, cat.indices[indice]);
     it->ind = indice;
-    it->c=cat;
+    it->c=&cat;
     return *it;
 }
 

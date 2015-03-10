@@ -18,7 +18,7 @@ void facecompras();
 
 void interface() {
     char *r;
-    int sair = 0, leitura;
+    int sair = 0;
     printf("%s ------------------------------------------\n|"
             "%sGESTHIPER%s                                 |\n|"
             "                                          |\n|"
@@ -56,7 +56,7 @@ void interface() {
 
 void faceprodutos() {
     char *r;
-    int sair=0,leitura;
+    int sair=0;
     
     printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
             "%s*1* %sPRODUTOS%s                              |\n|"
@@ -95,7 +95,7 @@ void faceprodutos() {
 
 void faceclientes() {
     char r[50];
-    int sair = 0, leitura;
+    int sair = 0;
     printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
             "%s*2* %sCLIENTES%s                              |\n|"
             "                                                      |\n|"
@@ -135,7 +135,7 @@ void faceclientes() {
 
 void facecompras() {
     char r[50];
-    int sair = 0, leitura;
+    int sair = 0;
     printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
             "%s*3* %sCONTABILIDADE%s                         |\n|"
             "                                                |\n|"
