@@ -20,10 +20,15 @@ int cliente_valido(char *);
 int produto_valido(char *);
 int compra_valida(COMPRA *);
 void mostra_compra(COMPRA *);
+void imprime_codigos_comecados_por_letra(CATALOGO, char);
+
+CATALOGO catalogo_clientes;
 
 int main(int argc, char** argv) {
+    catalogo_clientes = inicializa_catalogo(5);
     le_ficheiros(argc, argv);
-    interface();
+    imprime_codigos_comecados_por_letra(catalogo_clientes,'c');
+    /*interface();*/
     return (EXIT_SUCCESS);
 }
 
@@ -90,6 +95,7 @@ void le_clientes(FILE *f_cli, char *nf) {
         cliente[strlen(cliente) - 1] = '\0';
         
         if (cliente_valido(cliente) != -1){
+            insere_item(catalogo_clientes,cliente);
             clientes_validos++;
         }
         
@@ -229,4 +235,22 @@ void mostra_compra(COMPRA *compra) {
     printf("Cliente: %s | ", get_cod_cliente(compra));
     printf("Mes: %2d\n", get_mes(compra));
 
+}
+
+
+/* 
+ * Função apenas para testar o iterador.
+ * Não usar no programa final.
+ * 
+ */
+void imprime_codigos_comecados_por_letra(CATALOGO cat, char c){
+    ITERADOR it = inicializa_iterador_letra(cat,c);
+    char *codigo;
+    printf("A imprimir os nomes começados por %c:\n", toupper(c));
+    printf("------------------------------------\n");
+    
+    while((codigo = iterador_next(it))!=NULL){
+        printf("%s\n",codigo);
+    }
+    
 }

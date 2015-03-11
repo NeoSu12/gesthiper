@@ -1,8 +1,8 @@
 #ifndef CATALOGO_H
 #define	CATALOGO_H
 
-typedef struct catalogo CATALOGO;
-typedef struct iterador ITERADOR;
+typedef struct catalogo* CATALOGO;
+typedef struct iterador* ITERADOR;
 
 CATALOGO inicializa_catalogo(int);
 void insere_item(CATALOGO, char *);

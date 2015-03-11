@@ -461,9 +461,9 @@ trav_refresh (struct avl_traverser *trav)
     }
 }
 
-TRAVERSER *
+TRAVERSER 
 avl_t_alloc(){
-    return (TRAVERSER *) malloc(sizeof(TRAVERSER));
+    return (TRAVERSER) malloc(sizeof(struct avl_traverser));
 }
 
 
