@@ -7,7 +7,6 @@
 
 
 struct catalogo{
-    int tam;
     ARVORE indices[27];
 };
 
@@ -25,13 +24,14 @@ void free_string(void *, void *);
  ÁRVORE
  */
 
-CATALOGO inicializa_catalogo(int tam){
+CATALOGO inicializa_catalogo(){
     int i=0;
     CATALOGO res = (CATALOGO) malloc(sizeof(struct catalogo));
-    res->tam=tam;
+    
     for(i=0;i<=26;i++){
         res->indices[i] = avl_create(compara,NULL,NULL);
     }
+    
     return res;
 }
 
@@ -51,17 +51,10 @@ char *procura_elemento(CATALOGO cat, char *elem){
 
 void insere_item(CATALOGO cat, char *str){
     int ind = calcula_indice(str[0]);
-    char *new = (char *) malloc(cat->tam + 1);
-    strncpy(new, str, cat->tam +1);
+    int tamanho = strlen(str);
+    char *new = (char *) malloc(tamanho + 1);
+    strncpy(new, str, tamanho +1);
     avl_insert(cat->indices[ind],new);
-}
-
-int compara(const void *avl_a, const void *avl_b, void *avl_param){
-    return strcmp((char *)avl_a, (char *)avl_b);
-}
-
-void free_string(void *item, void *param){
-    free(item);
 }
 
 void free_catalogo(CATALOGO cat){
@@ -71,6 +64,14 @@ void free_catalogo(CATALOGO cat){
         avl_destroy(cat->indices[i], free_string);
     }
     
+}
+
+int compara(const void *avl_a, const void *avl_b, void *avl_param){
+    return strcmp((char *)avl_a, (char *)avl_b);
+}
+
+void free_string(void *item, void *param){
+    free(item);
 }
 
 int calcula_indice(char l){
@@ -85,26 +86,16 @@ int calcula_indice(char l){
     return res;
 }
 
-
 /*
  ITERADOR
  */
-
-ITERADOR inicializa_iterador_null(CATALOGO cat){
-    ITERADOR it = (ITERADOR) malloc(sizeof(struct iterador));
-    it->tr = avl_t_alloc();
-    avl_t_init(it->tr,cat->indices[0]);
-    it->ind = 0;
-    it->c=cat;
-    return it;
-}
-
 
 ITERADOR inicializa_iterador_inicio(CATALOGO cat){
     ITERADOR it = (ITERADOR) malloc(sizeof(struct iterador));
     it->tr = avl_t_alloc();
     avl_t_first(it->tr,cat->indices[0]);
     it->ind=0;
+    it->c=cat;
     return it;
 }
 
@@ -137,11 +128,6 @@ ITERADOR inicializa_iterador_letra(CATALOGO cat, char c) {
 }
 
 char *iterador_next(ITERADOR it){
-    return avl_t_next(it->tr);
-}
-
-
-char *iterador_next__(ITERADOR it){
     char *res;
     int sair=0;
     
@@ -157,4 +143,8 @@ char *iterador_next__(ITERADOR it){
     }
     return res;
     }
+
+char *iterador_next_letra(ITERADOR it){
+    return avl_t_next(it->tr);
+}
        

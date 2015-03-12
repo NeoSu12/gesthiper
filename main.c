@@ -23,12 +23,18 @@ void mostra_compra(COMPRA *);
 void imprime_codigos_comecados_por_letra(CATALOGO, char);
 
 CATALOGO catalogo_clientes;
+CATALOGO catalogo_produtos;
 
 int main(int argc, char** argv) {
-    catalogo_clientes = inicializa_catalogo(5);
+    catalogo_clientes = inicializa_catalogo();
+    catalogo_produtos = inicializa_catalogo();
+    
     le_ficheiros(argc, argv);
-    imprime_codigos_comecados_por_letra(catalogo_clientes,'c');
-    /*interface();*/
+    
+    if(procura_elemento(catalogo_clientes,"AH265")!=NULL)
+        printf("O elemento foi encontrado.\n");
+    
+    /* interface(); */
     return (EXIT_SUCCESS);
 }
 
@@ -85,27 +91,24 @@ int le_ficheiros(int argc, char **argv) {
 void le_clientes(FILE *f_cli, char *nf) {
     int clientes_validos = 0, total_linhas_clientes = 0;
     clock_t ci, cf;
-    char *cliente;
+    char *cliente, *linha_cliente;
+    char *delim = "\n\r";
     
     ci = clock();
-    cliente = (char *) malloc(sizeof (char)*LINHA_CLIENTE_MAX);
+    linha_cliente = (char *) malloc(sizeof (char)*LINHA_CLIENTE_MAX);
+    
+    while (fgets(linha_cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
+        cliente = strtok(linha_cliente, delim);
 
-    while (fgets(cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
-        
-        cliente[strlen(cliente) - 1] = '\0';
-        
-        if (cliente_valido(cliente) != -1){
-            insere_item(catalogo_clientes,cliente);
+        if (cliente_valido(cliente) != -1) {
+            insere_item(catalogo_clientes, cliente);
             clientes_validos++;
         }
-        
-        /* printf("%s\n",cliente); */
+
         total_linhas_clientes++;
     }
     
-   
     cf = clock();
-    
     
     printf("-----CLIENTES-----\n");
     printf("Nome do ficheiro: %s\n", nf);
@@ -113,21 +116,28 @@ void le_clientes(FILE *f_cli, char *nf) {
     printf("Linhas lidas: %d\n", total_linhas_clientes);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
     
-    free(cliente);
+    free(linha_cliente);
 }
 
 void le_produtos(FILE *f_prod, char *nf) {
     int produtos_validos = 0, total_linhas_produtos = 0;
     clock_t ci, cf;
-    char *produto;
-
+    char *produto, *linha_produto;
+    char *delim = "\n\r";
+    
     ci = clock();
-    produto = (char *) malloc(sizeof (char)*LINHA_PRODUTO_MAX);
-
-    while (fgets(produto, LINHA_PRODUTO_MAX, f_prod) != NULL) {
-        produto[strlen(produto) - 1] = '\0';
-        if (produto_valido(produto) != -1) produtos_validos++;
-        /* printf("%s\n",produto); */
+    
+    linha_produto = (char *) malloc(sizeof (char)*LINHA_PRODUTO_MAX);
+    
+    while (fgets(linha_produto, LINHA_PRODUTO_MAX, f_prod) != NULL) {
+        produto = strtok(linha_produto, delim);
+        
+        if (produto_valido(produto) != -1) {
+            produtos_validos++;
+            insere_item(catalogo_produtos,produto);
+        }
+        
+        /*printf("%s\n",produto);*/
         total_linhas_produtos++;
     }
     
@@ -138,7 +148,7 @@ void le_produtos(FILE *f_prod, char *nf) {
     printf("Linhas validas: %d\n", produtos_validos);
     printf("Linhas lidas: %d\n", total_linhas_produtos);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
-    free(produto);
+    free(linha_produto);
 }
 
 void le_compras(FILE *f_comp, char *nf) {
@@ -149,11 +159,12 @@ void le_compras(FILE *f_comp, char *nf) {
 
     ci = clock();
     linha_compra = (char *) malloc(sizeof (char)*LINHA_COMPRA_MAX);
+    
     compra = inicializa_compra();
-    delim = " ";
+    delim = " \n\r";
 
     while (fgets(linha_compra, LINHA_COMPRA_MAX, f_comp) != NULL) {
-        linha_compra[strlen(linha_compra) - 1] = '\0';
+        
         /*Produto*/
         token = strtok(linha_compra, delim);
         set_cod_produto(compra, token);
@@ -180,6 +191,7 @@ void le_compras(FILE *f_comp, char *nf) {
         total_linhas_compras++;
     }
     cf = clock();
+    
     printf("------COMPRAS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d\n", compras_validas);
@@ -249,7 +261,7 @@ void imprime_codigos_comecados_por_letra(CATALOGO cat, char c){
     printf("A imprimir os nomes começados por %c:\n", toupper(c));
     printf("------------------------------------\n");
     
-    while((codigo = iterador_next(it))!=NULL){
+    while((codigo = iterador_next_letra(it))!=NULL){
         printf("%s\n",codigo);
     }
     

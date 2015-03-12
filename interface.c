@@ -35,7 +35,7 @@ void interface() {
     while (sair == 0) {
         r = (char *) malloc(sizeof(char)*50);
         printf("//O que procura(?): ");
-        leitura=scanf("%s", r);
+        leitura=scanf("%s\n", r);
         
         switch (toupper(r[0])) {
             case '1': faceprodutos();break;
@@ -75,7 +75,7 @@ void faceprodutos() {
     while (sair == 0) {
         r = (char *) malloc(sizeof(char)*50);
         printf("//O que procura(?): ");
-        leitura = scanf("%s", r);
+        leitura = scanf("%s\n", r);
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
                       interface();break;
@@ -114,7 +114,7 @@ void faceclientes() {
         while (sair == 0) {
 
         printf("//O que procura(?): ");
-        leitura = scanf("%s", r);
+        leitura = scanf("%s\n", r);
         
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
@@ -156,7 +156,7 @@ void facecompras() {
     while (sair == 0) {
 
         printf("//O que procura(?): ");
-        leitura = scanf("%s", r);
+        leitura = scanf("%s\n", r);
 
         switch (toupper(r[0])) {
             case '0': printf("\033[2J\033[1;1H");
