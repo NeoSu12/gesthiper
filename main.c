@@ -18,7 +18,7 @@ void le_produtos(FILE *, char *);
 void le_compras(FILE *, char *);
 int compra_valida(COMPRA *);
 void mostra_compra(COMPRA *);
-void imprime_codigos_comecados_por_letra(CATALOGO, char);
+void testes();
 
 CATALOGO catalogo_clientes;
 CATALOGO catalogo_produtos;
@@ -26,10 +26,10 @@ CATALOGO catalogo_produtos;
 int main(int argc, char** argv) {
     catalogo_clientes = inicializa_catalogo();
     catalogo_produtos = inicializa_catalogo();
+    testes();
+    /*le_ficheiros(argc, argv);
     
-    le_ficheiros(argc, argv);
-    
-    interface();
+    interface();*/
     return (EXIT_SUCCESS);
 }
 
@@ -207,20 +207,57 @@ void mostra_compra(COMPRA *compra) {
 
 }
 
-
-/* 
- * Função apenas para testar o iterador.
- * Não usar no programa final.
- * 
- */
-void imprime_codigos_comecados_por_letra(CATALOGO cat, char c){
-    ITERADOR it = inicializa_iterador_letra(cat,c);
-    char *codigo;
-    printf("A imprimir os nomes começados por %c:\n", toupper(c));
-    printf("------------------------------------\n");
+void testes() {
+    char *res_it;
+    ITERADOR it_fim = inicializa_it_fim(catalogo_clientes);
+    ITERADOR it_inicio = inicializa_it_inicio(catalogo_clientes);
     
-    while((codigo = iterador_next_letra(it))!=NULL){
-        printf("%s\n",codigo);
+    /* Testa inserções */
+    insere_item(catalogo_clientes, "AA");
+    insere_item(catalogo_clientes, "BC");
+    insere_item(catalogo_clientes, "BA");
+    insere_item(catalogo_clientes, "CA");
+    insere_item(catalogo_clientes, "DX");
+    
+    /* 
+     * Testa se a funcao iterador_proximo() consegue pegar num
+     * iterador a começar no inicio da arvore e percorrer todos os elementos.
+     */
+    printf("Imprimir o catalogo do inicio para o fim:\n");
+    while ((res_it = iterador_proximo(it_inicio)) != NULL) {
+        printf("%s\n", res_it);
     }
     
+    /*
+     * Testa se o mesmo iterador que foi inicializado no inicio do catalogo
+     * e levado até ao fim no ciclo anterior agora consegue fazer o caminho inverso,
+     * de volta ao inicio.
+     */
+    printf("Imprimir o catalogo do fim para o inicio:\n");
+    while ((res_it = iterador_anterior(it_inicio)) != NULL) {
+        printf("%s\n", res_it);
+    }
+    
+    /*
+     * Testa se um iterador inicializado no fim do catalogo consegue ser levado até
+     * ao principio.
+     */
+    printf("Imprimir o catalogo do fim para o inicio:\n");
+    while ((res_it = iterador_anterior(it_fim)) != NULL) {
+        printf("%s\n", res_it);
+    }
+    
+    /*
+     * Testa a remoção de um elemento.
+     */
+    remove_item(catalogo_clientes,"AA");
+    printf("Imprimir o catalogo do inicio para o fim:\n");
+    while ((res_it = iterador_proximo(it_inicio)) != NULL) {
+        printf("%s\n", res_it);
+    }
+    
+    /*
+     * Testa função total_codigos.
+     */
+    printf("Total codigos: %d\n", total_codigos(catalogo_clientes));
 }

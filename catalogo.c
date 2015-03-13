@@ -5,7 +5,6 @@
 #include "catalogo.h"
 #include "avl.h"
 
-
 struct catalogo{
     ARVORE indices[27];
 };
@@ -15,6 +14,10 @@ struct iterador{
     CATALOGO c;
     int ind;
 };
+
+/*
+ * Funções privadas ao módulo.
+ */
 
 int compara(const void *, const void *, void *);
 int calcula_indice(char);
@@ -46,15 +49,39 @@ char *procura_elemento(CATALOGO cat, char *elem){
         res = NULL;
     }
     
-    return res;
+    return res==NULL ? NULL : elem;
 }
 
-void insere_item(CATALOGO cat, char *str){
+char *insere_item(CATALOGO cat, char *str){
     int ind = calcula_indice(str[0]);
     int tamanho = strlen(str);
+    char *res;
     char *new = (char *) malloc(tamanho + 1);
+    
     strncpy(new, str, tamanho +1);
-    avl_insert(cat->indices[ind],new);
+    res = avl_insert(cat->indices[ind],new);
+    
+    return res==NULL ? NULL : str;
+}
+
+char *remove_item(CATALOGO cat, char *str){
+    int ind = calcula_indice(str[0]);
+    return avl_delete(cat->indices[ind],str);
+}
+
+int total_codigos(CATALOGO cat){
+    size_t soma=0;
+    int i;
+    
+    for(i=0;i<=26;i++)
+        soma += avl_count(cat->indices[i]);
+    
+    return soma;
+}
+
+int total_codigos_letra(CATALOGO cat, char letra){
+    int ind = calcula_indice(letra);
+    return avl_count(cat->indices[ind]);
 }
 
 void free_catalogo(CATALOGO cat){
@@ -64,7 +91,124 @@ void free_catalogo(CATALOGO cat){
         avl_destroy(cat->indices[i], free_string);
     }
     
+    free(cat);
 }
+/*
+ ITERADOR
+ */
+
+ITERADOR inicializa_it_inicio(CATALOGO cat) {
+    ITERADOR it = (ITERADOR) malloc(sizeof (struct iterador));
+    it->tr = avl_t_alloc();
+    avl_t_first(it->tr, cat->indices[0]);
+    it->ind = 0;
+    it->c = cat;
+    return it;
+}
+
+ITERADOR inicializa_it_fim(CATALOGO cat) {
+    ITERADOR it;
+    it = (ITERADOR) malloc(sizeof (struct iterador));
+    it->tr = avl_t_alloc();
+    avl_t_first(it->tr, cat->indices[26]);
+    it->ind = 26;
+    it->c = cat;
+    return it;
+}
+
+ITERADOR inicializa_it_elem(CATALOGO cat, char *st) {
+    int indice;
+    ITERADOR it;
+
+    if (st != NULL) {
+        it = (ITERADOR) malloc(sizeof (struct iterador));
+        it->tr = avl_t_alloc();
+        it->c = cat;
+        indice = calcula_indice(toupper(*st));
+        avl_t_find(it->tr, cat->indices[indice], st);
+        it->ind = indice;
+    } else {
+        it = NULL;
+    }
+
+    return it;
+}
+
+ITERADOR inicializa_it_inicio_letra(CATALOGO cat, char c) {
+    int indice;
+    ITERADOR it = (ITERADOR) malloc(sizeof (struct iterador));
+    it->tr = avl_t_alloc();
+    indice = calcula_indice(toupper(c));
+    avl_t_first(it->tr, cat->indices[indice]);
+    it->ind = indice;
+    it->c=cat;
+    return it;
+}
+
+ITERADOR inicializa_it_fim_letra(CATALOGO cat, char c) {
+    int indice;
+    ITERADOR it = (ITERADOR) malloc(sizeof (struct iterador));
+    it->tr = avl_t_alloc();
+    indice = calcula_indice(toupper(c));
+    avl_t_last(it->tr, cat->indices[indice]);
+    it->ind = indice;
+    it->c=cat;
+    return it;
+}
+
+char *iterador_proximo(ITERADOR it) {
+    char *res=NULL;
+    int sair = 0;
+
+    while (res==NULL && sair == 0) {
+        
+        res = avl_t_next(it->tr);
+        
+        if (res != NULL || (res == NULL && it->ind >= 26)) {
+            sair = 1;
+        } else {
+            /* res == NULL && it->ind<26 */
+            it->ind++;
+            res = avl_t_first(it->tr, it->c->indices[it->ind]);
+        }
+    }
+
+    return res;
+}
+
+char *iterador_actual(ITERADOR it){
+    return avl_t_cur(it->tr);
+}
+
+char *iterador_anterior(ITERADOR it) {
+    char *res=NULL;
+    int sair = 0;
+
+    while (res == NULL && sair == 0) {
+        
+        res = avl_t_prev(it->tr);
+        if (res != NULL || (res == NULL && it->ind <= 0)) {
+            sair = 1;
+        } else {
+            /* res == NULL && it->ind>=0 */
+            it->ind--;
+            res = avl_t_last(it->tr, it->c->indices[it->ind]);
+        }
+    }
+    return res;
+}
+
+char *iterador_proximo_letra(ITERADOR it){
+    return avl_t_next(it->tr);
+}
+
+char *iterador_anterior_letra(ITERADOR it){
+    return avl_t_prev(it->tr);
+}
+       
+/*
+ * Funções (privadas) auxiliares ao módulo.
+ */
 
 int compara(const void *avl_a, const void *avl_b, void *avl_param){
     return strcmp((char *)avl_a, (char *)avl_b);
@@ -85,66 +229,3 @@ int calcula_indice(char l){
     }
     return res;
 }
-
-/*
- ITERADOR
- */
-
-ITERADOR inicializa_iterador_inicio(CATALOGO cat){
-    ITERADOR it = (ITERADOR) malloc(sizeof(struct iterador));
-    it->tr = avl_t_alloc();
-    avl_t_first(it->tr,cat->indices[0]);
-    it->ind=0;
-    it->c=cat;
-    return it;
-}
-
-ITERADOR inicializa_iterador_elem(CATALOGO cat, char *st) {
-    int indice;
-    ITERADOR it = (ITERADOR) malloc(sizeof(struct iterador));
-    it->tr = avl_t_alloc();
-    it->c=cat;
-
-    if (st != NULL) {
-        indice = calcula_indice(toupper(*st));
-        avl_t_find(it->tr, cat->indices[indice], st);
-        it->ind = indice;
-    }else{
-        it = NULL;
-    }
-    
-    return it;
-}
-
-ITERADOR inicializa_iterador_letra(CATALOGO cat, char c) {
-    int indice;
-    ITERADOR it = (ITERADOR) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
-    indice = calcula_indice(toupper(c));
-    avl_t_first(it->tr, cat->indices[indice]);
-    it->ind = indice;
-    it->c=cat;
-    return it;
-}
-
-char *iterador_next(ITERADOR it){
-    char *res;
-    int sair=0;
-    
-    while(sair==0){
-        res = avl_t_next(it->tr);
-        if(res != NULL || (res==NULL && it->ind>=26)){
-            sair=1;
-        }else{
-        /* res == NULL && it->ind<26 */
-            it->ind++;
-            avl_t_first(it->tr,it->c->indices[it->ind]);
-        }
-    }
-    return res;
-    }
-
-char *iterador_next_letra(ITERADOR it){
-    return avl_t_next(it->tr);
-}
-       

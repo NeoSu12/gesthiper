@@ -6,6 +6,8 @@ void msg_erro_args(ERRO, char *);
 void msg_erro_abrir_fich(ERRO, void *);
 void msg_erro_flag_desconhecida(ERRO, void *);
 void msg_erro_opcao_invalida(ERRO,void *);
+void msg_erro_nenhuma_opcao(ERRO,void *);
+void msg_erro_opcao_invalida(ERRO,void *);
 
 void error_msg(ERRO erro, void *param) {
     fprintf(stderr, "ERRO[%d]: ",erro);

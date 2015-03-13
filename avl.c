@@ -70,6 +70,10 @@ struct avl_traverser
     unsigned long avl_generation;       /* Generation number. */
   };
 
+  size_t avl_count(struct avl_table *tab){
+      return tab->avl_count;
+  }
+  
 
 /* Creates and returns a new table
    with comparison function |compare| using parameter |param|
