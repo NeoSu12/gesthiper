@@ -83,6 +83,7 @@ int faceprodutos() {
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
         switch (toupper(r[0])) {
+        	case '\\':
             case '0': printf("\033[2J\033[1;1H");
                       sair_menu=1;
                       sair_programa=0;
@@ -128,6 +129,7 @@ int faceclientes() {
         leitura = scanf("%s", r);
         
         switch (toupper(r[0])) {
+        	case '\\':
             case '0': printf("\033[2J\033[1;1H");
                       sair_menu=1;
                       sair_programa=0;
@@ -175,6 +177,7 @@ int facecompras() {
         leitura = scanf("%s", r);
 
         switch (toupper(r[0])) {
+        	case '\\':
             case '0': printf("\033[2J\033[1;1H");
                       sair_menu=1;
                       sair_programa=0;

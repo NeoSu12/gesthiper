@@ -49,3 +49,4 @@ gesthiper-Makefile.mk
 # para correr o make pelo terminal.
 /Makefile
 
+DocsAux/~$queries_modulos.xlsx
