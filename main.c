@@ -16,8 +16,6 @@ int le_ficheiros(int, char **);
 void le_clientes(FILE *, char *);
 void le_produtos(FILE *, char *);
 void le_compras(FILE *, char *);
-int cliente_valido(char *);
-int produto_valido(char *);
 int compra_valida(COMPRA *);
 void mostra_compra(COMPRA *);
 void imprime_codigos_comecados_por_letra(CATALOGO, char);
@@ -31,10 +29,7 @@ int main(int argc, char** argv) {
     
     le_ficheiros(argc, argv);
     
-    if(procura_elemento(catalogo_clientes,"AH265")!=NULL)
-        printf("O elemento foi encontrado.\n");
-    
-    /* interface(); */
+    interface();
     return (EXIT_SUCCESS);
 }
 
@@ -92,30 +87,26 @@ void le_clientes(FILE *f_cli, char *nf) {
     int clientes_validos = 0, total_linhas_clientes = 0;
     clock_t ci, cf;
     char *cliente, *linha_cliente;
-    char *delim = "\n\r";
-    
+    char *delim = " \n\r";
+
     ci = clock();
-    linha_cliente = (char *) malloc(sizeof (char)*LINHA_CLIENTE_MAX);
-    
+    linha_cliente = (char *) malloc(sizeof(char)*LINHA_CLIENTE_MAX);
+
     while (fgets(linha_cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
         cliente = strtok(linha_cliente, delim);
-
-        if (cliente_valido(cliente) != -1) {
-            insere_item(catalogo_clientes, cliente);
-            clientes_validos++;
-        }
-
+        insere_item(catalogo_clientes, cliente);
+        clientes_validos++;
         total_linhas_clientes++;
     }
-    
+
     cf = clock();
-    
+
     printf("-----CLIENTES-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d\n", clientes_validos);
     printf("Linhas lidas: %d\n", total_linhas_clientes);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
-    
+
     free(linha_cliente);
 }
 
@@ -123,26 +114,21 @@ void le_produtos(FILE *f_prod, char *nf) {
     int produtos_validos = 0, total_linhas_produtos = 0;
     clock_t ci, cf;
     char *produto, *linha_produto;
-    char *delim = "\n\r";
-    
+    char *delim = " \n\r";
+
     ci = clock();
-    
-    linha_produto = (char *) malloc(sizeof (char)*LINHA_PRODUTO_MAX);
-    
+
+    linha_produto = (char *) malloc(sizeof(char)*LINHA_PRODUTO_MAX);
+
     while (fgets(linha_produto, LINHA_PRODUTO_MAX, f_prod) != NULL) {
         produto = strtok(linha_produto, delim);
-        
-        if (produto_valido(produto) != -1) {
-            produtos_validos++;
-            insere_item(catalogo_produtos,produto);
-        }
-        
-        /*printf("%s\n",produto);*/
+        insere_item(catalogo_produtos, produto);
+        produtos_validos++;
         total_linhas_produtos++;
     }
-    
+
     cf = clock();
-    
+
     printf("-----PRODUTOS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d\n", produtos_validos);
@@ -152,16 +138,16 @@ void le_produtos(FILE *f_prod, char *nf) {
 }
 
 void le_compras(FILE *f_comp, char *nf) {
+    COMPRA *compra;
     int compras_validas = 0, total_linhas_compras = 0;
     clock_t ci, cf;
-    char *linha_compra, *delim, *token;
-    COMPRA *compra;
+    char *linha_compra, *token;
+    char *delim = " \n\r";
 
     ci = clock();
-    linha_compra = (char *) malloc(sizeof (char)*LINHA_COMPRA_MAX);
     
+    linha_compra = (char *) malloc(sizeof (char)*LINHA_COMPRA_MAX);
     compra = inicializa_compra();
-    delim = " \n\r";
 
     while (fgets(linha_compra, LINHA_COMPRA_MAX, f_comp) != NULL) {
         
@@ -186,7 +172,6 @@ void le_compras(FILE *f_comp, char *nf) {
 
         if (compra_valida(compra)) {
             compras_validas++;
-            /*mostra_compra(compra);*/
         }
         total_linhas_compras++;
     }
@@ -202,39 +187,12 @@ void le_compras(FILE *f_comp, char *nf) {
     free(linha_compra);
 }
 
-int cliente_valido(char *cl) {
-    int res = 0;
-    int tam = strlen(cl);
 
-    if (tam != 5) {
-        res = -1;
-    } else {
-        res = isupper(cl[0]) && isupper(cl[1]) &&
-                isdigit(cl[2]) && isdigit(cl[3]) && isdigit(cl[4]);
-    }
-
-    return res;
-}
-
-int produto_valido(char *prod) {
-    int res = 0;
-    int tam = strlen(prod);
-
-    if (tam != 6) {
-        res = -1;
-    } else {
-        res = isupper(prod[0]) && isupper(prod[1]) &&
-                isdigit(prod[2]) && isdigit(prod[3]) &&
-                isdigit(prod[4]) && isdigit(prod[5]);
-    }
-
-    return res;
-}
-
+/*
+ * TODO: Verificar se produto e cliente existem, depois de ter catalogos prontos.
+ */
 int compra_valida(COMPRA *compra) {
-    return (cliente_valido(get_cod_cliente(compra)) != -1)
-            && (produto_valido(get_cod_produto(compra)) != -1)
-            && get_mes(compra) >= 1 && get_mes(compra) <= 12
+    return get_mes(compra) >= 1 && get_mes(compra) <= 12
             && get_preco_unit(compra) >= 0
             && (get_promo(compra) == 'N' || get_promo(compra) == 'P');
 }
