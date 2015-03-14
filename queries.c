@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "queries.h"
 
 #define NORMAL  "\x1B[0m"
@@ -10,7 +11,25 @@
 #define WHITE  "\x1B[37m"
 
 void _02_codigo_produtos_letra() {
-    printf("[QUERIE 2] Ainda não implementado!\n");
+    int leitura = 0;
+    int sair_menu = 0;
+    char letra;
+    char input[50];
+    
+    while(sair_menu == 0){
+    printf("Insira a letra a procurar > ");
+    leitura = scanf("%s", input);
+    letra = toupper(input[0]);
+    
+    if(isalpha(letra)){
+        
+    }else{
+        sair_menu = 1;
+    }
+    
+    
+    }
+    
 }
 
 void _03_compras_mensais_prod() {

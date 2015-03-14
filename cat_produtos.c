@@ -2,16 +2,16 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "catalogo.h"
+#include "cat_produtos.h"
 #include "avl.h"
 
-struct catalogo {
+struct catalogo_produtos {
     ARVORE indices[27];
 };
 
 struct iterador {
     TRAVERSER tr;
-    CATALOGO c;
+    CatProdutos c;
     int ind;
 };
 
@@ -19,30 +19,31 @@ struct iterador {
  * Funções privadas ao módulo.
  */
 
-int compara(const void *, const void *, void *);
-int calcula_indice(char);
-void free_string(void *, void *);
+int compara_produtos(const void *, const void *, void *);
+void free_produto(void *item, void *param);
+int calcula_indice_produto(char l);
+
 
 /*
  ÁRVORE
  */
 
-CATALOGO inicializa_catalogo() {
+CatProdutos inicializa_catalogo_produtos() {
     int i = 0;
-    CATALOGO res = (CATALOGO) malloc(sizeof (struct catalogo));
+    CatProdutos res = (CatProdutos) malloc(sizeof (struct catalogo_produtos));
 
     for (i = 0; i <= 26; i++) {
-        res->indices[i] = avl_create(compara, NULL, NULL);
+        res->indices[i] = avl_create(compara_produtos, NULL, NULL);
     }
 
     return res;
 }
 
-int existe_elemento(CATALOGO cat, char *elem) {
+int existe_produto(CatProdutos cat, char *elem) {
     int ind, res = 0;
 
     if (elem != NULL) {
-        ind = calcula_indice(*elem);
+        ind = calcula_indice_produto(*elem);
         if (avl_find(cat->indices[ind], elem) != NULL) res = 1;
         else res = 0;
     }
@@ -50,12 +51,12 @@ int existe_elemento(CATALOGO cat, char *elem) {
     return res;
 }
 
-char *procura_elemento(CATALOGO cat, char *elem) {
+char *procura_produto(CatProdutos cat, char *elem) {
     int ind;
     char *res;
 
     if (elem != NULL) {
-        ind = calcula_indice(*elem);
+        ind = calcula_indice_produto(*elem);
         res = (char *) avl_find(cat->indices[ind], elem);
     } else {
         res = NULL;
@@ -64,8 +65,8 @@ char *procura_elemento(CATALOGO cat, char *elem) {
     return res == NULL ? NULL : elem;
 }
 
-char *insere_item(CATALOGO cat, char *str) {
-    int ind = calcula_indice(str[0]);
+char *insere_produto(CatProdutos cat, char *str) {
+    int ind = calcula_indice_produto(str[0]);
     int tamanho = strlen(str);
     char *res;
     char *new = (char *) malloc(tamanho + 1);
@@ -76,12 +77,12 @@ char *insere_item(CATALOGO cat, char *str) {
     return res == NULL ? NULL : str;
 }
 
-char *remove_item(CATALOGO cat, char *str) {
-    int ind = calcula_indice(str[0]);
+char *remove_produto(CatProdutos cat, char *str) {
+    int ind = calcula_indice_produto(str[0]);
     return avl_delete(cat->indices[ind], str);
 }
 
-int total_codigos(CATALOGO cat) {
+int total_produtos(CatProdutos cat) {
     size_t soma = 0;
     int i;
 
@@ -91,27 +92,27 @@ int total_codigos(CATALOGO cat) {
     return soma;
 }
 
-int total_codigos_letra(CATALOGO cat, char letra) {
-    int ind = calcula_indice(letra);
+int total_produtos_letra(CatProdutos cat, char letra) {
+    int ind = calcula_indice_produto(letra);
     return avl_count(cat->indices[ind]);
 }
 
-void free_catalogo(CATALOGO cat) {
+void free_catalogo_produtos(CatProdutos cat) {
     int i = 0;
 
     for (i = 0; i <= 26; i++) {
-        avl_destroy(cat->indices[i], free_string);
+        avl_destroy(cat->indices[i], free_produto);
     }
 
     free(cat);
 }
 
 /*
- ITERADOR
+ IT_PRODUTOS
  */
 
-ITERADOR inicializa_it_inicio(CATALOGO cat) {
-    ITERADOR it = (ITERADOR) malloc(sizeof (struct iterador));
+IT_PRODUTOS inicializa_it_produtos_inicio(CatProdutos cat) {
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
     it->tr = avl_t_alloc();
     avl_t_first(it->tr, cat->indices[0]);
     it->ind = 0;
@@ -119,9 +120,9 @@ ITERADOR inicializa_it_inicio(CATALOGO cat) {
     return it;
 }
 
-ITERADOR inicializa_it_fim(CATALOGO cat) {
-    ITERADOR it;
-    it = (ITERADOR) malloc(sizeof (struct iterador));
+IT_PRODUTOS inicializa_it_produtos_fim(CatProdutos cat) {
+    IT_PRODUTOS it;
+    it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
     it->tr = avl_t_alloc();
     avl_t_first(it->tr, cat->indices[26]);
     it->ind = 26;
@@ -129,15 +130,15 @@ ITERADOR inicializa_it_fim(CATALOGO cat) {
     return it;
 }
 
-ITERADOR inicializa_it_elem(CATALOGO cat, char *st) {
+IT_PRODUTOS inicializa_it_produtos_elem(CatProdutos cat, char *st) {
     int indice;
-    ITERADOR it;
+    IT_PRODUTOS it;
 
     if (st != NULL) {
-        it = (ITERADOR) malloc(sizeof (struct iterador));
+        it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
         it->tr = avl_t_alloc();
         it->c = cat;
-        indice = calcula_indice(toupper(*st));
+        indice = calcula_indice_produto(toupper(*st));
         avl_t_find(it->tr, cat->indices[indice], st);
         it->ind = indice;
     } else {
@@ -147,60 +148,60 @@ ITERADOR inicializa_it_elem(CATALOGO cat, char *st) {
     return it;
 }
 
-ITERADOR inicializa_it_inicio_letra(CATALOGO cat, char c) {
+IT_PRODUTOS inicializa_it_produtos_inicio_letra(CatProdutos cat, char c) {
     int indice;
-    ITERADOR it = (ITERADOR) malloc(sizeof (struct iterador));
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
     it->tr = avl_t_alloc();
-    indice = calcula_indice(toupper(c));
+    indice = calcula_indice_produto(toupper(c));
     avl_t_first(it->tr, cat->indices[indice]);
     it->ind = indice;
     it->c = cat;
     return it;
 }
 
-ITERADOR inicializa_it_fim_letra(CATALOGO cat, char c) {
+IT_PRODUTOS inicializa_it_produtos_fim_letra(CatProdutos cat, char c) {
     int indice;
-    ITERADOR it = (ITERADOR) malloc(sizeof (struct iterador));
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
     it->tr = avl_t_alloc();
-    indice = calcula_indice(toupper(c));
+    indice = calcula_indice_produto(toupper(c));
     avl_t_last(it->tr, cat->indices[indice]);
     it->ind = indice;
     it->c = cat;
     return it;
 }
 
-int itera_n_proximos(ITERADOR it, char *codigos[], int n) {
+int itera_n_produtos_proximos(IT_PRODUTOS it, char *codigos[], int n) {
     char *codigo, *primeiro;
     int i = 0;
 
-    if ((primeiro = iterador_actual(it)) != NULL) {
+    if ((primeiro = it_produto_actual(it)) != NULL) {
         codigos[i] = primeiro;
         i++;
     }
 
-    while (i < n && (codigo = iterador_proximo(it)) != NULL) {
+    while (i < n && (codigo = it_produto_proximo(it)) != NULL) {
         codigos[i] = codigo;
         i++;
     }
     return i;
 }
 
-int itera_n_anteriores(ITERADOR it, char *codigos[], int n) {
+int itera_n_produtos_anteriores(IT_PRODUTOS it, char *codigos[], int n) {
     char *codigo, *primeiro;
     int i = n - 1;
 
-    if ((primeiro = iterador_actual(it)) != NULL) {
+    if ((primeiro = it_produto_actual(it)) != NULL) {
         codigos[i] = primeiro;
         i--;
     }
-    while (i >= 0 && (codigo = iterador_anterior(it)) != NULL) {
+    while (i >= 0 && (codigo = it_produto_anterior(it)) != NULL) {
         codigos[i] = codigo;
         i--;
     }
     return i < 0 ? n : n - 1;
 }
 
-char *iterador_proximo(ITERADOR it) {
+char *it_produto_proximo(IT_PRODUTOS it) {
     int tamanho;
     int sair = 0;
     char *res = NULL;
@@ -225,7 +226,7 @@ char *iterador_proximo(ITERADOR it) {
     return ret;
 }
 
-char *iterador_actual(ITERADOR it) {
+char *it_produto_actual(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
     char *res = avl_t_cur(it->tr);
@@ -233,12 +234,13 @@ char *iterador_actual(ITERADOR it) {
     if (res != NULL) {
         tamanho = strlen(res) + 1;
         ret = (char *) malloc(sizeof (char)*tamanho);
+        strncpy(ret, res, tamanho);
     }
 
     return ret;
 }
 
-char *iterador_anterior(ITERADOR it) {
+char *it_produto_anterior(IT_PRODUTOS it) {
     int tamanho;
     int sair = 0;
     char *res = NULL;
@@ -263,7 +265,7 @@ char *iterador_anterior(ITERADOR it) {
     return ret;
 }
 
-char *iterador_proximo_letra(ITERADOR it) {
+char *it_produto_proximo_letra(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
     char *res = avl_t_next(it->tr);
@@ -277,7 +279,7 @@ char *iterador_proximo_letra(ITERADOR it) {
     return ret;
 }
 
-char *iterador_anterior_letra(ITERADOR it) {
+char *it_produto_anterior_letra(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
     char *res = avl_t_prev(it->tr);
@@ -295,15 +297,15 @@ char *iterador_anterior_letra(ITERADOR it) {
  * Funções (privadas) auxiliares ao módulo.
  */
 
-int compara(const void *avl_a, const void *avl_b, void *avl_param) {
+int compara_produtos(const void *avl_a, const void *avl_b, void *avl_param) {
     return strcmp((char *) avl_a, (char *) avl_b);
 }
 
-void free_string(void *item, void *param) {
+void free_produto(void *item, void *param) {
     free(item);
 }
 
-int calcula_indice(char l) {
+int calcula_indice_produto(char l) {
     int res = 0;
     char letra = toupper(l);
 

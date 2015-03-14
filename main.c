@@ -6,7 +6,8 @@
 #include "interface.h"
 #include "erros.h"
 #include "compra.h"
-#include "catalogo.h"
+#include "cat_clientes.h"
+#include "cat_produtos.h"
 
 #define LINHA_CLIENTE_MAX 20
 #define LINHA_PRODUTO_MAX 20
@@ -20,12 +21,12 @@ int compra_valida(COMPRA );
 void mostra_compra(COMPRA );
 void testes();
 
-CATALOGO catalogo_clientes;
-CATALOGO catalogo_produtos;
+CatClientes catalogo_clientes;
+CatProdutos catalogo_produtos;
 
 int main(int argc, char** argv) {
-    catalogo_clientes = inicializa_catalogo();
-    catalogo_produtos = inicializa_catalogo();
+    catalogo_clientes = inicializa_catalogo_clientes();
+    catalogo_produtos = inicializa_catalogo_produtos();
     testes();
     
     /*le_ficheiros(argc, argv);
@@ -95,7 +96,7 @@ void le_clientes(FILE *f_cli, char *nf) {
 
     while (fgets(linha_cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
         cliente = strtok(linha_cliente, delim);
-        insere_item(catalogo_clientes, cliente);
+        insere_cliente(catalogo_clientes, cliente);
         clientes_validos++;
         total_linhas_clientes++;
     }
@@ -123,7 +124,7 @@ void le_produtos(FILE *f_prod, char *nf) {
 
     while (fgets(linha_produto, LINHA_PRODUTO_MAX, f_prod) != NULL) {
         produto = strtok(linha_produto, delim);
-        insere_item(catalogo_produtos, produto);
+        insere_produto(catalogo_produtos, produto);
         produtos_validos++;
         total_linhas_produtos++;
     }
@@ -210,45 +211,45 @@ void mostra_compra(COMPRA compra) {
 }
 
 void testes() {
-    ITERADOR it_fim, it_inicio, it_inicio_letra, it_fim_letra, it_elem, it_iteran, it_iteran_fim;
+    IT_CLIENTES it_fim, it_inicio, it_inicio_letra, it_fim_letra, it_elem, it_iteran, it_iteran_fim;
     char *res_it;
     int it_count, i=0;
     char *cods[50], *cods_f[50];
     
     /* Testa inserções */
     printf("A colocar items no catalogo...");
-    insere_item(catalogo_clientes, "A1");
-    insere_item(catalogo_clientes, "A2");
-    insere_item(catalogo_clientes, "A3");
-    insere_item(catalogo_clientes, "B1");
-    insere_item(catalogo_clientes, "B2");
-    insere_item(catalogo_clientes, "C1");
-    insere_item(catalogo_clientes, "C2");
-    insere_item(catalogo_clientes, "C3");
-    insere_item(catalogo_clientes, "C4");
-    insere_item(catalogo_clientes, "C5");
-    insere_item(catalogo_clientes, "D1");
+    insere_cliente(catalogo_clientes, "A1");
+    insere_cliente(catalogo_clientes, "A2");
+    insere_cliente(catalogo_clientes, "A3");
+    insere_cliente(catalogo_clientes, "B1");
+    insere_cliente(catalogo_clientes, "B2");
+    insere_cliente(catalogo_clientes, "C1");
+    insere_cliente(catalogo_clientes, "C2");
+    insere_cliente(catalogo_clientes, "C3");
+    insere_cliente(catalogo_clientes, "C4");
+    insere_cliente(catalogo_clientes, "C5");
+    insere_cliente(catalogo_clientes, "D1");
     printf("done!\n");
     
     printf("A inicializar iteradores...");
-    it_fim = inicializa_it_fim(catalogo_clientes);
-    it_inicio = inicializa_it_inicio(catalogo_clientes);
-    it_inicio_letra = inicializa_it_inicio_letra(catalogo_clientes,'c');
-    it_fim_letra = inicializa_it_fim_letra(catalogo_clientes,'c');
-    it_elem = inicializa_it_elem(catalogo_clientes, "CL");
-    it_iteran = inicializa_it_inicio(catalogo_clientes);
-    it_iteran_fim = inicializa_it_fim(catalogo_clientes);
+    it_fim = inicializa_it_clientes_fim(catalogo_clientes);
+    it_inicio = inicializa_it_clientes_inicio(catalogo_clientes);
+    it_inicio_letra = inicializa_it_clientes_inicio_letra(catalogo_clientes,'c');
+    it_fim_letra = inicializa_it_clientes_fim_letra(catalogo_clientes,'c');
+    it_elem = inicializa_it_clientes_elem(catalogo_clientes, "CL");
+    it_iteran = inicializa_it_clientes_inicio(catalogo_clientes);
+    it_iteran_fim = inicializa_it_clientes_fim(catalogo_clientes);
     printf("done!\n");
     
     printf("Itera n:\n");
-    it_count = itera_n_proximos(it_iteran,cods,2);
+    it_count = itera_n_clientes_proximos(it_iteran,cods,2);
 
     for(i=0;i<it_count;i++){
         printf("%s\n",cods[i]);
     }
     
     printf("Itera n:\n");
-    it_count = itera_n_anteriores(it_iteran_fim,cods_f,2);
+    it_count = itera_n_clientes_anteriores(it_iteran_fim,cods_f,2);
 
     for(i=0;i<it_count;i++){
         printf("%s\n",cods_f[i]);
@@ -258,8 +259,8 @@ void testes() {
      * iterador a começar no inicio da arvore e percorrer todos os elementos.
      */
     printf("Imprimir o catalogo do inicio para o fim (iterador inicializado):\n");
-    iterador_anterior(it_inicio);
-    while((res_it = iterador_proximo(it_inicio)) != NULL) {
+    it_cliente_anterior(it_inicio);
+    while((res_it = it_cliente_proximo(it_inicio)) != NULL) {
         printf("%s ", res_it);
     }
     printf("\n");
@@ -269,7 +270,7 @@ void testes() {
      * de volta ao inicio.
      */
     printf("Imprimir o catalogo do fim para o inicio (iterador anterior):\n");
-    while ((res_it = iterador_anterior(it_inicio)) != NULL) {
+    while ((res_it = it_cliente_anterior(it_inicio)) != NULL) {
         printf("%s ", res_it);
     }
     printf("\n");
@@ -278,54 +279,54 @@ void testes() {
      * ao principio.
      */
     printf("Imprimir o catalogo do fim para o inicio (iterador inicializado):\n");
-    while ((res_it = iterador_anterior(it_fim)) != NULL) {
+    while ((res_it = it_cliente_anterior(it_fim)) != NULL) {
         printf("%s ", res_it);
     }
     printf("\n");
 
     printf("[Antes da remoção] O elemento existe?:\n");
-    existe_elemento(catalogo_clientes, "AA") ? 
+    existe_cliente(catalogo_clientes, "AA") ? 
         printf("O elemento existe.\n") : printf("O elemento nao existe.\n");
     /*
      * Testa a remoção de um elemento.
      */
-    remove_item(catalogo_clientes, "AA");
+    remove_cliente(catalogo_clientes, "AA");
 
     printf("[Depois da remoção] O elemento existe?:\n");
-    existe_elemento(catalogo_clientes, "AA") ? 
+    existe_cliente(catalogo_clientes, "AA") ? 
         printf("O elemento existe.\n") : printf("O elemento nao existe.\n");
 
     printf("Imprimir o catalogo do inicio para o fim:\n");
-    while ((res_it = iterador_proximo(it_inicio)) != NULL) {
+    while ((res_it = it_cliente_proximo(it_inicio)) != NULL) {
         printf("%s ", res_it);
     }
     printf("\n");
     /*
      * Testa função total_codigos.
      */
-    printf("Total codigos: %d\n", total_codigos(catalogo_clientes));
+    printf("Total codigos: %d\n", total_clientes(catalogo_clientes));
     
     
     printf("Letra do inicio ao fim (iterador inicializado):\n");
-    while ((res_it = iterador_proximo_letra(it_inicio_letra)) != NULL) {
+    while ((res_it = it_cliente_proximo_letra(it_inicio_letra)) != NULL) {
         printf("%s ", res_it);
     }
     printf("\n");
     
     printf("Letra do fim para o inicio (iterador anterior):\n");
-    while ((res_it = iterador_anterior_letra(it_inicio_letra)) != NULL) {
+    while ((res_it = it_cliente_anterior_letra(it_inicio_letra)) != NULL) {
         printf("%s ", res_it);
     }
     printf("\n");
     
     printf("Letra do fim para o inicio (iterador inicializado):\n");
-    while ((res_it = iterador_anterior_letra(it_fim_letra)) != NULL) {
+    while ((res_it = it_cliente_anterior_letra(it_fim_letra)) != NULL) {
         printf("%s ", res_it);
     }
     printf("\n");
     
     printf("Imprimir o catalogo a partir de elemento até ao fim (iterador inicializado):\n");
-    while ((res_it = iterador_proximo(it_elem)) != NULL) {
+    while ((res_it = it_cliente_proximo(it_elem)) != NULL) {
         printf("%s ", res_it);
     }
     printf("\n");

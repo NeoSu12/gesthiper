@@ -1,7 +1,7 @@
 # Makefile feita 'por nos' e que deve
 # ser usada para correr no terminal.
 
-objects = main.o erros.o compra.o avl.o catalogo.o interface.o queries.o
+objects = main.o erros.o compra.o avl.o cat_clientes.o cat_produtos.o interface.o queries.o
 flags = -ansi -pedantic -Wall -O2
 
 gesthiper : $(objects)
@@ -18,15 +18,19 @@ compra.o : compra.c compra.h
 
 avl.o : avl.c avl.h
 	gcc $(flags) -c avl.c
-	
-catalogo.o : catalogo.c avl.h catalogo.h
-	gcc $(flags) -c catalogo.c
 
 interface.o : interface.c interface.h queries.h
 	gcc $(flags) -c interface.c
 
 queries.o : queries.c queries.h
 	gcc $(flags) -c queries.c
+
+cat_clientes.o : cat_clientes.c avl.h cat_clientes.h
+	gcc $(flags) -c cat_clientes.c
+
+cat_produtos.o : cat_produtos.c avl.h cat_produtos.h
+	gcc $(flags) -c cat_produtos.c
+
 
 .PHONY : clean
 clean :
