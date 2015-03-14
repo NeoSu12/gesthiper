@@ -38,6 +38,18 @@ CATALOGO inicializa_catalogo(){
     return res;
 }
 
+int existe_elemento(CATALOGO cat, char *elem){
+    int ind, res=0;
+    
+    if(elem != NULL){
+        ind = calcula_indice(*elem);
+        if(avl_find(cat->indices[ind], elem) != NULL) res = 1;
+        else res = 0;
+    }
+    
+    return res;
+}
+
 char *procura_elemento(CATALOGO cat, char *elem){
     int ind;
     char *res;
@@ -119,7 +131,7 @@ ITERADOR inicializa_it_fim(CATALOGO cat) {
 ITERADOR inicializa_it_elem(CATALOGO cat, char *st) {
     int indice;
     ITERADOR it;
-
+    
     if (st != NULL) {
         it = (ITERADOR) malloc(sizeof (struct iterador));
         it->tr = avl_t_alloc();
@@ -154,6 +166,37 @@ ITERADOR inicializa_it_fim_letra(CATALOGO cat, char c) {
     it->ind = indice;
     it->c=cat;
     return it;
+}
+
+int itera_n_proximos(ITERADOR it, char *codigos[], int n){
+    char *codigo, *primeiro;
+    int i=0;
+    
+    if((primeiro  = iterador_actual(it)) != NULL ){
+        codigos[i] = primeiro;
+        i++;
+    }
+    
+    while(i<n && (codigo = iterador_proximo(it)) != NULL){
+        codigos[i] = codigo;
+        i++;
+    }
+    return i;
+}
+
+int itera_n_anteriores(ITERADOR it, char *codigos[], int n){
+    char *codigo, *primeiro;
+    int i=n-1;
+    
+    if((primeiro  = iterador_actual(it)) != NULL ){
+        codigos[i] = primeiro;
+        i--;
+    }
+    while(i>=0 && (codigo = iterador_anterior(it)) != NULL){
+        codigos[i] = codigo;
+        i--;
+    }
+    return i<0 ? n : n-1;
 }
 
 char *iterador_proximo(ITERADOR it) {

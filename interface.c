@@ -84,8 +84,7 @@ int faceprodutos() {
         leitura = scanf("%s", r);
         switch (toupper(r[0])) {
         	case '\\':
-            case '0': printf("\033[2J\033[1;1H");
-                      sair_menu=1;
+            case '0': sair_menu=1;
                       sair_programa=0;
                       break;
             case '1': _02_codigo_produtos_letra(); break;
@@ -130,8 +129,7 @@ int faceclientes() {
         
         switch (toupper(r[0])) {
         	case '\\':
-            case '0': printf("\033[2J\033[1;1H");
-                      sair_menu=1;
+            case '0': sair_menu=1;
                       sair_programa=0;
                       break;
             case '1': _05_tabela_cliente(); break;
@@ -178,8 +176,7 @@ int facecompras() {
 
         switch (toupper(r[0])) {
         	case '\\':
-            case '0': printf("\033[2J\033[1;1H");
-                      sair_menu=1;
+            case '0': sair_menu=1;
                       sair_programa=0;
                       break;
             case '1': _03_compras_mensais_prod();break;
