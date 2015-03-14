@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "queries.h"
+#include "cat_produtos.h"
+#include "cat_clientes.h"
 
 #define NORMAL  "\x1B[0m"
 #define RED  "\x1B[31m"
@@ -10,19 +12,25 @@
 #define BLUE  "\x1B[34m"
 #define WHITE  "\x1B[37m"
 
+extern CatClientes catalogo_clientes;
+extern CatProdutos catalogo_produtos;
+
 void _02_codigo_produtos_letra() {
     int leitura = 0;
     int sair_menu = 0;
     char letra;
     char input[50];
+    char *pagina[5];
     
     while(sair_menu == 0){
+        
     printf("Insira a letra a procurar > ");
     leitura = scanf("%s", input);
     letra = toupper(input[0]);
     
     if(isalpha(letra)){
-        
+        printf("Foram encontrados %d produtos começados pela letra %c\n",
+                total_produtos_letra(catalogo_produtos,letra), letra);
     }else{
         sair_menu = 1;
     }

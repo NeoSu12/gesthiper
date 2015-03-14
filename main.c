@@ -27,11 +27,9 @@ CatProdutos catalogo_produtos;
 int main(int argc, char** argv) {
     catalogo_clientes = inicializa_catalogo_clientes();
     catalogo_produtos = inicializa_catalogo_produtos();
-    testes();
-    
-    /*le_ficheiros(argc, argv);
-    
-    interface();*/
+    /* testes(); */
+    le_ficheiros(argc, argv);
+    interface();
     return (EXIT_SUCCESS);
 }
 
