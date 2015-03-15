@@ -9,10 +9,10 @@ struct catalogo_produtos {
     ARVORE indices[27];
 };
 
-struct iterador {
-    TRAVERSER tr;
-    CatProdutos c;
-    int ind;
+struct iterador_produtos {
+    TRAVERSER traverser;
+    CatProdutos catalogo;
+    int indice;
 };
 
 /*
@@ -112,21 +112,21 @@ void free_catalogo_produtos(CatProdutos cat) {
  */
 
 IT_PRODUTOS inicializa_it_produtos_inicio(CatProdutos cat) {
-    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
-    avl_t_first(it->tr, cat->indices[0]);
-    it->ind = 0;
-    it->c = cat;
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
+    it->traverser = avl_t_alloc();
+    avl_t_first(it->traverser, cat->indices[0]);
+    it->indice = 0;
+    it->catalogo = cat;
     return it;
 }
 
 IT_PRODUTOS inicializa_it_produtos_fim(CatProdutos cat) {
     IT_PRODUTOS it;
-    it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
-    avl_t_first(it->tr, cat->indices[26]);
-    it->ind = 26;
-    it->c = cat;
+    it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
+    it->traverser = avl_t_alloc();
+    avl_t_first(it->traverser, cat->indices[26]);
+    it->indice = 26;
+    it->catalogo = cat;
     return it;
 }
 
@@ -135,12 +135,12 @@ IT_PRODUTOS inicializa_it_produtos_elem(CatProdutos cat, char *st) {
     IT_PRODUTOS it;
 
     if (st != NULL) {
-        it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
-        it->tr = avl_t_alloc();
-        it->c = cat;
+        it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
+        it->traverser = avl_t_alloc();
+        it->catalogo = cat;
         indice = calcula_indice_produto(toupper(*st));
-        avl_t_find(it->tr, cat->indices[indice], st);
-        it->ind = indice;
+        avl_t_find(it->traverser, cat->indices[indice], st);
+        it->indice = indice;
     } else {
         it = NULL;
     }
@@ -150,23 +150,23 @@ IT_PRODUTOS inicializa_it_produtos_elem(CatProdutos cat, char *st) {
 
 IT_PRODUTOS inicializa_it_produtos_inicio_letra(CatProdutos cat, char c) {
     int indice;
-    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
+    it->traverser = avl_t_alloc();
     indice = calcula_indice_produto(toupper(c));
-    avl_t_first(it->tr, cat->indices[indice]);
-    it->ind = indice;
-    it->c = cat;
+    avl_t_first(it->traverser, cat->indices[indice]);
+    it->indice = indice;
+    it->catalogo = cat;
     return it;
 }
 
 IT_PRODUTOS inicializa_it_produtos_fim_letra(CatProdutos cat, char c) {
     int indice;
-    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
+    it->traverser = avl_t_alloc();
     indice = calcula_indice_produto(toupper(c));
-    avl_t_last(it->tr, cat->indices[indice]);
-    it->ind = indice;
-    it->c = cat;
+    avl_t_last(it->traverser, cat->indices[indice]);
+    it->indice = indice;
+    it->catalogo = cat;
     return it;
 }
 
@@ -198,7 +198,7 @@ int itera_n_produtos_anteriores(IT_PRODUTOS it, char *codigos[], int n) {
         codigos[i] = codigo;
         i--;
     }
-    return i < 0 ? n : n - 1;
+    return i < 0 ? n : n - i;
 }
 
 char *it_produto_proximo(IT_PRODUTOS it) {
@@ -208,13 +208,13 @@ char *it_produto_proximo(IT_PRODUTOS it) {
     char *ret = NULL;
 
     while (res == NULL && sair == 0) {
-        res = avl_t_next(it->tr);
-        if (res != NULL || (res == NULL && it->ind >= 26)) {
+        res = avl_t_next(it->traverser);
+        if (res != NULL || (res == NULL && it->indice >= 26)) {
             sair = 1;
         } else {
-            /* res == NULL && it->ind<26 */
-            it->ind++;
-            res = avl_t_first(it->tr, it->c->indices[it->ind]);
+            /* res == NULL && it->indice<26 */
+            it->indice++;
+            res = avl_t_first(it->traverser, it->catalogo->indices[it->indice]);
         }
     }
 
@@ -229,7 +229,7 @@ char *it_produto_proximo(IT_PRODUTOS it) {
 char *it_produto_actual(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
-    char *res = avl_t_cur(it->tr);
+    char *res = avl_t_cur(it->traverser);
 
     if (res != NULL) {
         tamanho = strlen(res) + 1;
@@ -247,13 +247,13 @@ char *it_produto_anterior(IT_PRODUTOS it) {
     char *ret = NULL;
 
     while (res == NULL && sair == 0) {
-        res = avl_t_prev(it->tr);
-        if (res != NULL || (res == NULL && it->ind <= 0)) {
+        res = avl_t_prev(it->traverser);
+        if (res != NULL || (res == NULL && it->indice <= 0)) {
             sair = 1;
         } else {
-            /* res == NULL && it->ind>=0 */
-            it->ind--;
-            res = avl_t_last(it->tr, it->c->indices[it->ind]);
+            /* res == NULL && it->indice>=0 */
+            it->indice--;
+            res = avl_t_last(it->traverser, it->catalogo->indices[it->indice]);
         }
     }
 
@@ -268,7 +268,7 @@ char *it_produto_anterior(IT_PRODUTOS it) {
 char *it_produto_proximo_letra(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
-    char *res = avl_t_next(it->tr);
+    char *res = avl_t_next(it->traverser);
 
     if (res != NULL) {
         tamanho = strlen(res) + 1;
@@ -282,7 +282,7 @@ char *it_produto_proximo_letra(IT_PRODUTOS it) {
 char *it_produto_anterior_letra(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
-    char *res = avl_t_prev(it->tr);
+    char *res = avl_t_prev(it->traverser);
 
     if (res != NULL) {
         tamanho = strlen(res) + 1;

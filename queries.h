@@ -1,7 +1,7 @@
 #ifndef QUERIES_H
 #define	QUERIES_H
 
-void _02_codigo_produtos_letra();
+int _02_codigo_produtos_letra();
 void _03_compras_mensais_prod();
 void _04_prods_nao_comprados();
 void _05_tabela_cliente();

@@ -27,7 +27,7 @@ CatProdutos catalogo_produtos;
 int main(int argc, char** argv) {
     catalogo_clientes = inicializa_catalogo_clientes();
     catalogo_produtos = inicializa_catalogo_produtos();
-    /* testes(); */
+    /*testes();*/
     le_ficheiros(argc, argv);
     interface();
     return (EXIT_SUCCESS);
@@ -219,6 +219,9 @@ void testes() {
     insere_cliente(catalogo_clientes, "A1");
     insere_cliente(catalogo_clientes, "A2");
     insere_cliente(catalogo_clientes, "A3");
+    insere_cliente(catalogo_clientes, "A4");
+    insere_cliente(catalogo_clientes, "A5");
+    insere_cliente(catalogo_clientes, "A6");
     insere_cliente(catalogo_clientes, "B1");
     insere_cliente(catalogo_clientes, "B2");
     insere_cliente(catalogo_clientes, "C1");
@@ -241,6 +244,20 @@ void testes() {
     
     printf("Itera n:\n");
     it_count = itera_n_clientes_proximos(it_iteran,cods,2);
+
+    for(i=0;i<it_count;i++){
+        printf("%s\n",cods[i]);
+    }
+    
+    printf("Itera n outra vez:\n");
+    it_count = itera_n_clientes_proximos(it_iteran,cods,2);
+
+    for(i=0;i<it_count;i++){
+        printf("%s\n",cods[i]);
+    }
+    
+    printf("Volta para a 1ª pag:\n");
+    it_count = itera_n_clientes_anteriores(it_iteran,cods,2);
 
     for(i=0;i<it_count;i++){
         printf("%s\n",cods[i]);

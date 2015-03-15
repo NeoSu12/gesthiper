@@ -9,10 +9,10 @@ struct catalogo_clientes {
     ARVORE indices[27];
 };
 
-struct iterador {
-    TRAVERSER tr;
-    CatClientes c;
-    int ind;
+struct iterador_clientes {
+    TRAVERSER traverser;
+    CatClientes catalogo;
+    int indice;
 };
 
 /*
@@ -112,21 +112,21 @@ void free_catalogo_clientes(CatClientes cat) {
  */
 
 IT_CLIENTES inicializa_it_clientes_inicio(CatClientes cat) {
-    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
-    avl_t_first(it->tr, cat->indices[0]);
-    it->ind = 0;
-    it->c = cat;
+    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+    it->traverser = avl_t_alloc();
+    avl_t_first(it->traverser, cat->indices[0]);
+    it->indice = 0;
+    it->catalogo = cat;
     return it;
 }
 
 IT_CLIENTES inicializa_it_clientes_fim(CatClientes cat) {
     IT_CLIENTES it;
-    it = (IT_CLIENTES) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
-    avl_t_first(it->tr, cat->indices[26]);
-    it->ind = 26;
-    it->c = cat;
+    it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+    it->traverser = avl_t_alloc();
+    avl_t_first(it->traverser, cat->indices[26]);
+    it->indice = 26;
+    it->catalogo = cat;
     return it;
 }
 
@@ -135,12 +135,12 @@ IT_CLIENTES inicializa_it_clientes_elem(CatClientes cat, char *st) {
     IT_CLIENTES it;
 
     if (st != NULL) {
-        it = (IT_CLIENTES) malloc(sizeof (struct iterador));
-        it->tr = avl_t_alloc();
-        it->c = cat;
+        it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+        it->traverser = avl_t_alloc();
+        it->catalogo = cat;
         indice = calcula_indice_cliente(toupper(*st));
-        avl_t_find(it->tr, cat->indices[indice], st);
-        it->ind = indice;
+        avl_t_find(it->traverser, cat->indices[indice], st);
+        it->indice = indice;
     } else {
         it = NULL;
     }
@@ -150,30 +150,34 @@ IT_CLIENTES inicializa_it_clientes_elem(CatClientes cat, char *st) {
 
 IT_CLIENTES inicializa_it_clientes_inicio_letra(CatClientes cat, char c) {
     int indice;
-    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
+    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+    it->traverser = avl_t_alloc();
     indice = calcula_indice_cliente(toupper(c));
-    avl_t_first(it->tr, cat->indices[indice]);
-    it->ind = indice;
-    it->c = cat;
+    avl_t_first(it->traverser, cat->indices[indice]);
+    it->indice = indice;
+    it->catalogo = cat;
     return it;
 }
 
 IT_CLIENTES inicializa_it_clientes_fim_letra(CatClientes cat, char c) {
     int indice;
-    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador));
-    it->tr = avl_t_alloc();
+    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+    it->traverser = avl_t_alloc();
     indice = calcula_indice_cliente(toupper(c));
-    avl_t_last(it->tr, cat->indices[indice]);
-    it->ind = indice;
-    it->c = cat;
+    avl_t_last(it->traverser, cat->indices[indice]);
+    it->indice = indice;
+    it->catalogo = cat;
     return it;
 }
 
 int itera_n_clientes_proximos(IT_CLIENTES it, char *codigos[], int n) {
     char *codigo, *primeiro;
     int i = 0;
-
+    
+    
+    if(it_cliente_actual(it)==NULL) 
+        it_cliente_proximo(it);
+    
     if ((primeiro = it_cliente_actual(it)) != NULL) {
         codigos[i] = primeiro;
         i++;
@@ -183,22 +187,20 @@ int itera_n_clientes_proximos(IT_CLIENTES it, char *codigos[], int n) {
         codigos[i] = codigo;
         i++;
     }
+    
+    it_cliente_proximo(it);
     return i;
+    
 }
 
 int itera_n_clientes_anteriores(IT_CLIENTES it, char *codigos[], int n) {
-    char *codigo, *primeiro;
-    int i = n - 1;
-
-    if ((primeiro = it_cliente_actual(it)) != NULL) {
-        codigos[i] = primeiro;
-        i--;
-    }
-    while (i >= 0 && (codigo = it_cliente_anterior(it)) != NULL) {
-        codigos[i] = codigo;
-        i--;
-    }
-    return i < 0 ? n : n - 1;
+    int i = 0;
+    
+    while (i < n && it_cliente_anterior(it) != NULL) i++;
+    
+    itera_n_clientes_proximos(it,codigos,i);
+    
+    return i;
 }
 
 char *it_cliente_proximo(IT_CLIENTES it) {
@@ -208,13 +210,13 @@ char *it_cliente_proximo(IT_CLIENTES it) {
     char *ret = NULL;
 
     while (res == NULL && sair == 0) {
-        res = avl_t_next(it->tr);
-        if (res != NULL || (res == NULL && it->ind >= 26)) {
+        res = avl_t_next(it->traverser);
+        if (res != NULL || (res == NULL && it->indice >= 26)) {
             sair = 1;
         } else {
-            /* res == NULL && it->ind<26 */
-            it->ind++;
-            res = avl_t_first(it->tr, it->c->indices[it->ind]);
+            /* res == NULL && it->indice<26 */
+            it->indice++;
+            res = avl_t_first(it->traverser, it->catalogo->indices[it->indice]);
         }
     }
 
@@ -229,7 +231,7 @@ char *it_cliente_proximo(IT_CLIENTES it) {
 char *it_cliente_actual(IT_CLIENTES it) {
     int tamanho;
     char *ret = NULL;
-    char *res = avl_t_cur(it->tr);
+    char *res = avl_t_cur(it->traverser);
 
     if (res != NULL) {
         tamanho = strlen(res) + 1;
@@ -247,13 +249,13 @@ char *it_cliente_anterior(IT_CLIENTES it) {
     char *ret = NULL;
 
     while (res == NULL && sair == 0) {
-        res = avl_t_prev(it->tr);
-        if (res != NULL || (res == NULL && it->ind <= 0)) {
+        res = avl_t_prev(it->traverser);
+        if (res != NULL || (res == NULL && it->indice <= 0)) {
             sair = 1;
         } else {
-            /* res == NULL && it->ind>=0 */
-            it->ind--;
-            res = avl_t_last(it->tr, it->c->indices[it->ind]);
+            /* res == NULL && it->indice>=0 */
+            it->indice--;
+            res = avl_t_last(it->traverser, it->catalogo->indices[it->indice]);
         }
     }
 
@@ -268,7 +270,7 @@ char *it_cliente_anterior(IT_CLIENTES it) {
 char *it_cliente_proximo_letra(IT_CLIENTES it) {
     int tamanho;
     char *ret = NULL;
-    char *res = avl_t_next(it->tr);
+    char *res = avl_t_next(it->traverser);
 
     if (res != NULL) {
         tamanho = strlen(res) + 1;
@@ -282,7 +284,7 @@ char *it_cliente_proximo_letra(IT_CLIENTES it) {
 char *it_cliente_anterior_letra(IT_CLIENTES it) {
     int tamanho;
     char *ret = NULL;
-    char *res = avl_t_prev(it->tr);
+    char *res = avl_t_prev(it->traverser);
 
     if (res != NULL) {
         tamanho = strlen(res) + 1;

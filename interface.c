@@ -66,38 +66,42 @@ int faceprodutos() {
     char r[50];
     int sair_menu=0, leitura;
     int sair_programa=0;
-    
-    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
-            "%s*1* %sPRODUTOS%s                              |\n|"
-            "                                                    |\n|"
-            "   1 - Listar produtos começados por letra [2]      |\n|"
-            "   2 - Produtos nao comprados [4]                   |\n|"
-            "   3 - Clientes que compraram o produto [8]         |\n|"
-            "                                                    |\n|"
-            "  0 - Voltar                     Q - %sSair%s |\n"
-            " ------------------------------------------\n%s", 
-            WHITE, YELLOW, BLUE, WHITE, RED, WHITE, NORMAL);
-    
-    
-    while (sair_menu == 0) {
+
+
+    while (sair_menu == 0 && sair_programa == 0) {
+        printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%s*1* %sPRODUTOS%s                              |\n|"
+                "                                                    |\n|"
+                "   1 - Listar produtos começados por letra [2]      |\n|"
+                "   2 - Produtos nao comprados [4]                   |\n|"
+                "   3 - Clientes que compraram o produto [8]         |\n|"
+                "                                                    |\n|"
+                "  0 - Voltar                     Q - %sSair%s |\n"
+                " ------------------------------------------\n%s",
+                WHITE, YELLOW, BLUE, WHITE, RED, WHITE, NORMAL);
+
+
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
         switch (toupper(r[0])) {
-        	case '\\':
-            case '0': sair_menu=1;
-                      sair_programa=0;
-                      break;
-            case '1': _02_codigo_produtos_letra(); break;
-            case '2': _04_prods_nao_comprados(); break;
-            case '3': _08_clientes_compraram_prod(); break;
+            case '\\':
+            case '0': sair_menu = 1;
+                sair_programa = 0;
+                break;
+            case '1': sair_programa = _02_codigo_produtos_letra();
+                break;
+            case '2': _04_prods_nao_comprados();
+                break;
+            case '3': _08_clientes_compraram_prod();
+                break;
             case 'Q': sair_menu = 1;
-                      sair_programa = 1;
-                      break;
-            default: 
+                sair_programa = 1;
+                break;
+            default:
                 /*TODO: Tratamento de erro temporario.
                  * Melhorar este tratamento depois de saber resposta do professor
                  sobre o uso do scanf.*/
-                if(leitura==0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
+                if (leitura == 0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
                 else error_msg(ERRO_OPCAO_INVALIDA, NULL);
                 break;
         }
@@ -110,20 +114,19 @@ int faceclientes() {
     int sair_menu = 0, sair_programa=0;
     int leitura;
     
-    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
-            "%s*2* %sCLIENTES%s                              |\n|"
-            "                                                      |\n|"
-            "   1 - Número de produtos comprados por cliente [5]   |\n|"
-            "   2 - Codigos de clientes começados por letra [6]    |\n|"
-            "   3 - Produtos mais comprados por cliente [9]        |\n|"
-            "   4 - Clientes regulares [10]                        |\n|"
-            "   5 - Top 3 produtos mais comprados por cliente [13] |\n", WHITE, YELLOW, BLUE, WHITE);
-    
-    printf("|                                          |\n|"
-            "  0 - Voltar                     Q - %sSair%s |\n"
-            " ------------------------------------------\n%s", RED, WHITE, NORMAL);
         while (sair_menu == 0) {
+        printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%s*2* %sCLIENTES%s                              |\n|"
+                "                                                      |\n|"
+                "   1 - Número de produtos comprados por cliente [5]   |\n|"
+                "   2 - Codigos de clientes começados por letra [6]    |\n|"
+                "   3 - Produtos mais comprados por cliente [9]        |\n|"
+                "   4 - Clientes regulares [10]                        |\n|"
+                "   5 - Top 3 produtos mais comprados por cliente [13] |\n", WHITE, YELLOW, BLUE, WHITE);
 
+        printf("|                                          |\n|"
+                "  0 - Voltar                     Q - %sSair%s |\n"
+                " ------------------------------------------\n%s", RED, WHITE, NORMAL);
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
         
@@ -156,21 +159,21 @@ int facecompras() {
     char r[50];
     int sair_menu = 0,sair_programa=0;
     int leitura;
-    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
-            "%s*3* %sCONTABILIDADE%s                         |\n|"
-            "                                                |\n|"
-            "   1 - Numero vendas num mes de um produto[3]   |\n|"
-            "   2 - Numero vendas num intervalo de meses[7]  |\n|"
-            "   3 - Criar ficheiro CSV [11]                  |\n|"
-            "   4 - N produtos mais vendidos [12]            |\n|"
-            "   5 - Clientes e produtos fantasma [14]        |\n", WHITE, YELLOW, BLUE, WHITE);
 
-    printf("|                                          |\n|"
-            "  0 - Voltar                     Q - %sSair%s |\n"
-            " ------------------------------------------\n%s", RED, WHITE, NORMAL);
 
     while (sair_menu == 0) {
+        printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%s*3* %sCONTABILIDADE%s                         |\n|"
+                "                                                |\n|"
+                "   1 - Numero vendas num mes de um produto[3]   |\n|"
+                "   2 - Numero vendas num intervalo de meses[7]  |\n|"
+                "   3 - Criar ficheiro CSV [11]                  |\n|"
+                "   4 - N produtos mais vendidos [12]            |\n|"
+                "   5 - Clientes e produtos fantasma [14]        |\n", WHITE, YELLOW, BLUE, WHITE);
 
+        printf("|                                          |\n|"
+                "  0 - Voltar                     Q - %sSair%s |\n"
+                " ------------------------------------------\n%s", RED, WHITE, NORMAL);
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
 

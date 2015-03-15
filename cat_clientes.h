@@ -2,7 +2,7 @@
 #define	CatClientes_H
 
 typedef struct catalogo_clientes* CatClientes;
-typedef struct iterador* IT_CLIENTES;
+typedef struct iterador_clientes* IT_CLIENTES;
 
 /* CatClientes */
 

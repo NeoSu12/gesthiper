@@ -2,7 +2,7 @@
 #define	CatProdutos_H
 
 typedef struct catalogo_produtos* CatProdutos;
-typedef struct iterador* IT_PRODUTOS;
+typedef struct iterador_produtos* IT_PRODUTOS;
 
 /* CatProdutos */
 
