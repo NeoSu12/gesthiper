@@ -48,5 +48,8 @@ gesthiper-Makefile.mk
 # Usar a 'makefile' (note-se que esta tudo em minusculas) 
 # para correr o make pelo terminal.
 /Makefile
-
 DocsAux/~$queries_modulos.xlsx
+ordenado.txt
+
+
+

@@ -5,6 +5,10 @@
 #include "headers/cat_clientes.h"
 #include "headers/avl.h"
 
+#define APENAS_LETRA 1
+#define TODO_CATALOGO 2
+
+
 struct catalogo_clientes {
     ARVORE indices[27];
 };
@@ -15,17 +19,26 @@ struct iterador_clientes {
     int indice;
 };
 
+struct paginacao_clientes{
+    IT_CLIENTES it;
+    int posicao;
+    int tamanho_pag;
+    int letra_ou_catalogo;
+};
+
 /*
- * Funções privadas ao módulo.
+ * FUNÇÕES PRIVADAS AO MÓDULO
  */
 
 int compara_clientes(const void *, const void *, void *);
-void free_cliente(void *item, void *param);
+void free_cliente(void *item, void *);
 int calcula_indice_cliente(char l);
+int ajusta_iterador_clientes(PagClientes, int);
+int ajusta_iterador_clientes_letra(PagClientes, int);
 
 
 /*
- ÁRVORE
+ * ÁRVORE
  */
 
 CatClientes inicializa_catalogo_clientes() {
@@ -108,7 +121,7 @@ void free_catalogo_clientes(CatClientes cat) {
 }
 
 /*
- IT_CLIENTES
+ * ITERADORES CLIENTES
  */
 
 IT_CLIENTES inicializa_it_clientes_inicio(CatClientes cat) {
@@ -293,6 +306,105 @@ char *it_cliente_anterior_letra(IT_CLIENTES it) {
     }
 
     return ret;
+}
+
+/*
+ * PAGINAÇÃO
+ */
+
+PagClientes inicializa_pag_clientes(CatClientes cat, int tam_pag){
+    PagClientes res = (PagClientes) malloc(sizeof(struct paginacao_clientes));
+    IT_CLIENTES iterador = inicializa_it_clientes_inicio(cat);
+    
+    res->letra_ou_catalogo = TODO_CATALOGO;
+    res->it=iterador;
+    res->tamanho_pag=tam_pag;
+
+    if (avl_t_first(iterador->traverser, iterador->catalogo->indices[iterador->indice]) == NULL)
+        res->posicao = 0;
+    else
+        res->posicao = 1;
+    
+    return res;
+}
+
+PagClientes inicializa_pag_clientes_letra(CatClientes cat, int tam_pag, char letra){
+    PagClientes res = (PagClientes) malloc(sizeof(struct paginacao_clientes));
+    IT_CLIENTES iterador = inicializa_it_clientes_inicio_letra(cat, letra);
+    
+    res->letra_ou_catalogo=APENAS_LETRA;
+    res->it=iterador;
+    res->tamanho_pag=tam_pag;
+    
+    if(avl_t_first(iterador->traverser, iterador->catalogo->indices[iterador->indice])==NULL)
+        res->posicao=0;
+    else 
+        res->posicao=1;
+    
+    return res;
+}
+
+int pag_clientes_goto_pag(PagClientes pag_clientes ,int n_pagina, char *pagina[]){
+    int ajuste;
+    int elems;
+    
+    if(pag_clientes->letra_ou_catalogo==TODO_CATALOGO){
+        ajuste = ajusta_iterador_clientes(pag_clientes, n_pagina);
+    }else{
+        ajuste = ajusta_iterador_clientes_letra(pag_clientes, n_pagina);
+    }
+    
+    if(ajuste == PAGINA_POSSIVEL){
+        elems = itera_n_clientes_proximos(pag_clientes->it, pagina ,pag_clientes->tamanho_pag);
+        pag_clientes->posicao+=elems;
+    } else {
+        elems = PAGINA_IMPOSSIVEL;
+    }
+    
+    return elems;
+    
+}
+
+int ajusta_iterador_clientes(PagClientes pag_clientes, int n_pagina){
+    int i, retorno;
+    int tam_pag = pag_clientes->tamanho_pag;
+    int pos_f = (n_pagina-1)*tam_pag+1;
+    int diferenca = pos_f - pag_clientes->posicao;
+    
+    if(diferenca>0){
+        for(i=0;i<diferenca && it_cliente_proximo(pag_clientes->it)!=NULL;i++)
+            pag_clientes->posicao++;
+    }else{
+        diferenca = abs(diferenca);
+        for(i=0;i<diferenca && it_cliente_anterior(pag_clientes->it)!=NULL;i++)
+            pag_clientes->posicao--;
+    }
+    
+    if(i==diferenca) retorno = PAGINA_POSSIVEL;
+    else retorno = PAGINA_IMPOSSIVEL;
+    
+    return retorno;
+}
+
+int ajusta_iterador_clientes_letra(PagClientes pag_clientes, int n_pagina){
+    int i, retorno;
+    int tam_pag = pag_clientes->tamanho_pag;
+    int pos_f = (n_pagina-1)*tam_pag+1;
+    int diferenca = pos_f - pag_clientes->posicao;
+    
+    if(diferenca>0){
+        for(i=0;i<diferenca && it_cliente_proximo_letra(pag_clientes->it)!=NULL;i++)
+            pag_clientes->posicao++;
+    }else{
+        diferenca = abs(diferenca);
+        for(i=0;i<diferenca && it_cliente_anterior_letra(pag_clientes->it)!=NULL;i++)
+            pag_clientes->posicao--;
+    }
+    
+    if(i==diferenca) retorno = PAGINA_POSSIVEL;
+    else retorno = PAGINA_IMPOSSIVEL;
+    
+    return retorno;
 }
 
 /*

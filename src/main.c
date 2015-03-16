@@ -17,8 +17,8 @@ int le_ficheiros(int, char **);
 void le_clientes(FILE *, char *);
 void le_produtos(FILE *, char *);
 void le_compras(FILE *, char *);
-int compra_valida(COMPRA );
-void mostra_compra(COMPRA );
+int compra_valida(COMPRA);
+void mostra_compra(COMPRA);
 void testes();
 
 CatClientes catalogo_clientes;
@@ -27,9 +27,15 @@ CatProdutos catalogo_produtos;
 int main(int argc, char** argv) {
     catalogo_clientes = inicializa_catalogo_clientes();
     catalogo_produtos = inicializa_catalogo_produtos();
-    /*testes();*/
+    
+    /*
+    testes();
+    */
+    
+    
     le_ficheiros(argc, argv);
     interface();
+    
     return (EXIT_SUCCESS);
 }
 
@@ -210,6 +216,7 @@ void mostra_compra(COMPRA compra) {
 
 void testes() {
     IT_CLIENTES it_fim, it_inicio, it_inicio_letra, it_fim_letra, it_elem, it_iteran, it_iteran_fim;
+    PagClientes paginacao;
     char *res_it;
     int it_count, i=0;
     char *cods[50], *cods_f[50];
@@ -231,6 +238,32 @@ void testes() {
     insere_cliente(catalogo_clientes, "C5");
     insere_cliente(catalogo_clientes, "D1");
     printf("done!\n");
+    
+    paginacao = inicializa_pag_clientes(catalogo_clientes,2);
+    
+    printf("Vai para pagina 1:\n");
+    it_count = pag_clientes_goto_pag(paginacao ,1, cods);
+    for(i=0;i<it_count;i++){
+        printf("%s\n",cods[i]);
+    }
+    
+    printf("Vai para pagina 2:\n");
+    it_count = pag_clientes_goto_pag(paginacao ,2, cods);
+    for(i=0;i<it_count;i++){
+        printf("%s\n",cods[i]);
+    }
+    
+    printf("Volta para pagina 1:\n");
+    it_count = pag_clientes_goto_pag(paginacao ,1, cods);
+    for(i=0;i<it_count;i++){
+        printf("%s\n",cods[i]);
+    }
+    
+    printf("Vai para pagina 5:\n");
+    it_count = pag_clientes_goto_pag(paginacao ,5, cods);
+    for(i=0;i<it_count;i++){
+        printf("%s\n",cods[i]);
+    }
     
     printf("A inicializar iteradores...");
     it_fim = inicializa_it_clientes_fim(catalogo_clientes);

@@ -136,7 +136,7 @@ int faceclientes() {
                       sair_programa=0;
                       break;
             case '1': _05_tabela_cliente(); break;
-            case '2': _06_codigos_clientes_letra(); break;
+            case '2': sair_programa = _06_codigos_clientes_letra(); break;
             case '3': _09_produtos_mais_comprados_cliente(); break;
             case '4': _10_clientes_regulares(); break;
             case '5': _13_tres_prods_mais_comprados(); break;

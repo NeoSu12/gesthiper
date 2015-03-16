@@ -5,6 +5,10 @@
 #include "headers/cat_produtos.h"
 #include "headers/avl.h"
 
+#define APENAS_LETRA 1
+#define TODO_CATALOGO 2
+
+
 struct catalogo_produtos {
     ARVORE indices[27];
 };
@@ -15,17 +19,26 @@ struct iterador_produtos {
     int indice;
 };
 
+struct paginacao_produtos{
+    IT_PRODUTOS it;
+    int posicao;
+    int tamanho_pag;
+    int letra_ou_catalogo;
+};
+
 /*
- * Funções privadas ao módulo.
+ * FUNÇÕES PRIVADAS AO MÓDULO
  */
 
 int compara_produtos(const void *, const void *, void *);
-void free_produto(void *item, void *param);
+void free_produto(void *item, void *);
 int calcula_indice_produto(char l);
+int ajusta_iterador_produtos(PagProdutos, int);
+int ajusta_iterador_produtos_letra(PagProdutos, int);
 
 
 /*
- ÁRVORE
+ * ÁRVORE
  */
 
 CatProdutos inicializa_catalogo_produtos() {
@@ -108,7 +121,7 @@ void free_catalogo_produtos(CatProdutos cat) {
 }
 
 /*
- IT_PRODUTOS
+ * ITERADORES CLIENTES
  */
 
 IT_PRODUTOS inicializa_it_produtos_inicio(CatProdutos cat) {
@@ -173,7 +186,11 @@ IT_PRODUTOS inicializa_it_produtos_fim_letra(CatProdutos cat, char c) {
 int itera_n_produtos_proximos(IT_PRODUTOS it, char *codigos[], int n) {
     char *codigo, *primeiro;
     int i = 0;
-
+    
+    
+    if(it_produto_actual(it)==NULL) 
+        it_produto_proximo(it);
+    
     if ((primeiro = it_produto_actual(it)) != NULL) {
         codigos[i] = primeiro;
         i++;
@@ -183,22 +200,20 @@ int itera_n_produtos_proximos(IT_PRODUTOS it, char *codigos[], int n) {
         codigos[i] = codigo;
         i++;
     }
+    
+    it_produto_proximo(it);
     return i;
+    
 }
 
 int itera_n_produtos_anteriores(IT_PRODUTOS it, char *codigos[], int n) {
-    char *codigo, *primeiro;
-    int i = n - 1;
-
-    if ((primeiro = it_produto_actual(it)) != NULL) {
-        codigos[i] = primeiro;
-        i--;
-    }
-    while (i >= 0 && (codigo = it_produto_anterior(it)) != NULL) {
-        codigos[i] = codigo;
-        i--;
-    }
-    return i < 0 ? n : n - i;
+    int i = 0;
+    
+    while (i < n && it_produto_anterior(it) != NULL) i++;
+    
+    itera_n_produtos_proximos(it,codigos,i);
+    
+    return i;
 }
 
 char *it_produto_proximo(IT_PRODUTOS it) {
@@ -291,6 +306,105 @@ char *it_produto_anterior_letra(IT_PRODUTOS it) {
     }
 
     return ret;
+}
+
+/*
+ * PAGINAÇÃO
+ */
+
+PagProdutos inicializa_pag_produtos(CatProdutos cat, int tam_pag){
+    PagProdutos res = (PagProdutos) malloc(sizeof(struct paginacao_produtos));
+    IT_PRODUTOS iterador = inicializa_it_produtos_inicio(cat);
+    
+    res->letra_ou_catalogo = TODO_CATALOGO;
+    res->it=iterador;
+    res->tamanho_pag=tam_pag;
+
+    if (avl_t_first(iterador->traverser, iterador->catalogo->indices[iterador->indice]) == NULL)
+        res->posicao = 0;
+    else
+        res->posicao = 1;
+    
+    return res;
+}
+
+PagProdutos inicializa_pag_produtos_letra(CatProdutos cat, int tam_pag, char letra){
+    PagProdutos res = (PagProdutos) malloc(sizeof(struct paginacao_produtos));
+    IT_PRODUTOS iterador = inicializa_it_produtos_inicio_letra(cat, letra);
+    
+    res->letra_ou_catalogo=APENAS_LETRA;
+    res->it=iterador;
+    res->tamanho_pag=tam_pag;
+    
+    if(avl_t_first(iterador->traverser, iterador->catalogo->indices[iterador->indice])==NULL)
+        res->posicao=0;
+    else 
+        res->posicao=1;
+    
+    return res;
+}
+
+int pag_produtos_goto_pag(PagProdutos pag_produtos ,int n_pagina, char *pagina[]){
+    int ajuste;
+    int elems;
+    
+    if(pag_produtos->letra_ou_catalogo==TODO_CATALOGO){
+        ajuste = ajusta_iterador_produtos(pag_produtos, n_pagina);
+    }else{
+        ajuste = ajusta_iterador_produtos_letra(pag_produtos, n_pagina);
+    }
+    
+    if(ajuste == PAGINA_POSSIVEL){
+        elems = itera_n_produtos_proximos(pag_produtos->it, pagina ,pag_produtos->tamanho_pag);
+        pag_produtos->posicao+=elems;
+    } else {
+        elems = PAGINA_IMPOSSIVEL;
+    }
+    
+    return elems;
+    
+}
+
+int ajusta_iterador_produtos(PagProdutos pag_produtos, int n_pagina){
+    int i, retorno;
+    int tam_pag = pag_produtos->tamanho_pag;
+    int pos_f = (n_pagina-1)*tam_pag+1;
+    int diferenca = pos_f - pag_produtos->posicao;
+    
+    if(diferenca>0){
+        for(i=0;i<diferenca && it_produto_proximo(pag_produtos->it)!=NULL;i++)
+            pag_produtos->posicao++;
+    }else{
+        diferenca = abs(diferenca);
+        for(i=0;i<diferenca && it_produto_anterior(pag_produtos->it)!=NULL;i++)
+            pag_produtos->posicao--;
+    }
+    
+    if(i==diferenca) retorno = PAGINA_POSSIVEL;
+    else retorno = PAGINA_IMPOSSIVEL;
+    
+    return retorno;
+}
+
+int ajusta_iterador_produtos_letra(PagProdutos pag_produtos, int n_pagina){
+    int i, retorno;
+    int tam_pag = pag_produtos->tamanho_pag;
+    int pos_f = (n_pagina-1)*tam_pag+1;
+    int diferenca = pos_f - pag_produtos->posicao;
+    
+    if(diferenca>0){
+        for(i=0;i<diferenca && it_produto_proximo_letra(pag_produtos->it)!=NULL;i++)
+            pag_produtos->posicao++;
+    }else{
+        diferenca = abs(diferenca);
+        for(i=0;i<diferenca && it_produto_anterior_letra(pag_produtos->it)!=NULL;i++)
+            pag_produtos->posicao--;
+    }
+    
+    if(i==diferenca) retorno = PAGINA_POSSIVEL;
+    else retorno = PAGINA_IMPOSSIVEL;
+    
+    return retorno;
 }
 
 /*

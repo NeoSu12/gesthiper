@@ -1,8 +1,12 @@
 #ifndef CatClientes_H
 #define	CatClientes_H
 
+#define PAGINA_POSSIVEL 0
+#define PAGINA_IMPOSSIVEL -1
+
 typedef struct catalogo_clientes* CatClientes;
 typedef struct iterador_clientes* IT_CLIENTES;
+typedef struct paginacao_clientes* PagClientes;
 
 /* CatClientes */
 
@@ -29,6 +33,12 @@ char *it_cliente_actual(IT_CLIENTES);
 char *it_cliente_anterior(IT_CLIENTES);
 char *it_cliente_proximo_letra(IT_CLIENTES); 
 char *it_cliente_anterior_letra(IT_CLIENTES);
+
+/* PAGINAÇÃO */
+
+PagClientes inicializa_pag_clientes(CatClientes cat, int tam_pag);
+PagClientes inicializa_pag_clientes_letra(CatClientes cat, int tam_pag, char letra);
+int pag_clientes_goto_pag(PagClientes pag_clientes ,int n_pagina, char *pagina[]);
 
 
 #endif	/* CatClientes_H */

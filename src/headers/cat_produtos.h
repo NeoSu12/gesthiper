@@ -1,8 +1,12 @@
 #ifndef CatProdutos_H
 #define	CatProdutos_H
 
+#define PAGINA_POSSIVEL 0
+#define PAGINA_IMPOSSIVEL -1
+
 typedef struct catalogo_produtos* CatProdutos;
 typedef struct iterador_produtos* IT_PRODUTOS;
+typedef struct paginacao_produtos* PagProdutos;
 
 /* CatProdutos */
 
@@ -30,8 +34,11 @@ char *it_produto_anterior(IT_PRODUTOS);
 char *it_produto_proximo_letra(IT_PRODUTOS); 
 char *it_produto_anterior_letra(IT_PRODUTOS);
 
+/* PAGINAÇÃO */
+
+PagProdutos inicializa_pag_produtos(CatProdutos cat, int tam_pag);
+PagProdutos inicializa_pag_produtos_letra(CatProdutos cat, int tam_pag, char letra);
+int pag_produtos_goto_pag(PagProdutos pag_produtos ,int n_pagina, char *pagina[]);
+
 
 #endif	/* CatProdutos_H */
-
-
-
