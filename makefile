@@ -1,3 +1,5 @@
+VPATH = src:src/headers
+
 objects = main.o erros.o compra.o avl.o cat_clientes.o \
 	   cat_produtos.o interface.o queries.o
 

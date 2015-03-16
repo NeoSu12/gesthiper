@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "compra.h"
+#include "headers/compra.h"
 
 #define NBYTES_CLIENTE sizeof(char)*(5+1)
 #define NBYTES_PRODUTO sizeof(char)*(6+1)

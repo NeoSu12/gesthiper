@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "avl.h"
+#include "headers/avl.h"
 
 #ifndef LIBAVL_ALLOCATOR
 #define LIBAVL_ALLOCATOR

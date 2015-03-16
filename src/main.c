@@ -3,11 +3,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include "interface.h"
-#include "erros.h"
-#include "compra.h"
-#include "cat_clientes.h"
-#include "cat_produtos.h"
+#include "headers/interface.h"
+#include "headers/erros.h"
+#include "headers/compra.h"
+#include "headers/cat_clientes.h"
+#include "headers/cat_produtos.h"
 
 #define LINHA_CLIENTE_MAX 20
 #define LINHA_PRODUTO_MAX 20

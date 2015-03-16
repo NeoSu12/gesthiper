@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "erros.h"
+#include "headers/erros.h"
 
 void msg_erro_args(ERRO, char *);
 void msg_erro_abrir_fich(ERRO, void *);

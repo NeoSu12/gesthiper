@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "queries.h"
-#include "cat_produtos.h"
-#include "cat_clientes.h"
+#include "headers/queries.h"
+#include "headers/cat_produtos.h"
+#include "headers/cat_clientes.h"
 
 #define NORMAL  "\x1B[0m"
 #define RED  "\x1B[31m"

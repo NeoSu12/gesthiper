@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "interface.h"
-#include "queries.h"
-#include "erros.h"
+#include "headers/interface.h"
+#include "headers/queries.h"
+#include "headers/erros.h"
 
 #define NORMAL  "\x1B[0m"
 #define RED  "\x1B[31m"

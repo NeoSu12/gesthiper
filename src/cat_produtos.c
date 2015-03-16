@@ -2,16 +2,16 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "cat_clientes.h"
-#include "avl.h"
+#include "headers/cat_produtos.h"
+#include "headers/avl.h"
 
-struct catalogo_clientes {
+struct catalogo_produtos {
     ARVORE indices[27];
 };
 
-struct iterador_clientes {
+struct iterador_produtos {
     TRAVERSER traverser;
-    CatClientes catalogo;
+    CatProdutos catalogo;
     int indice;
 };
 
@@ -19,31 +19,31 @@ struct iterador_clientes {
  * Funções privadas ao módulo.
  */
 
-int compara_clientes(const void *, const void *, void *);
-void free_cliente(void *item, void *param);
-int calcula_indice_cliente(char l);
+int compara_produtos(const void *, const void *, void *);
+void free_produto(void *item, void *param);
+int calcula_indice_produto(char l);
 
 
 /*
  ÁRVORE
  */
 
-CatClientes inicializa_catalogo_clientes() {
+CatProdutos inicializa_catalogo_produtos() {
     int i = 0;
-    CatClientes res = (CatClientes) malloc(sizeof (struct catalogo_clientes));
+    CatProdutos res = (CatProdutos) malloc(sizeof (struct catalogo_produtos));
 
     for (i = 0; i <= 26; i++) {
-        res->indices[i] = avl_create(compara_clientes, NULL, NULL);
+        res->indices[i] = avl_create(compara_produtos, NULL, NULL);
     }
 
     return res;
 }
 
-int existe_cliente(CatClientes cat, char *elem) {
+int existe_produto(CatProdutos cat, char *elem) {
     int ind, res = 0;
 
     if (elem != NULL) {
-        ind = calcula_indice_cliente(*elem);
+        ind = calcula_indice_produto(*elem);
         if (avl_find(cat->indices[ind], elem) != NULL) res = 1;
         else res = 0;
     }
@@ -51,12 +51,12 @@ int existe_cliente(CatClientes cat, char *elem) {
     return res;
 }
 
-char *procura_cliente(CatClientes cat, char *elem) {
+char *procura_produto(CatProdutos cat, char *elem) {
     int ind;
     char *res;
 
     if (elem != NULL) {
-        ind = calcula_indice_cliente(*elem);
+        ind = calcula_indice_produto(*elem);
         res = (char *) avl_find(cat->indices[ind], elem);
     } else {
         res = NULL;
@@ -65,8 +65,8 @@ char *procura_cliente(CatClientes cat, char *elem) {
     return res == NULL ? NULL : elem;
 }
 
-char *insere_cliente(CatClientes cat, char *str) {
-    int ind = calcula_indice_cliente(str[0]);
+char *insere_produto(CatProdutos cat, char *str) {
+    int ind = calcula_indice_produto(str[0]);
     int tamanho = strlen(str);
     char *res;
     char *new = (char *) malloc(tamanho + 1);
@@ -77,12 +77,12 @@ char *insere_cliente(CatClientes cat, char *str) {
     return res == NULL ? NULL : str;
 }
 
-char *remove_cliente(CatClientes cat, char *str) {
-    int ind = calcula_indice_cliente(str[0]);
+char *remove_produto(CatProdutos cat, char *str) {
+    int ind = calcula_indice_produto(str[0]);
     return avl_delete(cat->indices[ind], str);
 }
 
-int total_clientes(CatClientes cat) {
+int total_produtos(CatProdutos cat) {
     size_t soma = 0;
     int i;
 
@@ -92,27 +92,27 @@ int total_clientes(CatClientes cat) {
     return soma;
 }
 
-int total_clientes_letra(CatClientes cat, char letra) {
-    int ind = calcula_indice_cliente(letra);
+int total_produtos_letra(CatProdutos cat, char letra) {
+    int ind = calcula_indice_produto(letra);
     return avl_count(cat->indices[ind]);
 }
 
-void free_catalogo_clientes(CatClientes cat) {
+void free_catalogo_produtos(CatProdutos cat) {
     int i = 0;
 
     for (i = 0; i <= 26; i++) {
-        avl_destroy(cat->indices[i], free_cliente);
+        avl_destroy(cat->indices[i], free_produto);
     }
 
     free(cat);
 }
 
 /*
- IT_CLIENTES
+ IT_PRODUTOS
  */
 
-IT_CLIENTES inicializa_it_clientes_inicio(CatClientes cat) {
-    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+IT_PRODUTOS inicializa_it_produtos_inicio(CatProdutos cat) {
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
     it->traverser = avl_t_alloc();
     avl_t_first(it->traverser, cat->indices[0]);
     it->indice = 0;
@@ -120,9 +120,9 @@ IT_CLIENTES inicializa_it_clientes_inicio(CatClientes cat) {
     return it;
 }
 
-IT_CLIENTES inicializa_it_clientes_fim(CatClientes cat) {
-    IT_CLIENTES it;
-    it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+IT_PRODUTOS inicializa_it_produtos_fim(CatProdutos cat) {
+    IT_PRODUTOS it;
+    it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
     it->traverser = avl_t_alloc();
     avl_t_first(it->traverser, cat->indices[26]);
     it->indice = 26;
@@ -130,15 +130,15 @@ IT_CLIENTES inicializa_it_clientes_fim(CatClientes cat) {
     return it;
 }
 
-IT_CLIENTES inicializa_it_clientes_elem(CatClientes cat, char *st) {
+IT_PRODUTOS inicializa_it_produtos_elem(CatProdutos cat, char *st) {
     int indice;
-    IT_CLIENTES it;
+    IT_PRODUTOS it;
 
     if (st != NULL) {
-        it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+        it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
         it->traverser = avl_t_alloc();
         it->catalogo = cat;
-        indice = calcula_indice_cliente(toupper(*st));
+        indice = calcula_indice_produto(toupper(*st));
         avl_t_find(it->traverser, cat->indices[indice], st);
         it->indice = indice;
     } else {
@@ -148,62 +148,60 @@ IT_CLIENTES inicializa_it_clientes_elem(CatClientes cat, char *st) {
     return it;
 }
 
-IT_CLIENTES inicializa_it_clientes_inicio_letra(CatClientes cat, char c) {
+IT_PRODUTOS inicializa_it_produtos_inicio_letra(CatProdutos cat, char c) {
     int indice;
-    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
     it->traverser = avl_t_alloc();
-    indice = calcula_indice_cliente(toupper(c));
+    indice = calcula_indice_produto(toupper(c));
     avl_t_first(it->traverser, cat->indices[indice]);
     it->indice = indice;
     it->catalogo = cat;
     return it;
 }
 
-IT_CLIENTES inicializa_it_clientes_fim_letra(CatClientes cat, char c) {
+IT_PRODUTOS inicializa_it_produtos_fim_letra(CatProdutos cat, char c) {
     int indice;
-    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+    IT_PRODUTOS it = (IT_PRODUTOS) malloc(sizeof (struct iterador_produtos));
     it->traverser = avl_t_alloc();
-    indice = calcula_indice_cliente(toupper(c));
+    indice = calcula_indice_produto(toupper(c));
     avl_t_last(it->traverser, cat->indices[indice]);
     it->indice = indice;
     it->catalogo = cat;
     return it;
 }
 
-int itera_n_clientes_proximos(IT_CLIENTES it, char *codigos[], int n) {
+int itera_n_produtos_proximos(IT_PRODUTOS it, char *codigos[], int n) {
     char *codigo, *primeiro;
     int i = 0;
-    
-    
-    if(it_cliente_actual(it)==NULL) 
-        it_cliente_proximo(it);
-    
-    if ((primeiro = it_cliente_actual(it)) != NULL) {
+
+    if ((primeiro = it_produto_actual(it)) != NULL) {
         codigos[i] = primeiro;
         i++;
     }
 
-    while (i < n && (codigo = it_cliente_proximo(it)) != NULL) {
+    while (i < n && (codigo = it_produto_proximo(it)) != NULL) {
         codigos[i] = codigo;
         i++;
     }
-    
-    it_cliente_proximo(it);
-    return i;
-    
-}
-
-int itera_n_clientes_anteriores(IT_CLIENTES it, char *codigos[], int n) {
-    int i = 0;
-    
-    while (i < n && it_cliente_anterior(it) != NULL) i++;
-    
-    itera_n_clientes_proximos(it,codigos,i);
-    
     return i;
 }
 
-char *it_cliente_proximo(IT_CLIENTES it) {
+int itera_n_produtos_anteriores(IT_PRODUTOS it, char *codigos[], int n) {
+    char *codigo, *primeiro;
+    int i = n - 1;
+
+    if ((primeiro = it_produto_actual(it)) != NULL) {
+        codigos[i] = primeiro;
+        i--;
+    }
+    while (i >= 0 && (codigo = it_produto_anterior(it)) != NULL) {
+        codigos[i] = codigo;
+        i--;
+    }
+    return i < 0 ? n : n - i;
+}
+
+char *it_produto_proximo(IT_PRODUTOS it) {
     int tamanho;
     int sair = 0;
     char *res = NULL;
@@ -228,7 +226,7 @@ char *it_cliente_proximo(IT_CLIENTES it) {
     return ret;
 }
 
-char *it_cliente_actual(IT_CLIENTES it) {
+char *it_produto_actual(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
     char *res = avl_t_cur(it->traverser);
@@ -242,7 +240,7 @@ char *it_cliente_actual(IT_CLIENTES it) {
     return ret;
 }
 
-char *it_cliente_anterior(IT_CLIENTES it) {
+char *it_produto_anterior(IT_PRODUTOS it) {
     int tamanho;
     int sair = 0;
     char *res = NULL;
@@ -267,7 +265,7 @@ char *it_cliente_anterior(IT_CLIENTES it) {
     return ret;
 }
 
-char *it_cliente_proximo_letra(IT_CLIENTES it) {
+char *it_produto_proximo_letra(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
     char *res = avl_t_next(it->traverser);
@@ -281,7 +279,7 @@ char *it_cliente_proximo_letra(IT_CLIENTES it) {
     return ret;
 }
 
-char *it_cliente_anterior_letra(IT_CLIENTES it) {
+char *it_produto_anterior_letra(IT_PRODUTOS it) {
     int tamanho;
     char *ret = NULL;
     char *res = avl_t_prev(it->traverser);
@@ -299,15 +297,15 @@ char *it_cliente_anterior_letra(IT_CLIENTES it) {
  * Funções (privadas) auxiliares ao módulo.
  */
 
-int compara_clientes(const void *avl_a, const void *avl_b, void *avl_param) {
+int compara_produtos(const void *avl_a, const void *avl_b, void *avl_param) {
     return strcmp((char *) avl_a, (char *) avl_b);
 }
 
-void free_cliente(void *item, void *param) {
+void free_produto(void *item, void *param) {
     free(item);
 }
 
-int calcula_indice_cliente(char l) {
+int calcula_indice_produto(char l) {
     int res = 0;
     char letra = toupper(l);
 
