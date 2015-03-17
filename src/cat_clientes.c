@@ -307,7 +307,7 @@ char *it_cliente_proximo_letra(IT_CLIENTES it) {
     int tamanho;
     char *ret = NULL;
     char *res = avl_t_next(it->traverser);
-
+    
     if (res != NULL) {
         tamanho = strlen(res) + 1;
         ret = (char *) malloc(sizeof (char)*tamanho);

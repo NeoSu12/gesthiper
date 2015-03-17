@@ -21,6 +21,7 @@ int compra_valida(COMPRA);
 void mostra_compra(COMPRA);
 void mostra_numero_codigos();
 void testes();
+void testes2();
 
 CatClientes catalogo_clientes;
 CatProdutos catalogo_produtos;
@@ -30,7 +31,7 @@ int main(int argc, char** argv) {
     catalogo_produtos = inicializa_catalogo_produtos();
     
     /*
-    testes();
+    testes2();
     */
     
     le_ficheiros(argc, argv);
@@ -101,8 +102,10 @@ void le_clientes(FILE *f_cli, char *nf) {
 
     while (fgets(linha_cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
         cliente = strtok(linha_cliente, delim);
-        insere_cliente(catalogo_clientes, cliente);
-        clientes_validos++;
+        if(cliente!=NULL){
+            insere_cliente(catalogo_clientes, cliente);
+            clientes_validos++;
+        }
         total_linhas_clientes++;
     }
 
@@ -398,3 +401,41 @@ void testes() {
     printf("\n");
     
 }
+
+void testes2(){
+    IT_CLIENTES it;
+    char *res_it;
+    
+    /* Testa inserções */
+    printf("A colocar items no catalogo...");
+    insere_cliente(catalogo_clientes, "A1");
+    insere_cliente(catalogo_clientes, "A2");
+    insere_cliente(catalogo_clientes, "A3");
+    insere_cliente(catalogo_clientes, "A4");
+    insere_cliente(catalogo_clientes, "A5");
+    insere_cliente(catalogo_clientes, "A6");
+    insere_cliente(catalogo_clientes, "B1");
+    insere_cliente(catalogo_clientes, "B2");
+    insere_cliente(catalogo_clientes, "C1");
+    insere_cliente(catalogo_clientes, "C2");
+    insere_cliente(catalogo_clientes, "C3");
+    insere_cliente(catalogo_clientes, "C4");
+    insere_cliente(catalogo_clientes, "C5");
+    insere_cliente(catalogo_clientes, "D1");
+    printf("done!\n");
+    
+    it = inicializa_it_clientes_inicio(catalogo_clientes);
+    
+    printf("Imprimir o catalogo do inicio para o fim (iterador inicializado):\n");
+    it_cliente_anterior(it);
+    while((res_it = it_cliente_proximo(it)) != NULL) {
+        printf("%s ", res_it);
+    }
+    printf("\n");
+    
+    res_it = it_cliente_anterior(it);
+    res_it = it_cliente_anterior(it);
+    res_it = it_cliente_anterior(it);
+    
+}
+
