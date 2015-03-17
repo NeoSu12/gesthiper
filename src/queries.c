@@ -12,7 +12,7 @@
 #define BLUE  "\x1B[34m"
 #define WHITE  "\x1B[37m"
 
-#define TAM_PAGINA 5
+#define TAM_PAGINA 10
 
 extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;

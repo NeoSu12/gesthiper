@@ -102,10 +102,12 @@ void le_clientes(FILE *f_cli, char *nf) {
 
     while (fgets(linha_cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
         cliente = strtok(linha_cliente, delim);
+        
         if(cliente!=NULL){
             insere_cliente(catalogo_clientes, cliente);
             clientes_validos++;
         }
+        
         total_linhas_clientes++;
     }
 
@@ -132,8 +134,12 @@ void le_produtos(FILE *f_prod, char *nf) {
 
     while (fgets(linha_produto, LINHA_PRODUTO_MAX, f_prod) != NULL) {
         produto = strtok(linha_produto, delim);
-        insere_produto(catalogo_produtos, produto);
-        produtos_validos++;
+        
+        if (produto != NULL) {
+            insere_produto(catalogo_produtos, produto);
+            produtos_validos++;
+        }
+
         total_linhas_produtos++;
     }
 
