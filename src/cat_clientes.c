@@ -206,6 +206,29 @@ int itera_n_clientes_proximos(IT_CLIENTES it, char *codigos[], int n) {
     
 }
 
+int itera_n_clientes_proximos_letra(IT_CLIENTES it, char *codigos[], int n) {
+    char *codigo, *primeiro;
+    int i = 0;
+    
+    
+    if(it_cliente_actual(it)==NULL) 
+        it_cliente_proximo_letra(it);
+    
+    if ((primeiro = it_cliente_actual(it)) != NULL) {
+        codigos[i] = primeiro;
+        i++;
+    }
+
+    while (i < n && (codigo = it_cliente_proximo_letra(it)) != NULL) {
+        codigos[i] = codigo;
+        i++;
+    }
+    
+    it_cliente_proximo(it);
+    return i;
+    
+}
+
 int itera_n_clientes_anteriores(IT_CLIENTES it, char *codigos[], int n) {
     int i = 0;
     
@@ -332,7 +355,7 @@ PagClientes inicializa_pag_clientes_letra(CatClientes cat, int tam_pag, char let
     PagClientes res = (PagClientes) malloc(sizeof(struct paginacao_clientes));
     IT_CLIENTES iterador = inicializa_it_clientes_inicio_letra(cat, letra);
     
-    res->letra_ou_catalogo=APENAS_LETRA;
+    res->letra_ou_catalogo = APENAS_LETRA;
     res->it=iterador;
     res->tamanho_pag=tam_pag;
     
@@ -355,7 +378,12 @@ int pag_clientes_goto_pag(PagClientes pag_clientes ,int n_pagina, char *pagina[]
     }
     
     if(ajuste == PAGINA_POSSIVEL){
-        elems = itera_n_clientes_proximos(pag_clientes->it, pagina ,pag_clientes->tamanho_pag);
+        if(pag_clientes->letra_ou_catalogo==TODO_CATALOGO){
+            elems = itera_n_clientes_proximos(pag_clientes->it, pagina ,pag_clientes->tamanho_pag);
+        }else{ 
+            elems = itera_n_clientes_proximos_letra(pag_clientes->it, pagina ,pag_clientes->tamanho_pag);
+        }
+        
         pag_clientes->posicao+=elems;
     } else {
         elems = PAGINA_IMPOSSIVEL;

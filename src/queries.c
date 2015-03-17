@@ -12,7 +12,7 @@
 #define BLUE  "\x1B[34m"
 #define WHITE  "\x1B[37m"
 
-#define TAM_PAGINA 20
+#define TAM_PAGINA 50
 
 extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
@@ -26,72 +26,70 @@ int _02_codigo_produtos_letra() {
     char input[50];
     char *pagina[TAM_PAGINA];
 
-    while (sair_menu == 0) {
+    printf("Insira a letra a procurar > ");
+    leitura = scanf("%s", input);
+    letra = toupper(input[0]);
 
-        printf("Insira a letra a procurar > ");
-        leitura = scanf("%s", input);
-        letra = toupper(input[0]);
+    if (isalpha(letra) && leitura > 0) {
+        paginacao = inicializa_pag_produtos_letra(catalogo_produtos, TAM_PAGINA, letra);
+        resultados = total_produtos_letra(catalogo_produtos, letra);
+        
+        iterados = pag_produtos_goto_pag(paginacao, n_pagina, pagina);
+        lim_inf = (n_pagina-1)*TAM_PAGINA +1;
+        lim_sup = lim_inf + iterados -1;
 
-        if (isalpha(letra) && leitura > 0) {
-            paginacao = inicializa_pag_produtos_letra(catalogo_produtos, TAM_PAGINA, letra);
-            resultados = total_produtos_letra(catalogo_produtos, letra);
-            iterados = pag_produtos_goto_pag(paginacao, n_pagina, pagina);
-            lim_sup += iterados;
-            
-            while (sair_menu == 0) {
-                printf("\033[2J\033[1;1H");
-                printf("-------------\n");
-                printf("--Pagina %2d--\n", n_pagina);
-                printf("-------------\n");
+        while (sair_menu == 0) {
+            printf("\033[2J\033[1;1H");
+            printf("-------------\n");
+            printf("--Pagina %2d--\n", n_pagina);
+            printf("-------------\n");
 
-                for (i = 0; i < iterados; i++)
-                    printf("%s\n", pagina[i]);
+            for (i = 0; i < iterados; i++)
+                printf("%s\n", pagina[i]);
 
-                printf("-------------\n");
+            printf("-------------\n");
 
-                printf("A mostrar %d-%d de %d resultados\n", lim_inf, lim_sup, resultados);
-                printf("---------------------------------------------------------\n");
-                printf("1- Pag. Anterior | 2 - Proxima Pag | 0- Voltar | Q - Sair\n");
-                printf("Escolha >");
-                leitura = scanf("%s", input);
+            printf("A mostrar %d-%d de %d resultados\n", lim_inf, lim_sup, resultados);
+            printf("---------------------------------------------------------\n");
+            printf("1- Pag. Anterior | 2 - Proxima Pag | 0- Voltar | Q - Sair\n");
+            printf("Escolha >");
+            leitura = scanf("%s", input);
 
-                switch (toupper(input[0])) {
-                    case '0':
-                        sair_menu = 1;
-                        sair_programa = 0;
-                        break;
-                    case '1':
-                        if (n_pagina != 1)
-                            n_pagina--;
-                        break;
-                    case '2':
-                        n_pagina++;
-                        break;
-                    case 'Q':
-                        sair_menu = 1;
-                        sair_programa = 1;
-                        break;
-                    default:
-                        sair_menu = 1;
-                        break;
-                }
-                iterados = pag_produtos_goto_pag(paginacao, n_pagina, pagina);
-
-                if (iterados != PAGINA_IMPOSSIVEL) {
-                    lim_sup += iterados;
-                    lim_inf += iterados;
-                } else {
-                    /*Se a pagina nao existe, apenas pode acontecer por ter chegado ao
-                     fim, nesse caso desfazer o incremento do switch.*/
-                    n_pagina--;
-                }
+            switch (toupper(input[0])) {
+                case '0':
+                    sair_menu = 1;
+                    sair_programa = 0;
+                    break;
+                case '1':
+                    if (n_pagina > 1)
+                        n_pagina--;
+                    break;
+                case '2':
+                    n_pagina++;
+                    break;
+                case 'Q':
+                    sair_menu = 1;
+                    sair_programa = 1;
+                    break;
+                default:
+                    sair_menu = 1;
+                    break;
             }
-        } else {
-            sair_menu = 1;
+            iterados = pag_produtos_goto_pag(paginacao, n_pagina, pagina);
+
+            if (iterados != PAGINA_IMPOSSIVEL) {
+                lim_inf = (n_pagina-1)*TAM_PAGINA +1;
+                lim_sup = lim_inf + iterados -1;
+            } else {
+                /*Se a pagina nao existe, apenas pode acontecer por ter chegado ao
+                 fim, nesse caso desfazer o incremento do switch.*/
+                n_pagina--;
+            }
         }
-
-
+    } else {
+        sair_menu = 1;
     }
+
     return sair_programa;
 }
 
@@ -116,72 +114,70 @@ int _06_codigos_clientes_letra() {
     char input[50];
     char *pagina[TAM_PAGINA];
 
-    while (sair_menu == 0) {
+    printf("Insira a letra a procurar > ");
+    leitura = scanf("%s", input);
+    letra = toupper(input[0]);
 
-        printf("Insira a letra a procurar > ");
-        leitura = scanf("%s", input);
-        letra = toupper(input[0]);
+    if (isalpha(letra) && leitura > 0) {
+        paginacao = inicializa_pag_clientes_letra(catalogo_clientes, TAM_PAGINA, letra);
+        resultados = total_clientes_letra(catalogo_clientes, letra);
+        
+        iterados = pag_clientes_goto_pag(paginacao, n_pagina, pagina);
+        lim_inf = (n_pagina-1)*TAM_PAGINA +1;
+        lim_sup = lim_inf + iterados -1;
 
-        if (isalpha(letra) && leitura > 0) {
-            paginacao = inicializa_pag_clientes_letra(catalogo_clientes, TAM_PAGINA, letra);
-            resultados = total_clientes_letra(catalogo_clientes, letra);
-            iterados = pag_clientes_goto_pag(paginacao, n_pagina, pagina);
-            lim_sup += iterados;
-            
-            while (sair_menu == 0) {
-                printf("\033[2J\033[1;1H");
-                printf("-------------\n");
-                printf("--Pagina %2d--\n", n_pagina);
-                printf("-------------\n");
+        while (sair_menu == 0) {
+            printf("\033[2J\033[1;1H");
+            printf("-------------\n");
+            printf("--Pagina %2d--\n", n_pagina);
+            printf("-------------\n");
 
-                for (i = 0; i < iterados; i++)
-                    printf("%s\n", pagina[i]);
+            for (i = 0; i < iterados; i++)
+                printf("%s\n", pagina[i]);
 
-                printf("-------------\n");
+            printf("-------------\n");
 
-                printf("A mostrar %d-%d de %d resultados\n", lim_inf, lim_sup, resultados);
-                printf("---------------------------------------------------------\n");
-                printf("1- Pag. Anterior | 2 - Proxima Pag | 0- Voltar | Q - Sair\n");
-                printf("Escolha >");
-                leitura = scanf("%s", input);
+            printf("A mostrar %d-%d de %d resultados\n", lim_inf, lim_sup, resultados);
+            printf("---------------------------------------------------------\n");
+            printf("1- Pag. Anterior | 2 - Proxima Pag | 0- Voltar | Q - Sair\n");
+            printf("Escolha >");
+            leitura = scanf("%s", input);
 
-                switch (toupper(input[0])) {
-                    case '0':
-                        sair_menu = 1;
-                        sair_programa = 0;
-                        break;
-                    case '1':
-                        if (n_pagina != 1)
-                            n_pagina--;
-                        break;
-                    case '2':
-                        n_pagina++;
-                        break;
-                    case 'Q':
-                        sair_menu = 1;
-                        sair_programa = 1;
-                        break;
-                    default:
-                        sair_menu = 1;
-                        break;
-                }
-                iterados = pag_clientes_goto_pag(paginacao, n_pagina, pagina);
-
-                if (iterados != PAGINA_IMPOSSIVEL) {
-                    lim_sup += iterados;
-                    lim_inf += iterados;
-                } else {
-                    /*Se a pagina nao existe, apenas pode acontecer por ter chegado ao
-                     fim, nesse caso desfazer o incremento do switch.*/
-                    n_pagina--;
-                }
+            switch (toupper(input[0])) {
+                case '0':
+                    sair_menu = 1;
+                    sair_programa = 0;
+                    break;
+                case '1':
+                    if (n_pagina > 1)
+                        n_pagina--;
+                    break;
+                case '2':
+                    n_pagina++;
+                    break;
+                case 'Q':
+                    sair_menu = 1;
+                    sair_programa = 1;
+                    break;
+                default:
+                    sair_menu = 1;
+                    break;
             }
-        } else {
-            sair_menu = 1;
+            iterados = pag_clientes_goto_pag(paginacao, n_pagina, pagina);
+
+            if (iterados != PAGINA_IMPOSSIVEL) {
+                lim_inf = (n_pagina-1)*TAM_PAGINA +1;
+                lim_sup = lim_inf + iterados -1;
+            } else {
+                /*Se a pagina nao existe, apenas pode acontecer por ter chegado ao
+                 fim, nesse caso desfazer o incremento do switch.*/
+                n_pagina--;
+            }
         }
-
-
+    } else {
+        sair_menu = 1;
     }
+
     return sair_programa;
 }
 

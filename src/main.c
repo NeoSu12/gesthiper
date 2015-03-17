@@ -19,6 +19,7 @@ void le_produtos(FILE *, char *);
 void le_compras(FILE *, char *);
 int compra_valida(COMPRA);
 void mostra_compra(COMPRA);
+void mostra_numero_codigos();
 void testes();
 
 CatClientes catalogo_clientes;
@@ -32,8 +33,8 @@ int main(int argc, char** argv) {
     testes();
     */
     
-    
     le_ficheiros(argc, argv);
+    mostra_numero_codigos();
     interface();
     
     return (EXIT_SUCCESS);
@@ -192,6 +193,23 @@ void le_compras(FILE *f_comp, char *nf) {
 
     free_compra(compra);
     free(linha_compra);
+}
+
+void mostra_numero_codigos(){
+    char letra = 'A';
+    int tot_prod=0, tot_cli=0;
+    printf("----------------------------\n");
+    printf("CLIENTES\tPRODUTOS\n");
+    for(letra = 'A'; letra <= 'Z';letra++){
+        printf("%c: %5d\t%c: %5d\n", 
+                letra, total_clientes_letra(catalogo_clientes, letra),
+                letra, total_produtos_letra(catalogo_produtos, letra));
+        tot_cli += total_clientes_letra(catalogo_clientes, letra);
+        tot_prod+= total_produtos_letra(catalogo_produtos, letra);
+        
+    }
+    printf("Tot: %d\tTot:%d\n", tot_cli, tot_prod);
+    printf("----------------------------\n");
 }
 
 

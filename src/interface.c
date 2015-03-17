@@ -114,7 +114,7 @@ int faceclientes() {
     int sair_menu = 0, sair_programa=0;
     int leitura;
     
-        while (sair_menu == 0) {
+        while (sair_menu == 0 && sair_programa ==0) {
         printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
                 "%s*2* %sCLIENTES%s                              |\n|"
                 "                                                      |\n|"
