@@ -36,8 +36,9 @@ int main(int argc, char** argv) {
     
     le_ficheiros(argc, argv);
     mostra_numero_codigos();
+    /*
     interface();
-    
+    */
     return (EXIT_SUCCESS);
 }
 
@@ -46,7 +47,8 @@ int le_ficheiros(int argc, char **argv) {
     FILE *f_produtos = NULL;
     FILE *f_compras = NULL;
     char *nfclientes, *nfprodutos, *nfcompras;
-
+    clock_t ci, cf;
+    ci = clock();
     switch (argc) {
         case 1: nfclientes = "datasets/FichClientes.txt";
             nfprodutos = "datasets/FichProdutos.txt";
@@ -82,8 +84,11 @@ int le_ficheiros(int argc, char **argv) {
     le_clientes(f_clientes, nfclientes);
     le_produtos(f_produtos, nfprodutos);
     le_compras(f_compras, nfcompras);
-
-
+    
+    cf = clock();
+    printf("------------------\n");
+    printf("Tempo total leitura: %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
+    
     fclose(f_clientes);
     fclose(f_produtos);
     fclose(f_compras);
@@ -226,7 +231,9 @@ void mostra_numero_codigos(){
  * TODO: Verificar se produto e cliente existem, depois de ter catalogos prontos.
  */
 int compra_valida(COMPRA compra) {
-    return get_mes(compra) >= 1 && get_mes(compra) <= 12
+    return     existe_cliente(catalogo_clientes,get_cod_cliente(compra))
+            && existe_produto(catalogo_produtos, get_cod_produto(compra))
+            && get_mes(compra) >= 1 && get_mes(compra) <= 12
             && get_preco_unit(compra) >= 0
             && (get_promo(compra) == 'N' || get_promo(compra) == 'P');
 }

@@ -1,0 +1,47 @@
+-----CLIENTES-----
+Nome do ficheiro: datasets/FichClientes.txt
+Linhas validas: 16384
+Linhas lidas: 16384
+Leitura em 0.017899 segundos.
+-----PRODUTOS-----
+Nome do ficheiro: datasets/FichProdutos.txt
+Linhas validas: 195584
+Linhas lidas: 195584
+Leitura em 0.236706 segundos.
+------COMPRAS-----
+Nome do ficheiro: datasets/Compras.txt
+Linhas validas: 2366
+Linhas lidas: 500000
+Leitura em 1.087320 segundos.
+------------------
+Tempo total leitura: 1.342101 segundos.
+----------------------------
+CLIENTES	PRODUTOS
+A:  2559	A:  7643
+B:  2657	B:  7452
+C:  2641	C:  7414
+D:  2725	D:  7627
+E:  2945	E:  7533
+F:  2857	F:  7598
+G:     0	G:  7494
+H:     0	H:  7553
+I:     0	I:  7567
+J:     0	J:  7465
+K:     0	K:  7476
+L:     0	L:  7452
+M:     0	M:  7607
+N:     0	N:  7439
+O:     0	O:  7508
+P:     0	P:  7573
+Q:     0	Q:  7531
+R:     0	R:  7486
+S:     0	S:  7629
+T:     0	T:  7574
+U:     0	U:  7587
+V:     0	V:  7410
+W:     0	W:  7665
+X:     0	X:  7462
+Y:     0	Y:  7457
+Z:     0	Z:  7382
+Tot: 16384	Tot:195584
+----------------------------
