@@ -18,6 +18,7 @@ void le_clientes(FILE *, char *);
 void le_produtos(FILE *, char *);
 void le_compras(FILE *, char *);
 int compra_valida(COMPRA);
+int compra_valida_debug(COMPRA, int);
 void mostra_compra(COMPRA);
 void mostra_numero_codigos();
 void testes();
@@ -25,6 +26,8 @@ void testes2();
 
 CatClientes catalogo_clientes;
 CatProdutos catalogo_produtos;
+int cliente_errado=0, produto_errado=0, mes_errado=0, preco_errado=0, quantidade_errada=0, promo_errada=0;
+FILE *fich_info_compras;
 
 int main(int argc, char** argv) {
     catalogo_clientes = inicializa_catalogo_clientes();
@@ -120,7 +123,7 @@ void le_clientes(FILE *f_cli, char *nf) {
 
     printf("-----CLIENTES-----\n");
     printf("Nome do ficheiro: %s\n", nf);
-    printf("Linhas validas: %d\n", clientes_validos);
+    printf("Linhas validas: %d (%d invalidas)\n", clientes_validos, total_linhas_clientes-clientes_validos);
     printf("Linhas lidas: %d\n", total_linhas_clientes);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
 
@@ -152,7 +155,7 @@ void le_produtos(FILE *f_prod, char *nf) {
 
     printf("-----PRODUTOS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
-    printf("Linhas validas: %d\n", produtos_validos);
+    printf("Linhas validas: %d (%d invalidas)\n", produtos_validos, total_linhas_produtos-produtos_validos);
     printf("Linhas lidas: %d\n", total_linhas_produtos);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
     free(linha_produto);
@@ -201,10 +204,20 @@ void le_compras(FILE *f_comp, char *nf) {
     
     printf("------COMPRAS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
-    printf("Linhas validas: %d\n", compras_validas);
+    printf("Linhas validas: %d (%d invalidas)\n", compras_validas, total_linhas_compras-compras_validas);
     printf("Linhas lidas: %d\n", total_linhas_compras);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
-
+    printf("------------------\n");
+    printf("MOTIVO DAS COMPRAS INVALIDAS:\n");
+    printf("------------------\n");
+    printf("Codigo Cliente errado: %d\n", cliente_errado);
+    printf("Codigo Produto errado: %d\n", produto_errado);
+    printf("Mes errado: %d\n", mes_errado);
+    printf("Preco errado: %d\n", preco_errado);
+    printf("Quantidade errada: %d\n", quantidade_errada);
+    printf("Promocao errada: %d\n", promo_errada);
+    
+    
     free_compra(compra);
     free(linha_compra);
 }
@@ -213,6 +226,7 @@ void mostra_numero_codigos(){
     char letra = 'A';
     int tot_prod=0, tot_cli=0;
     printf("----------------------------\n");
+    printf("Nº DE CODIGOS COMECADOS POR...\n");
     printf("CLIENTES\tPRODUTOS\n");
     for(letra = 'A'; letra <= 'Z';letra++){
         printf("%c: %5d\t%c: %5d\n", 
@@ -227,15 +241,57 @@ void mostra_numero_codigos(){
 }
 
 
-/*
- * TODO: Verificar se produto e cliente existem, depois de ter catalogos prontos.
- */
 int compra_valida(COMPRA compra) {
     return     existe_cliente(catalogo_clientes,get_cod_cliente(compra))
             && existe_produto(catalogo_produtos, get_cod_produto(compra))
             && get_mes(compra) >= 1 && get_mes(compra) <= 12
             && get_preco_unit(compra) >= 0
+            && (get_quantidade(compra) > 0)
             && (get_promo(compra) == 'N' || get_promo(compra) == 'P');
+}
+
+int compra_valida_debug(COMPRA compra, int linha) {
+    int res = 1;
+    fich_info_compras = fopen("datasets/compras_erradas.txt", "a");
+    
+    if(!existe_cliente(catalogo_clientes,get_cod_cliente(compra))){
+        res=0;
+        cliente_errado++;
+        fprintf(fich_info_compras,"Linha %d: Codigo cliente errado. Codigo invalido: %s\n", linha,get_cod_cliente(compra));
+    }
+    
+    if(!existe_produto(catalogo_produtos, get_cod_produto(compra))){
+        res=0;
+        produto_errado++;
+        fprintf(fich_info_compras,"Linha %d: Codigo produto errado. Codigo invalido: %s\n", linha,get_cod_produto(compra));
+    }
+    
+    if(!(get_mes(compra) >= 1 && get_mes(compra) <= 12)){
+        res=0;
+        mes_errado++;
+        fprintf(fich_info_compras,"Linha %d: Mes errado. Valor mes invalido: %d\n", linha,get_mes(compra));
+    }
+    
+    if(!(get_preco_unit(compra) >= 0)){
+        res=0;
+        preco_errado++;
+        fprintf(fich_info_compras,"Linha %d: Preco unitario invalido. Valor de preco invalido: %f\n", linha,get_preco_unit(compra));
+    }
+    
+    if(!(get_quantidade(compra) > 0)){
+        res=0;
+        quantidade_errada++;
+        fprintf(fich_info_compras,"Linha %d: Quantidade invalida. Valor quantidade invalido: %d\n", linha,get_quantidade(compra));
+    }
+    
+    if(!((get_promo(compra) == 'N' || get_promo(compra) == 'P'))){
+        res=0;
+        promo_errada++;
+        fprintf(fich_info_compras,"Linha %d: Campo promocao invalido. Valor invalido:%c\n", linha,get_promo(compra));
+    }
+    
+    fclose(fich_info_compras);
+    return res;
 }
 
 void mostra_compra(COMPRA compra) {

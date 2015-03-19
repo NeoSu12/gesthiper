@@ -1,21 +1,4 @@
------CLIENTES-----
-Nome do ficheiro: datasets/FichClientes.txt
-Linhas validas: 16384
-Linhas lidas: 16384
-Leitura em 0.018610 segundos.
------PRODUTOS-----
-Nome do ficheiro: datasets/FichProdutos.txt
-Linhas validas: 195584
-Linhas lidas: 195584
-Leitura em 0.207575 segundos.
-------COMPRAS-----
-Nome do ficheiro: datasets/Compras.txt
-Linhas validas: 445344
-Linhas lidas: 500000
-Leitura em 1.705123 segundos.
-------------------
-Tempo total leitura: 1.931438 segundos.
-----------------------------
+Nº DE CODIGOS COMECADOS POR...
 CLIENTES	PRODUTOS
 A:  2478	A:  7539
 B:  2727	B:  7495
@@ -45,3 +28,4 @@ Y:     0	Y:  7511
 Z:     0	Z:  7377
 Tot: 16384	Tot:195584
 ----------------------------
+

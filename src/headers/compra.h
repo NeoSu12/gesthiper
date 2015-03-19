@@ -5,10 +5,10 @@ typedef struct compra* COMPRA;
 
 typedef char * cod_cliente_t;
 typedef double preco_unit_t;
-typedef unsigned short quantidade_t;
+typedef int quantidade_t;
 typedef char promo_t;
 typedef char * cod_produto_t;
-typedef unsigned short mes_t;
+typedef int mes_t;
 
 COMPRA inicializa_compra(void);
 COMPRA inicializa_compra_completo(cod_cliente_t, preco_unit_t, quantidade_t, promo_t, cod_produto_t, mes_t);
