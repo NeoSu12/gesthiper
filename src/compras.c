@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "headers/compras.h"
+#include "headers/compra.h"
 #include "headers/avl.h"
 
 #define NORMAL 0
@@ -39,17 +40,17 @@ Compras inicializa_compras(){
 }
 
 void insere_compra(Compras compras, COMPRA compra){
-    char *novo_cliente, *novo_produto;
     int i=0, j=0;
+    char *novo_cliente=NULL, *novo_produto=NULL;
     NodoCliente cliente;
     NodoProduto produto;
     
-    cliente = (NodoCliente) avl_find(compras->avl_clientes, compra->cod_cliente);
+    cliente = (NodoCliente) avl_find(compras->avl_clientes, get_cod_cliente(compra));
     
     if(cliente == NULL){
         cliente = (NodoCliente) malloc(sizeof(struct nodo_avl_clientes));
         
-        strcpy(novo_cliente,compra->cod_cliente);
+        strcpy(novo_cliente,get_cod_cliente(compra));
         cliente->cod_cliente = novo_cliente;
         cliente->avl_produtos = avl_create(compara_nodo_produtos, NULL, NULL);
         
@@ -59,12 +60,12 @@ void insere_compra(Compras compras, COMPRA compra){
         avl_insert(compras->avl_clientes,cliente);
     }
     
-    cliente->num_prods_comprados[compra->mes - 1] += compra->quantidade;
-    produto = (NodoProduto) avl_find(cliente->avl_produtos, compra->cod_produto);
+    cliente->num_prods_comprados[get_mes(compra) - 1] += get_quantidade(compra);
+    produto = (NodoProduto) avl_find(cliente->avl_produtos, get_cod_produto(compra));
     
     if(produto == NULL){
         produto = (NodoProduto) malloc(sizeof(struct nodo_avl_produtos));
-        strcpy(novo_produto,compra->cod_produto);
+        strcpy(novo_produto,get_cod_produto(compra));
         produto->cod_produto = novo_produto;
         
         for(i=0;i<12;i++){
@@ -74,13 +75,46 @@ void insere_compra(Compras compras, COMPRA compra){
         avl_insert(cliente->avl_produtos,produto);
     }
     
-    if(compra->promo == 'N') 
-        produto->num_compras[NORMAL][compra->mes - 1] += compra->quantidade;
+    if(get_promo(compra) == 'N') 
+        produto->num_compras[NORMAL][get_mes(compra) - 1] += get_quantidade(compra);
     
-    if(compra->promo == 'P') 
-        produto->num_compras[PROMO][compra->mes - 1] += compra->quantidade;
+    if(get_promo(compra) == 'P') 
+        produto->num_compras[PROMO][get_mes(compra) - 1] += get_quantidade(compra);
     
     
+}
+
+int num_produtos_comprados_cliente(Compras compras, char *cod_cliente){
+    NodoCliente cliente_procura, cliente;
+    int resultado=0, i=0;
+    
+    cliente_procura = (NodoCliente) malloc(sizeof(struct nodo_avl_clientes));
+    cliente_procura->cod_cliente = cod_cliente;
+    
+    cliente = (NodoCliente) avl_find(compras->avl_clientes,cliente_procura);
+    
+    if(cliente==NULL) resultado = -1;
+    else{
+        for(i=0;i<12;i++) 
+            resultado += cliente->num_prods_comprados[i];
+    }
+    
+    return resultado;
+}
+
+int num_produtos_comprados_cliente_mes(Compras compras, char *cod_cliente, char mes){
+    int resultado;
+    NodoCliente cliente_procura, cliente;
+    
+    cliente_procura = (NodoCliente) malloc(sizeof(struct nodo_avl_clientes));
+    cliente_procura->cod_cliente = cod_cliente;
+    
+    cliente = (NodoCliente) avl_find(compras->avl_clientes,cliente_procura);
+    
+    if(cliente==NULL) resultado = -1;
+    else resultado = cliente->num_prods_comprados[mes-1];
+    
+    return resultado;
 }
 
 
