@@ -8,6 +8,7 @@
 #include "headers/compra.h"
 #include "headers/cat_clientes.h"
 #include "headers/cat_produtos.h"
+#include "headers/compras.h"
 
 #define LINHA_CLIENTE_MAX 20
 #define LINHA_PRODUTO_MAX 20
@@ -26,13 +27,16 @@ void testes2();
 
 CatClientes catalogo_clientes;
 CatProdutos catalogo_produtos;
+Compras modulo_compras;
+
+/*VARIAVEIS TEMPORARIAS PARA TESTE*/
 int cliente_errado=0, produto_errado=0, mes_errado=0, preco_errado=0, quantidade_errada=0, promo_errada=0;
 FILE *fich_info_compras;
 
 int main(int argc, char** argv) {
     catalogo_clientes = inicializa_catalogo_clientes();
     catalogo_produtos = inicializa_catalogo_produtos();
-    
+    modulo_compras = inicializa_compras();
     /*
     testes2();
     */
@@ -194,7 +198,7 @@ void le_compras(FILE *f_comp, char *nf) {
         token = strtok(NULL, delim);
         set_mes(compra, atoi(token));
 
-        if (compra_valida(compra)) {
+        if (compra_valida_debug(compra, total_linhas_compras+1)) {
             compras_validas++;
         }
         total_linhas_compras++;
@@ -252,10 +256,12 @@ int compra_valida(COMPRA compra) {
 
 int compra_valida_debug(COMPRA compra, int linha) {
     int res = 1;
+    int lol=0;
     fich_info_compras = fopen("datasets/compras_erradas.txt", "a");
     
     if(!existe_cliente(catalogo_clientes,get_cod_cliente(compra))){
         res=0;
+        lol++;
         cliente_errado++;
         fprintf(fich_info_compras,"Linha %d: Codigo cliente errado. Codigo invalido: %s\n", linha,get_cod_cliente(compra));
     }
@@ -263,6 +269,7 @@ int compra_valida_debug(COMPRA compra, int linha) {
     if(!existe_produto(catalogo_produtos, get_cod_produto(compra))){
         res=0;
         produto_errado++;
+        lol++;
         fprintf(fich_info_compras,"Linha %d: Codigo produto errado. Codigo invalido: %s\n", linha,get_cod_produto(compra));
     }
     
@@ -289,6 +296,8 @@ int compra_valida_debug(COMPRA compra, int linha) {
         promo_errada++;
         fprintf(fich_info_compras,"Linha %d: Campo promocao invalido. Valor invalido:%c\n", linha,get_promo(compra));
     }
+    
+    if(lol>1) printf("VER ESTA LINHA! %d\n", linha);
     
     fclose(fich_info_compras);
     return res;
