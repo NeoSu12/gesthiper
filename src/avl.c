@@ -472,7 +472,7 @@ avl_t_alloc(){
 
 void
 avl_t_free(TRAVERSER it){
-    free(i);
+    free(it);
 }
 
 
