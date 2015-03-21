@@ -470,6 +470,11 @@ avl_t_alloc(){
     return (TRAVERSER) malloc(sizeof(struct avl_traverser));
 }
 
+void
+avl_t_free(TRAVERSER it){
+    free(i);
+}
+
 
 /* Initializes |trav| for use with |tree|
    and selects the null node. */

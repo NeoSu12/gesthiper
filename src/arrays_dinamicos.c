@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "arrays_dinamicos.h"
+#include "headers/arrays_dinamicos.h"
 
 struct array_dinamico{
     void **elementos;
@@ -8,8 +8,6 @@ struct array_dinamico{
     int capacidade;
     struct array_dinamico* garbage_collector;
 };
-
-
 
 ARRAY_DINAMICO ad_inicializa_gc(int);
 void quicksort(void **, ad_compara_elems *, int);

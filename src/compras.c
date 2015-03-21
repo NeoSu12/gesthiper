@@ -4,6 +4,7 @@
 #include "headers/compras.h"
 #include "headers/compra.h"
 #include "headers/avl.h"
+#include "headers/arrays_dinamicos.h"
 
 #define NORMAL 0
 #define PROMO 1
@@ -35,6 +36,9 @@ int compara_nodo_produtos(const void *,const void *, void *);
 void free_nodo_produto(void *, void *);
 void free_nodo_cliente(void *, void *);
 
+int compara_nodo_clientes(void *, void *);
+int compara_nodo_produtos(void *, void *);
+
 
 Compras inicializa_compras(){
     Compras res = (Compras) malloc(sizeof(struct modulo_compras));
@@ -46,7 +50,6 @@ void free_compras(Compras compras){
     avl_destroy(compras->avl_clientes, free_nodo_cliente);
     free(compras);
 }
-
 
 void insere_compra(Compras compras, COMPRA compra){
     int i=0, j=0;
@@ -126,6 +129,27 @@ int num_produtos_comprados_cliente_mes(Compras compras, char *cod_cliente, char 
     return resultado;
 }
 
+ARRAY_DINAMICO clientes_compraram_prod(Compras compras, char *cod_cliente){
+    NodoCliente cliente;
+    char *cliente_copia;
+    int tamanho_cliente;
+    ARRAY_DINAMICO lista_clientes = ad_inicializa(100);
+    TRAVERSER it = avl_t_alloc();
+    
+    avl_t_init(it, compras->avl_clientes);
+    
+    while((cliente = (NodoCliente) avl_t_next(it)) != NULL){
+        if(strcmp(cliente->cod_cliente,cod_cliente)==0){
+            tamanho_cliente = strlen(cod_cliente) + 1;
+            cliente_copia = (char *) malloc(sizeof(char)*tamanho_cliente)
+            strcpy(cliente_copia,cod_cliente);
+            ad_insere_elemento(lista_clientes,cliente_copia);
+        }
+    }
+    
+    avl_t_free(it);
+    return lista_clientes;
+}
 
 int compara_nodo_clientes(const void *avl_a,const void *avl_b, void *param){
     NodoCliente item_a = (NodoCliente) avl_a;
@@ -151,3 +175,15 @@ void free_nodo_produto(void *avl_item, void *avl_param){
 }
 
 
+
+int compara_nodo_clientes(void *item_a, void *item_b){
+    NodoCliente c_a = (NodoCliente) item_a;
+    NodoCliente c_b = (NodoCliente) item_b;
+    return strcmp((char *)c_a->cod_cliente, (char *)c_b->cod_cliente);
+}
+
+int compara_nodo_produtos(void *item_a, void *item_b){
+    NodoProduto c_a = (NodoProduto) item_a;
+    NodoProduto c_b = (NodoProduto) item_b;
+    return strcmp((char *)c_a->cod_produto, (char *)c_b->cod_produto);
+}

@@ -67,6 +67,7 @@ size_t avl_count(struct avl_table *);
 /* #define avl_count(table) ((size_t) (table)->avl_count) */
 
 TRAVERSER avl_t_alloc();
+void avl_t_free(TRAVERSER it);
 /* Table traverser functions. */
 void avl_t_init (struct avl_traverser *, struct avl_table *);
 void *avl_t_first (struct avl_traverser *, struct avl_table *);
