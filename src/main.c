@@ -46,6 +46,9 @@ int main(int argc, char** argv) {
     /*
     interface();
     */
+    free_catalogo_clientes(catalogo_clientes);
+    free_catalogo_produtos(catalogo_produtos);
+    free_compras(modulo_compras);
     return (EXIT_SUCCESS);
 }
 
@@ -198,7 +201,7 @@ void le_compras(FILE *f_comp, char *nf) {
         token = strtok(NULL, delim);
         set_mes(compra, atoi(token));
 
-        if (compra_valida_debug(compra, total_linhas_compras+1)) {
+        if (compra_valida(compra)) {
             compras_validas++;
         }
         total_linhas_compras++;

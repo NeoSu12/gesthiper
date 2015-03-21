@@ -32,12 +32,21 @@ typedef struct nodo_avl_clientes *NodoCliente;
 
 int compara_nodo_clientes(const void *,const void *, void *);
 int compara_nodo_produtos(const void *,const void *, void *);
+void free_nodo_produto(void *, void *);
+void free_nodo_cliente(void *, void *);
+
 
 Compras inicializa_compras(){
     Compras res = (Compras) malloc(sizeof(struct modulo_compras));
     res->avl_clientes = avl_create(compara_nodo_clientes, NULL, NULL);
     return res;
 }
+
+void free_compras(Compras compras){
+    avl_destroy(compras->avl_clientes, free_nodo_cliente);
+    free(compras);
+}
+
 
 void insere_compra(Compras compras, COMPRA compra){
     int i=0, j=0;
@@ -76,10 +85,10 @@ void insere_compra(Compras compras, COMPRA compra){
     }
     
     if(get_promo(compra) == 'N') 
-        produto->num_compras[NORMAL][get_mes(compra) - 1] += get_quantidade(compra);
+        produto->num_compras[get_mes(compra) - 1][NORMAL] += get_quantidade(compra);
     
     if(get_promo(compra) == 'P') 
-        produto->num_compras[PROMO][get_mes(compra) - 1] += get_quantidade(compra);
+        produto->num_compras[get_mes(compra) - 1][PROMO] += get_quantidade(compra);
     
     
 }
@@ -130,5 +139,15 @@ int compara_nodo_produtos(const void *avl_a,const void *avl_b, void *param){
     return strcmp(item_a->cod_produto, item_b->cod_produto);
 }
 
+void free_nodo_cliente(void *avl_item, void *avl_param){
+    NodoCliente cliente = (NodoCliente) avl_item;
+    avl_destroy(cliente->avl_produtos,free_nodo_produto);
+    free(cliente->cod_cliente);
+}
+
+void free_nodo_produto(void *avl_item, void *avl_param){
+    NodoProduto produto = (NodoProduto) avl_item;
+    free(produto->cod_produto);
+}
 
 
