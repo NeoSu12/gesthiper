@@ -69,15 +69,15 @@ int faceprodutos() {
 
 
     while (sair_menu == 0 && sair_programa == 0) {
-        printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
-                "%s*1* %sPRODUTOS%s                              |\n|"
-                "                                                    |\n|"
-                "   1 - Listar produtos começados por letra [2]      |\n|"
-                "   2 - Produtos nao comprados [4]                   |\n|"
-                "   3 - Clientes que compraram o produto [8]         |\n|"
-                "                                                    |\n|"
-                "  0 - Voltar                     Q - %sSair%s |\n"
-                " ------------------------------------------\n%s",
+        printf("\033[2J\033[1;1H%s -------------------------------------------------\n|"
+                "%s*1* %sPRODUTOS%s                                     |\n|"
+                "                                                 |\n|"
+                "   1 - Listar produtos começados por letra [2]   |\n|"
+                "   2 - Produtos nao comprados [4]                |\n|"
+                "   3 - Clientes que compraram o produto [8]      |\n|"
+                "                                                 |\n|"
+                "  0 - Voltar                            Q - %sSair%s |\n"
+                " -------------------------------------------------\n%s",
                 WHITE, YELLOW, BLUE, WHITE, RED, WHITE, NORMAL);
 
 
@@ -115,8 +115,8 @@ int faceclientes() {
     int leitura;
     
         while (sair_menu == 0 && sair_programa ==0) {
-        printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
-                "%s*2* %sCLIENTES%s                              |\n|"
+        printf("\033[2J\033[1;1H%s ------------------------------------------------------\n|"
+                "%s*2* %sCLIENTES%s                                          |\n|"
                 "                                                      |\n|"
                 "   1 - Número de produtos comprados por cliente [5]   |\n|"
                 "   2 - Codigos de clientes começados por letra [6]    |\n|"
@@ -124,9 +124,9 @@ int faceclientes() {
                 "   4 - Clientes regulares [10]                        |\n|"
                 "   5 - Top 3 produtos mais comprados por cliente [13] |\n", WHITE, YELLOW, BLUE, WHITE);
 
-        printf("|                                          |\n|"
-                "  0 - Voltar                     Q - %sSair%s |\n"
-                " ------------------------------------------\n%s", RED, WHITE, NORMAL);
+        printf("|                                                      |\n|"
+                "  0 - Voltar                                 Q - %sSair%s |\n"
+                " ------------------------------------------------------\n%s", RED, WHITE, NORMAL);
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
         
@@ -162,8 +162,8 @@ int facecompras() {
 
 
     while (sair_menu == 0) {
-        printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
-                "%s*3* %sCONTABILIDADE%s                         |\n|"
+        printf("\033[2J\033[1;1H%s ------------------------------------------------\n|"
+                "%s*3* %sCONTABILIDADE%s                               |\n|"
                 "                                                |\n|"
                 "   1 - Numero vendas num mes de um produto[3]   |\n|"
                 "   2 - Numero vendas num intervalo de meses[7]  |\n|"
@@ -171,9 +171,9 @@ int facecompras() {
                 "   4 - N produtos mais vendidos [12]            |\n|"
                 "   5 - Clientes e produtos fantasma [14]        |\n", WHITE, YELLOW, BLUE, WHITE);
 
-        printf("|                                          |\n|"
-                "  0 - Voltar                     Q - %sSair%s |\n"
-                " ------------------------------------------\n%s", RED, WHITE, NORMAL);
+        printf("|                                                |\n|"
+                "  0 - Voltar                           Q - %sSair%s |\n"
+                " ------------------------------------------------\n%s", RED, WHITE, NORMAL);
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
 

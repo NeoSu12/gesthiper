@@ -43,9 +43,7 @@ int main(int argc, char** argv) {
     
     le_ficheiros(argc, argv);
     mostra_numero_codigos();
-    /*
     interface();
-    */
     free_catalogo_clientes(catalogo_clientes);
     free_catalogo_produtos(catalogo_produtos);
     free_compras(modulo_compras);

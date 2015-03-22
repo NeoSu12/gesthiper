@@ -18,14 +18,45 @@ extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
 
 int _02_codigo_produtos_letra() {
-   int leitura = 0;
-    int sair_menu = 0, sair_programa = 0;
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
     int iterados, i, n_pagina = 1, lim_inf = 1, lim_sup = 0, resultados, total_pags, escolha_pag;
     PagProdutos paginacao;
     char letra;
-    char input[50];
+    char input[50],r[50];
     char *pagina[TAM_PAGINA];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "             %sLISTA PRODUTOS%s               |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("//O que procura(?): ");
+    leitura = scanf("%s", r);
     
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+ if(sair_menu==0){
     printf("Insira a letra a procurar > ");
     leitura = scanf("%s", input);
     letra = toupper(input[0]);
@@ -58,8 +89,7 @@ int _02_codigo_produtos_letra() {
 
             switch (toupper(input[0])) {
                 case '0':
-                    sair_menu = 1;
-                    sair_programa = 0;
+                    sair_menu=1;
                     break;
                 case '1':
                     if (n_pagina > 1)
@@ -77,6 +107,7 @@ int _02_codigo_produtos_letra() {
                 case 'Q':
                     sair_menu = 1;
                     sair_programa = 1;
+                    voltar=1;
                     break;
                 default:
                     sair_menu = 1;
@@ -96,7 +127,8 @@ int _02_codigo_produtos_letra() {
     } else {
         sair_menu = 1;
     }
-
+}
+}
     return sair_programa;
 }
 
@@ -114,13 +146,44 @@ void _05_tabela_cliente() {
 
 int _06_codigos_clientes_letra() {
     int leitura = 0;
-    int sair_menu = 0, sair_programa = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
     int iterados, i, n_pagina = 1, lim_inf = 1, lim_sup = 0, resultados, total_pags, escolha_pag;
     PagClientes paginacao;
     char letra;
-    char input[50];
+    char input[50],r[50];
     char *pagina[TAM_PAGINA];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "             %sLISTA CLIENTES%s               |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("//O que procura(?): ");
+    leitura = scanf("%s", r);
     
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+if(sair_menu==0){    
     printf("Insira a letra a procurar > ");
     leitura = scanf("%s", input);
     letra = toupper(input[0]);
@@ -153,8 +216,7 @@ int _06_codigos_clientes_letra() {
 
             switch (toupper(input[0])) {
                 case '0':
-                    sair_menu = 1;
-                    sair_programa = 0;
+                    sair_menu=1;
                     break;
                 case '1':
                     if (n_pagina > 1)
@@ -172,6 +234,7 @@ int _06_codigos_clientes_letra() {
                 case 'Q':
                     sair_menu = 1;
                     sair_programa = 1;
+                    voltar=1;
                     break;
                 default:
                     sair_menu = 1;
@@ -191,7 +254,8 @@ int _06_codigos_clientes_letra() {
     } else {
         sair_menu = 1;
     }
-
+}
+}
     return sair_programa;
 }
 
