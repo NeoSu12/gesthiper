@@ -3,8 +3,8 @@
 #include <string.h>
 #include "headers/compra.h"
 
-#define NBYTES_CLIENTE sizeof(char)*(5+1)
-#define NBYTES_PRODUTO sizeof(char)*(6+1)
+#define NBYTES_CLIENTE sizeof(char)*(15)
+#define NBYTES_PRODUTO sizeof(char)*(15)
 
 struct compra{
     cod_cliente_t cod_cliente;

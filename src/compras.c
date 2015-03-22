@@ -36,8 +36,6 @@ int compara_nodo_produtos(const void *,const void *, void *);
 void free_nodo_produto(void *, void *);
 void free_nodo_cliente(void *, void *);
 
-int compara_nodo_clientes(void *, void *);
-int compara_nodo_produtos(void *, void *);
 
 
 Compras inicializa_compras(){
@@ -141,7 +139,7 @@ ARRAY_DINAMICO clientes_compraram_prod(Compras compras, char *cod_cliente){
     while((cliente = (NodoCliente) avl_t_next(it)) != NULL){
         if(strcmp(cliente->cod_cliente,cod_cliente)==0){
             tamanho_cliente = strlen(cod_cliente) + 1;
-            cliente_copia = (char *) malloc(sizeof(char)*tamanho_cliente)
+            cliente_copia = (char *) malloc(sizeof(char)*tamanho_cliente);
             strcpy(cliente_copia,cod_cliente);
             ad_insere_elemento(lista_clientes,cliente_copia);
         }
@@ -174,16 +172,3 @@ void free_nodo_produto(void *avl_item, void *avl_param){
     free(produto->cod_produto);
 }
 
-
-
-int compara_nodo_clientes(void *item_a, void *item_b){
-    NodoCliente c_a = (NodoCliente) item_a;
-    NodoCliente c_b = (NodoCliente) item_b;
-    return strcmp((char *)c_a->cod_cliente, (char *)c_b->cod_cliente);
-}
-
-int compara_nodo_produtos(void *item_a, void *item_b){
-    NodoProduto c_a = (NodoProduto) item_a;
-    NodoProduto c_b = (NodoProduto) item_b;
-    return strcmp((char *)c_a->cod_produto, (char *)c_b->cod_produto);
-}
