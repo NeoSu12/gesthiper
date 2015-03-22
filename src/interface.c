@@ -90,9 +90,9 @@ int faceprodutos() {
                 break;
             case '1': sair_programa = _02_codigo_produtos_letra();
                 break;
-            case '2': _04_prods_nao_comprados();
+            case '2': sair_programa = _04_prods_nao_comprados();
                 break;
-            case '3': _08_clientes_compraram_prod();
+            case '3': sair_programa = _08_clientes_compraram_prod();
                 break;
             case 'Q': sair_menu = 1;
                 sair_programa = 1;
@@ -135,11 +135,11 @@ int faceclientes() {
             case '0': sair_menu=1;
                       sair_programa=0;
                       break;
-            case '1': _05_tabela_cliente(); break;
+            case '1': sair_programa = _05_tabela_cliente(); break;
             case '2': sair_programa = _06_codigos_clientes_letra(); break;
-            case '3': _09_produtos_mais_comprados_cliente(); break;
-            case '4': _10_clientes_regulares(); break;
-            case '5': _13_tres_prods_mais_comprados(); break;
+            case '3': sair_programa = _09_produtos_mais_comprados_cliente(); break;
+            case '4': sair_programa = _10_clientes_regulares(); break;
+            case '5': sair_programa = _13_tres_prods_mais_comprados(); break;
             case 'Q': sair_menu = 1;
                       sair_programa=1;
                       break;
@@ -161,7 +161,7 @@ int facecompras() {
     int leitura;
 
 
-    while (sair_menu == 0) {
+    while (sair_menu == 0 && sair_programa ==0) {
         printf("\033[2J\033[1;1H%s ------------------------------------------------\n|"
                 "%s*3* %sCONTABILIDADE%s                               |\n|"
                 "                                                |\n|"
@@ -182,11 +182,11 @@ int facecompras() {
             case '0': sair_menu=1;
                       sair_programa=0;
                       break;
-            case '1': _03_compras_mensais_prod();break;
-            case '2': _07_compras_intervalo_meses();break;
-            case '3': _11_compras_CSV();break;
-            case '4': _12_prods_mais_vendidos();break;
-            case '5': _14_clientes_prods_fantasma();break;
+            case '1': sair_programa = _03_compras_mensais_prod();break;
+            case '2': sair_programa = _07_compras_intervalo_meses();break;
+            case '3': sair_programa = _11_compras_CSV();break;
+            case '4': sair_programa = _12_prods_mais_vendidos();break;
+            case '5': sair_programa = _14_clientes_prods_fantasma();break;
             case 'Q': sair_menu = 1;
                       sair_programa = 1;
                       break;

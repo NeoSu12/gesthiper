@@ -132,16 +132,124 @@ while(voltar==0){
     return sair_programa;
 }
 
-void _03_compras_mensais_prod() {
-    printf("[QUERIE 3] Ainda não implementado!\n");
+int _03_compras_mensais_prod() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "             %sVENDAS PRODUTO%s               |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 3] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _04_prods_nao_comprados() {
-    printf("[QUERIE 4] Ainda não implementado!\n");
+int _04_prods_nao_comprados() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "           %sPRODUTOS NAO COMPRADOS%s         |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 4] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _05_tabela_cliente() {
-    printf("[QUERIE 5] Ainda não implementado!\n");
+int _05_tabela_cliente() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "     %sNºPRODUTOS COMPRADOS POR CLIENTE%s     |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 5] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
 int _06_codigos_clientes_letra() {
@@ -259,35 +367,323 @@ if(sair_menu==0){
     return sair_programa;
 }
 
-void _07_compras_intervalo_meses() {
-    printf("[QUERIE 7] Ainda não implementado!\n");
+int _07_compras_intervalo_meses() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "         %sNºCOMPRAS INTERVALO MESES%s        |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 7] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _08_clientes_compraram_prod() {
-    printf("[QUERIE 8] Ainda não implementado!\n");
+int _08_clientes_compraram_prod() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "        %sQUAIS CLIENTES COMPRARAM?  %s       |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 8] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _09_produtos_mais_comprados_cliente() {
-    printf("[QUERIE 9] Ainda não implementado!\n");
+int _09_produtos_mais_comprados_cliente() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "          %sPRODUTO MAIS COMPRADO%s           |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 9] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _10_clientes_regulares() {
-    printf("[QUERIE 10] Ainda não implementado!\n");
+int _10_clientes_regulares() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "            %sCLIENTES REGULARES%s            |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 10] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _11_compras_CSV() {
-    printf("[QUERIE 11] Ainda não implementado!\n");
+int _11_compras_CSV() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "               %sTABELA CSV%s                 |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 11] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _12_prods_mais_vendidos() {
-    printf("[QUERIE 12] Ainda não implementado!\n");
+int _12_prods_mais_vendidos() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "          %sPRODUTOS MAIS VENDIDOS%s          |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 12] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _13_tres_prods_mais_comprados() {
-    printf("[QUERIE 13] Ainda não implementado!\n");
+int _13_tres_prods_mais_comprados() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "               %sTOP 3 PRODUTOS%s             |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 13] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
-void _14_clientes_prods_fantasma() {
-    printf("[QUERIE 14] Ainda não implementado!\n");
+int _14_clientes_prods_fantasma() {
+    int leitura = 0;
+    int sair_menu = 0, sair_programa = 0, voltar = 0;
+    char r[50];
+while(voltar==0){
+    sair_menu=0;
+    printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
+                "%sGESTHIPER%s                                 |\n|"
+                "                                          |\n|"
+                "                                          |\n|"
+                "       %sCLIENTES E PRODUTOS FANTASMA%s       |\n|"
+                "                                          |\n|"
+                " 1 - Iniciar                              |\n| "
+                "0 - Voltar                      Q - %sSair%s |\n "
+                "------------------------------------------\n%s",
+                WHITE, BLUE, WHITE, GREEN, WHITE, RED, WHITE, NORMAL);
+    printf("[QUERIE 14] Ainda não implementado!\n//O que procura(?): ");
+    leitura = scanf("%s", r);
+    
+    switch (toupper(r[0])) {
+            case '0': voltar = 1;
+                      sair_menu = 1;
+                      sair_programa = 0;
+                      break;
+            case '1': 
+                      sair_menu = 1;
+                      break;
+            case 'Q': 
+                      voltar=1;
+                      sair_menu = 1;
+                      sair_programa = 1;
+                      break;
+             default: 
+                      sair_menu = 1;
+                      break;
+        }
+}
+return sair_programa;
 }
 
