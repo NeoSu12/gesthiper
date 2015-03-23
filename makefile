@@ -15,7 +15,10 @@ gesval: $(objects)
 	$(CC) $(VALFLAGS) -o gesval $(objects)
 
 runval: gesval meown
-	valgrind --show-leak-kinds=all ./gesval
+	valgrind --show-leak-kinds=all --leak-check=full ./gesval
+	
+valgrind: gesval
+	valgrind --show-leak-kinds=all --leak-check=full ./gesval
 
 main.o : erros.h compra.h interface.h cat_clientes.h cat_produtos.h compras.h
 erros.o : erros.h

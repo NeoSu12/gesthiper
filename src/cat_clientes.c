@@ -124,7 +124,29 @@ void free_catalogo_clientes(CatClientes cat) {
  * ITERADORES CLIENTES
  */
 
-IT_CLIENTES inicializa_it_clientes_inicio(CatClientes cat) {
+IT_CLIENTES inicializa_it_clientes(CatClientes cat) {
+    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+    it->traverser = avl_t_alloc();
+    avl_t_init(it->traverser, cat->indices[0]);
+    it->indice = 0;
+    it->catalogo = cat;
+    return it;
+}
+
+IT_CLIENTES inicializa_it_clientes_letra(CatClientes cat, char c) {
+    int indice;
+    IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
+    it->traverser = avl_t_alloc();
+    indice = calcula_indice_cliente(toupper(c));
+    avl_t_init(it->traverser, cat->indices[indice]);
+    it->indice = indice;
+    it->catalogo = cat;
+    return it;
+}
+
+
+
+IT_CLIENTES inicializa_it_clientes_primeiro(CatClientes cat) {
     IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
     it->traverser = avl_t_alloc();
     avl_t_first(it->traverser, cat->indices[0]);
@@ -133,11 +155,11 @@ IT_CLIENTES inicializa_it_clientes_inicio(CatClientes cat) {
     return it;
 }
 
-IT_CLIENTES inicializa_it_clientes_fim(CatClientes cat) {
+IT_CLIENTES inicializa_it_clientes_ultimo(CatClientes cat) {
     IT_CLIENTES it;
     it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
     it->traverser = avl_t_alloc();
-    avl_t_first(it->traverser, cat->indices[26]);
+    avl_t_last(it->traverser, cat->indices[26]);
     it->indice = 26;
     it->catalogo = cat;
     return it;
@@ -161,7 +183,7 @@ IT_CLIENTES inicializa_it_clientes_elem(CatClientes cat, char *st) {
     return it;
 }
 
-IT_CLIENTES inicializa_it_clientes_inicio_letra(CatClientes cat, char c) {
+IT_CLIENTES inicializa_it_clientes_primeiro_letra(CatClientes cat, char c) {
     int indice;
     IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
     it->traverser = avl_t_alloc();
@@ -172,7 +194,7 @@ IT_CLIENTES inicializa_it_clientes_inicio_letra(CatClientes cat, char c) {
     return it;
 }
 
-IT_CLIENTES inicializa_it_clientes_fim_letra(CatClientes cat, char c) {
+IT_CLIENTES inicializa_it_clientes_ultimo_letra(CatClientes cat, char c) {
     int indice;
     IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
     it->traverser = avl_t_alloc();
@@ -181,62 +203,6 @@ IT_CLIENTES inicializa_it_clientes_fim_letra(CatClientes cat, char c) {
     it->indice = indice;
     it->catalogo = cat;
     return it;
-}
-
-int itera_n_clientes_proximos(IT_CLIENTES it, char *codigos[], int n) {
-    char *codigo, *primeiro;
-    int i = 0;
-    
-    
-    if(it_cliente_actual(it)==NULL) 
-        it_cliente_proximo(it);
-    
-    if ((primeiro = it_cliente_actual(it)) != NULL) {
-        codigos[i] = primeiro;
-        i++;
-    }
-
-    while (i < n && (codigo = it_cliente_proximo(it)) != NULL) {
-        codigos[i] = codigo;
-        i++;
-    }
-    
-    it_cliente_proximo(it);
-    return i;
-    
-}
-
-int itera_n_clientes_proximos_letra(IT_CLIENTES it, char *codigos[], int n) {
-    char *codigo, *primeiro;
-    int i = 0;
-    
-    
-    if(it_cliente_actual(it)==NULL) 
-        it_cliente_proximo_letra(it);
-    
-    if ((primeiro = it_cliente_actual(it)) != NULL) {
-        codigos[i] = primeiro;
-        i++;
-    }
-
-    while (i < n && (codigo = it_cliente_proximo_letra(it)) != NULL) {
-        codigos[i] = codigo;
-        i++;
-    }
-    
-    it_cliente_proximo(it);
-    return i;
-    
-}
-
-int itera_n_clientes_anteriores(IT_CLIENTES it, char *codigos[], int n) {
-    int i = 0;
-    
-    while (i < n && it_cliente_anterior(it) != NULL) i++;
-    
-    itera_n_clientes_proximos(it,codigos,i);
-    
-    return i;
 }
 
 char *it_cliente_proximo(IT_CLIENTES it) {
@@ -331,109 +297,6 @@ char *it_cliente_anterior_letra(IT_CLIENTES it) {
     return ret;
 }
 
-/*
- * PAGINAÇÃO
- */
-
-PagClientes inicializa_pag_clientes(CatClientes cat, int tam_pag){
-    PagClientes res = (PagClientes) malloc(sizeof(struct paginacao_clientes));
-    IT_CLIENTES iterador = inicializa_it_clientes_inicio(cat);
-    
-    res->letra_ou_catalogo = TODO_CATALOGO;
-    res->it=iterador;
-    res->tamanho_pag=tam_pag;
-
-    if (avl_t_first(iterador->traverser, iterador->catalogo->indices[iterador->indice]) == NULL)
-        res->posicao = 0;
-    else
-        res->posicao = 1;
-    
-    return res;
-}
-
-PagClientes inicializa_pag_clientes_letra(CatClientes cat, int tam_pag, char letra){
-    PagClientes res = (PagClientes) malloc(sizeof(struct paginacao_clientes));
-    IT_CLIENTES iterador = inicializa_it_clientes_inicio_letra(cat, letra);
-    
-    res->letra_ou_catalogo = APENAS_LETRA;
-    res->it=iterador;
-    res->tamanho_pag=tam_pag;
-    
-    if(avl_t_first(iterador->traverser, iterador->catalogo->indices[iterador->indice])==NULL)
-        res->posicao=0;
-    else 
-        res->posicao=1;
-    
-    return res;
-}
-
-int pag_clientes_goto_pag(PagClientes pag_clientes ,int n_pagina, char *pagina[]){
-    int ajuste;
-    int elems;
-    
-    if(pag_clientes->letra_ou_catalogo==TODO_CATALOGO){
-        ajuste = ajusta_iterador_clientes(pag_clientes, n_pagina);
-    }else{
-        ajuste = ajusta_iterador_clientes_letra(pag_clientes, n_pagina);
-    }
-    
-    if(ajuste == PAGINA_POSSIVEL){
-        if(pag_clientes->letra_ou_catalogo==TODO_CATALOGO){
-            elems = itera_n_clientes_proximos(pag_clientes->it, pagina ,pag_clientes->tamanho_pag);
-        }else{ 
-            elems = itera_n_clientes_proximos_letra(pag_clientes->it, pagina ,pag_clientes->tamanho_pag);
-        }
-        
-        pag_clientes->posicao+=elems;
-    } else {
-        elems = PAGINA_IMPOSSIVEL;
-    }
-    
-    return elems;
-    
-}
-
-int ajusta_iterador_clientes(PagClientes pag_clientes, int n_pagina){
-    int i, retorno;
-    int tam_pag = pag_clientes->tamanho_pag;
-    int pos_f = (n_pagina-1)*tam_pag+1;
-    int diferenca = pos_f - pag_clientes->posicao;
-    
-    if(diferenca>0){
-        for(i=0;i<diferenca && it_cliente_proximo(pag_clientes->it)!=NULL;i++)
-            pag_clientes->posicao++;
-    }else{
-        diferenca = abs(diferenca);
-        for(i=0;i<diferenca && it_cliente_anterior(pag_clientes->it)!=NULL;i++)
-            pag_clientes->posicao--;
-    }
-    
-    if(i==diferenca) retorno = PAGINA_POSSIVEL;
-    else retorno = PAGINA_IMPOSSIVEL;
-    
-    return retorno;
-}
-
-int ajusta_iterador_clientes_letra(PagClientes pag_clientes, int n_pagina){
-    int i, retorno;
-    int tam_pag = pag_clientes->tamanho_pag;
-    int pos_f = (n_pagina-1)*tam_pag+1;
-    int diferenca = pos_f - pag_clientes->posicao;
-    
-    if(diferenca>0){
-        for(i=0;i<diferenca && it_cliente_proximo_letra(pag_clientes->it)!=NULL;i++)
-            pag_clientes->posicao++;
-    }else{
-        diferenca = abs(diferenca);
-        for(i=0;i<diferenca && it_cliente_anterior_letra(pag_clientes->it)!=NULL;i++)
-            pag_clientes->posicao--;
-    }
-    
-    if(i==diferenca) retorno = PAGINA_POSSIVEL;
-    else retorno = PAGINA_IMPOSSIVEL;
-    
-    return retorno;
-}
 
 /*
  * Funções (privadas) auxiliares ao módulo.

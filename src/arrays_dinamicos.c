@@ -130,23 +130,21 @@ void *ad_get_elemento(ARRAY_DINAMICO ad, int pos){
     return pos < ad->posicao ? ad->elementos[pos] : NULL;
 }
 
-void **ad_goto_pag(ARRAY_DINAMICO ad, int *elems_pag, int pag, int elems_por_pag){
+int ad_goto_pag(ARRAY_DINAMICO ad, int *pos_inicial, int pag, int elems_por_pag){
     int num_elems_pag;
-    void **res=NULL;
     int diferenca=-1;
     int comeco_pag = elems_por_pag * (pag-1);
     
     if(comeco_pag < ad->posicao) {
         diferenca = ad->posicao-comeco_pag;
         num_elems_pag = (diferenca > elems_por_pag) ? elems_por_pag : diferenca;
-        *elems_pag = num_elems_pag;
-        res = ad->elementos + comeco_pag;
+        *pos_inicial = comeco_pag;
     }else{
         num_elems_pag = AD_PAGINA_IMPOSSIVEL;
     }
     
     
-    return res;
+    return num_elems_pag;
 }
 
 void ad_ordena(ARRAY_DINAMICO ad, ad_compara_elems *f_comparacao) {
@@ -174,7 +172,7 @@ void quicksort(void **elems, ad_compara_elems *f_comparacao, int n){
     quicksort(elems+i,f_comparacao, n - i);
 }
 
-void ad_explicit_free(ARRAY_DINAMICO ad, ad_elimina_elems *f_eliminacao){
+void ad_deep_free(ARRAY_DINAMICO ad, ad_elimina_elems *f_eliminacao){
     int i;
     for(i=0;i<ad->posicao;i++)
         f_eliminacao(ad->elementos[i]);

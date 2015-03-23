@@ -21,24 +21,25 @@ void free_catalogo_clientes(CatClientes);
 
 /* IT_CLIENTES */
 
-IT_CLIENTES inicializa_it_clientes_inicio(CatClientes);
-IT_CLIENTES inicializa_it_clientes_fim(CatClientes);
+IT_CLIENTES inicializa_it_clientes(CatClientes cat);
+IT_CLIENTES inicializa_it_clientes_letra(CatClientes cat, char);
+
+IT_CLIENTES inicializa_it_clientes_primeiro(CatClientes);
+IT_CLIENTES inicializa_it_clientes_ultimo(CatClientes);
+
+IT_CLIENTES inicializa_it_clientes_primeiro_letra(CatClientes, char);
+IT_CLIENTES inicializa_it_clientes_ultimo_letra(CatClientes, char);
+
 IT_CLIENTES inicializa_it_clientes_elem(CatClientes, char *);
-IT_CLIENTES inicializa_it_clientes_inicio_letra(CatClientes, char);
-IT_CLIENTES inicializa_it_clientes_fim_letra(CatClientes, char);
-int itera_n_clientes_proximos(IT_CLIENTES, char *[], int);
-int itera_n_clientes_anteriores(IT_CLIENTES, char *[], int);
-char *it_cliente_proximo(IT_CLIENTES);
+
 char *it_cliente_actual(IT_CLIENTES);
+
+char *it_cliente_proximo(IT_CLIENTES);
 char *it_cliente_anterior(IT_CLIENTES);
+
 char *it_cliente_proximo_letra(IT_CLIENTES); 
 char *it_cliente_anterior_letra(IT_CLIENTES);
 
-/* PAGINAÇÃO */
-
-PagClientes inicializa_pag_clientes(CatClientes cat, int tam_pag);
-PagClientes inicializa_pag_clientes_letra(CatClientes cat, int tam_pag, char letra);
-int pag_clientes_goto_pag(PagClientes pag_clientes ,int n_pagina, char *pagina[]);
 
 
 #endif	/* CatClientes_H */

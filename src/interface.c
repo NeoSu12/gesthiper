@@ -13,9 +13,9 @@
 #define BLUE  "\x1B[34m"
 #define WHITE  "\x1B[37m"
 
-int faceprodutos();
-int faceclientes();
-int facecompras();
+int face_catalogos();
+int face_contabilidade();
+int face_compras();
 
 void interface() {
     char r[50];
@@ -28,24 +28,24 @@ void interface() {
         printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
                 "%sGESTHIPER%s                                 |\n|"
                 "                                          |\n|"
-                "   1 - Produtos                           |\n|"
-                "   2 - Clientes                           |\n|"
-                "   3 - Compras/Contabilidade              |\n|"
+                "   1 - Catalogos                          |\n|"
+                "   2 - Contabilidade                      |\n|"
+                "   3 - Compras                            |\n|"
                 "                                          |\n| "
                 "BEM-VINDO                       Q - %sSair%s |\n "
                 "------------------------------------------\n%s",
                 WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
 
 
-        printf("//O que procura(?): ");
+        printf("Insira o nº da opcao > ");
         leitura = scanf("%s", r);
 
         switch (toupper(r[0])) {
-            case '1': sair_programa = faceprodutos();
+            case '1': sair_programa = face_catalogos();
                 break;
-            case '2': sair_programa = faceclientes();
+            case '2': sair_programa = face_contabilidade();
                 break;
-            case '3': sair_programa = facecompras();
+            case '3': sair_programa = face_compras();
                 break;
             case 'Q': sair_programa = 1;
                 break;
@@ -62,7 +62,7 @@ void interface() {
 
 }
 
-int faceprodutos() {
+int face_catalogos() {
     char r[50];
     int sair_menu=0, leitura;
     int sair_programa=0;
@@ -70,31 +70,32 @@ int faceprodutos() {
 
     while (sair_menu == 0 && sair_programa == 0) {
         printf("\033[2J\033[1;1H%s -------------------------------------------------\n|"
-                "%s*1* %sPRODUTOS%s                                     |\n|"
+                "%s*1* %sCATALOGOS%s                                     |\n|"
                 "                                                 |\n|"
                 "   1 - Listar produtos começados por letra [2]   |\n|"
-                "   2 - Produtos nao comprados [4]                |\n|"
-                "   3 - Clientes que compraram o produto [8]      |\n|"
+                "   2 - Listar clientes comecados por letra [6]   |\n|"
                 "                                                 |\n|"
                 "  0 - Voltar                            Q - %sSair%s |\n"
                 " -------------------------------------------------\n%s",
                 WHITE, YELLOW, BLUE, WHITE, RED, WHITE, NORMAL);
 
 
-        printf("//O que procura(?): ");
+        printf("Insira o nº da opcao > ");
         leitura = scanf("%s", r);
         switch (toupper(r[0])) {
             case '\\':
-            case '0': sair_menu = 1;
+            case '0': 
+                sair_menu = 1;
                 sair_programa = 0;
                 break;
-            case '1': sair_programa = _02_codigo_produtos_letra();
+            case '1': 
+                sair_programa = _02_codigo_produtos_letra();
                 break;
-            case '2': sair_programa = _04_prods_nao_comprados();
+            case '2': 
+                sair_programa = _06_codigos_clientes_letra();
                 break;
-            case '3': sair_programa = _08_clientes_compraram_prod();
-                break;
-            case 'Q': sair_menu = 1;
+            case 'Q': 
+                sair_menu = 1;
                 sair_programa = 1;
                 break;
             default:
@@ -109,7 +110,7 @@ int faceprodutos() {
     return sair_programa;
 }
 
-int faceclientes() {
+int face_contabilidade() {
     char r[50];
     int sair_menu = 0, sair_programa=0;
     int leitura;
@@ -155,7 +156,7 @@ int faceclientes() {
     return sair_programa;
 }
 
-int facecompras() {
+int face_compras() {
     char r[50];
     int sair_menu = 0,sair_programa=0;
     int leitura;
