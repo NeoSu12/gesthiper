@@ -32,6 +32,8 @@ IT_CLIENTES inicializa_it_clientes_ultimo_letra(CatClientes, char);
 
 IT_CLIENTES inicializa_it_clientes_elem(CatClientes, char *);
 
+void free_it_cliente(IT_CLIENTES);
+
 char *it_cliente_actual(IT_CLIENTES);
 
 char *it_cliente_proximo(IT_CLIENTES);

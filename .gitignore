@@ -37,6 +37,7 @@
 #Usar o make para compilar sempre que necessario
 gesthiper
 ges-valgrind
+gesval
 
 # Ficheiros de projecto do netbeans
 /nbproject/

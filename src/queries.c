@@ -152,6 +152,7 @@ ARRAY_DINAMICO _06_clientes_to_ad(char letra) {
         ad_insere_elemento(ad, cliente);
     }
     
+    free_it_cliente(it);
     return ad;
 }
 

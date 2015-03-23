@@ -181,13 +181,12 @@ void ad_deep_free(ARRAY_DINAMICO ad, ad_elimina_elems *f_eliminacao){
         f_eliminacao(ad->garbage_collector->elementos[i]);
     
     ad_free(ad->garbage_collector);
-    ad_free(ad);
+    free(ad->elementos);
+    free(ad);
 }
 
 void ad_free(ARRAY_DINAMICO ad){
     free(ad->elementos);
-    free(ad->garbage_collector->elementos);
     free(ad->garbage_collector);
     free(ad);
 }
-

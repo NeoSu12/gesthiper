@@ -297,6 +297,10 @@ char *it_cliente_anterior_letra(IT_CLIENTES it) {
     return ret;
 }
 
+void free_it_cliente(IT_CLIENTES it){
+    avl_t_free(it->traverser);
+    free(it);
+}
 
 /*
  * Funções (privadas) auxiliares ao módulo.
