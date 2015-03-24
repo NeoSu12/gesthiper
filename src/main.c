@@ -252,17 +252,19 @@ int compra_valida(COMPRA compra) {
 
 int compra_valida_debug(COMPRA compra) {
     int res = 1;
-    
-    if(!existe_cliente(catalogo_clientes,get_cod_cliente(compra))){
-        res=0;
+
+    if (!existe_cliente(catalogo_clientes, get_cod_cliente(compra))) {
+        res = 0;
         cliente_errado++;
     }
-    
-    if(!existe_produto(catalogo_produtos, get_cod_produto(compra))){
-        res=0;
-        produto_errado++;
+
+    if (res != 0) {
+        if (!existe_produto(catalogo_produtos, get_cod_produto(compra))) {
+            res = 0;
+            produto_errado++;
+        }
     }
-    
+
     return res;
 }
 
