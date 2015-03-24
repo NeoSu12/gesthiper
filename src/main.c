@@ -169,6 +169,7 @@ void le_compras(FILE *f_comp, char *nf) {
     COMPRA compra;
     int compras_validas = 0, total_linhas_compras = 0;
     clock_t ci, cf;
+    double facturacao_total=0;
     char *linha_compra, *token;
     char *delim = " \n\r";
 
@@ -199,6 +200,7 @@ void le_compras(FILE *f_comp, char *nf) {
         set_mes(compra, atoi(token));
 
         if (compra_valida_debug(compra)) {
+            facturacao_total = facturacao_total + (get_quantidade(compra) * get_preco_unit(compra));
             compras_validas++;
         }
         total_linhas_compras++;
@@ -216,6 +218,7 @@ void le_compras(FILE *f_comp, char *nf) {
     printf("------------------\n");
     printf("Codigo Cliente errado: %d\n", cliente_errado);
     printf("Codigo Produto errado: %d\n", produto_errado);
+    printf("Facturacao Anual: %.2f€\n", facturacao_total);
     
     
     free_compra(compra);
@@ -239,7 +242,6 @@ void mostra_numero_codigos(){
     printf("Tot: %d\tTot:%d\n", tot_cli, tot_prod);
     printf("----------------------------\n");
 }
-
 
 int compra_valida(COMPRA compra) {
     return     existe_cliente(catalogo_clientes,get_cod_cliente(compra))

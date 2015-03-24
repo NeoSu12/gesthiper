@@ -21,8 +21,9 @@ void interface() {
     char r[50];
     int sair_programa = 0, leitura;
     
-    printf("Pressione qualquer tecla para continuar: ");
+    printf("Pressione qualquer tecla para continuar (q para sair): ");
     leitura = scanf("%s", r);
+    if(tolower(r[0])=='q') sair_programa = 1;
     
     while (sair_programa == 0) {
         printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
