@@ -11,7 +11,8 @@ typedef struct array_dinamico* ARRAY_DINAMICO;
 typedef int ad_compara_elems(void *item_a, void *item_b);
 typedef void ad_elimina_elems(void *item_a);
 
-ARRAY_DINAMICO ad_inicializa(int);
+ARRAY_DINAMICO ad_inicializa();
+ARRAY_DINAMICO ad_inicializa_cap(int);
 void ad_insere_elemento(ARRAY_DINAMICO, void *);
 int ad_procura_elemento(ARRAY_DINAMICO, void *,ad_compara_elems *);
 int ad_existe_elemento(ARRAY_DINAMICO, void *, ad_compara_elems *);

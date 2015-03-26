@@ -12,7 +12,11 @@ struct array_dinamico{
 ARRAY_DINAMICO ad_inicializa_gc(int);
 void quicksort(void **, ad_compara_elems *, int);
 
-ARRAY_DINAMICO ad_inicializa(int capacidade){
+ARRAY_DINAMICO ad_inicializa(){
+    return ad_inicializa_cap(20);
+}
+
+ARRAY_DINAMICO ad_inicializa_cap(int capacidade){
     ARRAY_DINAMICO array_d = (ARRAY_DINAMICO) malloc(sizeof(struct array_dinamico));
     
     array_d->elementos = (void **) malloc(sizeof(void *) * capacidade);

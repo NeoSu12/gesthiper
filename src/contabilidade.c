@@ -9,9 +9,16 @@
 #define NORMAL 0
 #define PROMO 1
 
+typedef enum campo {
+    CMP_VENDAS_NORMAIS = 1, CMP_VENDAS_PROMO, CMP_VENDAS_AMBOS,
+    CMP_FACT_NORMAL, CMP_FACT_PROMO, CMP_FACT_AMBOS
+} campo_t;
+
+
+
 struct mod_contabilidade {
     int total_global_compras[12][2];
-    int total_global_fact[12][2];
+    double total_global_fact[12][2];
     ARVORE avl_produtos;
 };
 
@@ -19,7 +26,7 @@ struct produtos {
     char *cod_produto;
     int tabela_qtd_vendida[12][2];
     /* Quantidade dum produto vendida num determinado mes 0-Normal / 1- Promo */
-    int tabela_fact_produto[12][2];
+    double tabela_fact_produto[12][2];
     /* Facturacao por mes */
 
 };
@@ -27,8 +34,12 @@ struct produtos {
 
 typedef struct produtos *NodoProdutos;
 /*funcoes locais*/
-NodoProdutos criaNodo(char*);
+int total_vendas_produto(Contabilidade, char*,int, int, campo_t);
+double total_fact_produto(Contabilidade, char*, int, int, campo_t);
 
+NodoProdutos criaNodo(char*);
+void troca_meses(int *, int *);
+void free_nodo_produto(NodoProdutos);
 
 
 Contabilidade inicializa_contabilidade() {
@@ -42,9 +53,8 @@ Contabilidade inicializa_contabilidade() {
 }
 
 
-void inserir_produto(Contabilidade cont, COMPRA comp) {
+void insere_compra(Contabilidade cont, COMPRA comp) {
     NodoProdutos prod;
-    cod_cliente_t cod_cli   = get_cod_cliente(comp);
     preco_unit_t preco_uni  = get_preco_unit(comp);
     quantidade_t quant      = get_quantidade(comp);
     promo_t promo_ch        = get_promo(comp);
@@ -75,52 +85,108 @@ int existeCodigo(Contabilidade cont, char* cod_prod) {
     return (res == NULL) ? 0 : 1;
 }
 
+int total_prods_comprados(Contabilidade cont){
+    return avl_count(cont->avl_produtos);
+}
 
-/*querie 3 - dado um cod e um mes, saber o total facturado e total vendas*/
-int total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
-    int res;
+/* 
+ * VENDAS 
+ */
+
+int total_vendas_produto(Contabilidade cont, char* cod_prod,
+                            int mes_inf, int mes_sup, campo_t campo) {
+    int res=0, i=0;
     NodoProdutos produto;
     NodoProdutos nodo_pesquisa = criaNodo(cod_prod);
-
+    
+    if(mes_inf>mes_sup) troca_meses(&mes_inf, &mes_sup);
+    
     produto = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
 
     if (produto != NULL) {
-        res = produto->tabela_qtd_vendida[mes - 1][NORMAL] +
-                produto->tabela_qtd_vendida[mes - 1][PROMO];
+        
+        for(i=mes_inf; i<=mes_sup;i++){
+            switch(campo){
+                case CMP_VENDAS_NORMAIS: 
+                    res += produto->tabela_qtd_vendida[i-1][NORMAL];
+                    break;
+                case CMP_VENDAS_PROMO: 
+                    res += produto->tabela_qtd_vendida[i-1][PROMO];
+                    break;
+                case CMP_VENDAS_AMBOS: 
+                    res += produto->tabela_qtd_vendida[i-1][NORMAL]+
+                        produto->tabela_qtd_vendida[i-1][PROMO];
+                    break;
+                default:
+                    break;
+            }
+        }
+        
     } else {
         res = PROD_NAO_VENDIDO;
     }
 
     free_nodo_produto(nodo_pesquisa);
     return res;
+}
+
+int total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    return total_vendas_produto(cont, cod_prod, mes, mes,CMP_VENDAS_AMBOS);
+}
+
+int total_vendas_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return total_vendas_produto(cont, cod_prod, mes_inf, mes_sup,CMP_VENDAS_AMBOS);
 }
 
 int total_vendas_normais_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
-    int res;
-    NodoProdutos produto;
-    NodoProdutos nodo_pesquisa = criaNodo(cod_prod);
+    return total_vendas_produto(cont, cod_prod, mes, mes,CMP_VENDAS_NORMAIS);
+}
 
-    produto = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
-
-    if (produto != NULL) {
-        res = produto->tabela_qtd_vendida[mes - 1][NORMAL];
-    } else {
-        res = PROD_NAO_VENDIDO;
-    }
-
-    free_nodo_produto(nodo_pesquisa);
-    return res;
+int total_vendas_normais_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return total_vendas_produto(cont, cod_prod, mes_inf, mes_sup,CMP_VENDAS_NORMAIS);
 }
 
 int total_vendas_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
-    int res;
+    return total_vendas_produto(cont, cod_prod, mes, mes,CMP_VENDAS_PROMO);
+}
+
+int total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return total_vendas_produto(cont, cod_prod, mes_inf, mes_sup,CMP_VENDAS_PROMO);
+}
+
+/* 
+ * FACTURACAO 
+ */
+
+double total_fact_produto(Contabilidade cont, char* cod_prod,
+                            int mes_inf, int mes_sup, campo_t campo) {
+    double res=0, i=0;
     NodoProdutos produto;
     NodoProdutos nodo_pesquisa = criaNodo(cod_prod);
-
+    
+    if(mes_inf>mes_sup) troca_meses(&mes_inf, &mes_sup);
+    
     produto = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
 
     if (produto != NULL) {
-        res = produto->tabela_qtd_vendida[mes - 1][PROMO];
+        
+        for(i=mes_inf; i<=mes_sup;i++){
+            switch(campo){
+                case CMP_FACT_NORMAL: 
+                    res += produto->tabela_fact_produto[i-1][NORMAL];
+                    break;
+                case CMP_FACT_PROMO: 
+                    res += produto->tabela_fact_produto[i-1][PROMO];
+                    break;
+                case CMP_FACT_AMBOS: 
+                    res += produto->tabela_fact_produto[i-1][NORMAL]+
+                        produto->tabela_fact_produto[i-1][PROMO];
+                    break;
+                default:
+                    break;
+            }
+        }
+        
     } else {
         res = PROD_NAO_VENDIDO;
     }
@@ -129,41 +195,31 @@ int total_vendas_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes) 
     return res;
 }
 
-int total_fact_produto_mes(Contabilidade cont, int mes, char* cod_prod) {
-    int res;
-    NodoProdutos produto;
-    NodoProdutos nodo_pesquisa = criaNodo(cod_prod);
-
-    produto = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
-
-    if (produto != NULL) {
-        res = produto->tabela_fact_produto[mes - 1][NORMAL] +
-                produto->tabela_fact_produto[mes - 1][PROMO];
-    } else {
-        res = PROD_NAO_VENDIDO;
-    }
-
-    free_nodo_produto(nodo_pesquisa);
-    return res;
+double total_fact_produto_mes(Contabilidade cont,char* cod_prod, int mes) {
+    return total_fact_produto(cont, cod_prod, mes, mes,CMP_FACT_AMBOS);
 }
 
-/*querie 4 - Devolver lista e numeros de produtos com 0 vendas*/
-
-/*querie 7 - Dado um intervalo de meses, devolver o numero de compras e total facturado - completo*/
-
-/*entre mes1 e mes2, dá total de compras e total facturado*/
-
-void compras_total_fact_intervalo(Contabilidade cont, int mes1, int mes2, int *compras, int *total_fact) {
-    *compras = 0;
-    *total_fact = 0;
-    while (mes1 < mes2) {
-        *compras += compras_total_mes(cont, mes1);
-        *total_fact += total_fact_mes(cont, mes1);
-        mes1++;
-    }
+double total_fact_produto_int_meses(Contabilidade cont,char* cod_prod, int mes_inf, int mes_sup) {
+    return total_fact_produto(cont, cod_prod, mes_inf, mes_sup,CMP_FACT_AMBOS);
 }
 
-/*dado um mes, da total de compras*/
+double total_fact_normal_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    return total_fact_produto(cont, cod_prod, mes, mes,CMP_FACT_NORMAL);
+}
+
+double total_fact_normal_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return total_fact_produto(cont, cod_prod, mes_inf, mes_sup,CMP_FACT_NORMAL);
+}
+
+double total_fact_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    return total_fact_produto(cont, cod_prod, mes, mes,CMP_FACT_PROMO);
+}
+
+double total_fact_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return total_fact_produto(cont, cod_prod, mes_inf, mes_sup,CMP_FACT_PROMO);
+}
+
+
 int compras_total_mes(Contabilidade cont, int mes) {
     return (cont->total_global_compras[mes - 1][NORMAL] + cont->total_global_compras[mes - 1][PROMO]);
 }
@@ -172,12 +228,10 @@ int total_fact_mes(Contabilidade cont, int mes) {
     return (cont->total_global_fact[mes - 1][NORMAL] + cont->total_global_fact[mes - 1][PROMO]);
 }
 
-/*querie 11 - Ficheiro em formato CSV, com mes | compras | clientes - FAZER NO MAIN REAPROVEITANDO AS FUNCOES PREVIAMENTE FEITAS*/
-
-/*querie 12 - Devolver uma lista dos N produtos mais vendidos INCOMPLETO*/
 
 ARRAY_DINAMICO lista_produtos_mais_comprados(Contabilidade cont) {
     NodoProdutos produto;
+    ARRAY_DINAMICO lista = ad_inicializa_cap();
     TRAVERSER it = avl_t_alloc();
     avl_t_init(it, cont->avl_produtos);
 
@@ -187,8 +241,15 @@ ARRAY_DINAMICO lista_produtos_mais_comprados(Contabilidade cont) {
 
 }
 
-/*querie 14 - clientes zombie - FAZER NO MAIN CONJUNTAMENTE COM O MODULO COMPRAS*/
+void free_contabilidade(Contabilidade cont) {
+    avl_destroy(cont->avl_produtos, free_nodo_produto);
+    free(cont);
+}
 
+
+/* 
+ * FUNCOES AUXILIARES PRIVADAS AO MODULO 
+ */
 
 NodoProdutos criaNodo(char* cod_prod) {
     int i, j;
@@ -206,12 +267,14 @@ NodoProdutos criaNodo(char* cod_prod) {
     return temp;
 }
 
+void troca_meses(int *mes1 , int *mes2){
+    int temp = *mes1;
+    *mes1 = *mes2;
+    *mes2 = temp;
+}
+
 void free_nodo_produto(NodoProdutos prod) {
     free(prod->cod_produto);
     free(prod);
 }
 
-void free_contabilidade(Contabilidade cont) {
-    avl_destroy(cont->avl_produtos, free_nodo_produto);
-    free(cont);
-}
