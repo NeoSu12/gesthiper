@@ -15,7 +15,7 @@ int total_prods_comprados(Contabilidade);
 
 
 /* 
- * VENDAS 
+ * VENDAS PRODUTO
  */
 
 int total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes);
@@ -26,7 +26,19 @@ int total_vendas_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes);
 int total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
 
 /* 
- * FACTURACAO 
+ * COMPRAS GLOBAIS
+ */
+
+int total_compras_mes(Contabilidade cont, int mes);
+int total_compras_normais_mes(Contabilidade cont, int mes);
+int total_compras_promo_mes(Contabilidade cont, int mes);
+int total_compras_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+int total_compras_normais_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+int total_compras_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+
+
+/* 
+ * FACTURACAO PRODUTO
  */
 
 double total_fact_produto_mes(Contabilidade cont,char* cod_prod, int mes);
@@ -36,5 +48,15 @@ double total_fact_normal_produto_int_meses(Contabilidade cont, char* cod_prod, i
 double total_fact_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes);
 double total_fact_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
 
+/* 
+ * FACTURACAO GLOBAL
+ */
+
+double total_facturacao_mes(Contabilidade cont, int mes);
+double total_facturacao_normal_mes(Contabilidade cont, int mes);
+double total_facturacao_promo_mes(Contabilidade cont, int mes);
+double total_facturacao_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+double total_facturacao_normal_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+double total_facturacao_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
 
 #endif
