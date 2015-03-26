@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "headers/arrays_dinamicos.h"
 
+
 struct array_dinamico{
     void **elementos;
     int posicao;
@@ -10,7 +11,9 @@ struct array_dinamico{
 };
 
 ARRAY_DINAMICO ad_inicializa_gc(int);
+void ad_realloc_if_needed(ARRAY_DINAMICO);
 void quicksort(void **, ad_compara_elems *, int);
+
 
 ARRAY_DINAMICO ad_inicializa(){
     return ad_inicializa_cap(20);
@@ -44,25 +47,65 @@ ARRAY_DINAMICO ad_inicializa_gc(int capacidade){
     return array_d;
 }
 
-void ad_insere_elemento(ARRAY_DINAMICO ad, void *elemento){
+void ad_realloc_if_needed(ARRAY_DINAMICO ad){
     int nova_cap;
     void **new_ptr;
     
-    if(ad->posicao == ad->capacidade-1){
+    if(ad->posicao == ad->capacidade){
         nova_cap = ad->capacidade*2;
-        /*Precisa de mais espaco, tenta realocar*/
         new_ptr = (void **) realloc(ad->elementos,sizeof(void *) * nova_cap);
         
         if (new_ptr != NULL){
             ad->elementos=new_ptr;
             ad->capacidade= nova_cap;
         }
-        
+    }
+}
+
+void ad_insere_elemento_pos(ARRAY_DINAMICO ad, int pos, void *elemento){
+    int i;
+    
+    ad_realloc_if_needed(ad);
+    
+    for(i=ad->posicao;i<pos;i--){
+        ad->elementos[ad->posicao] = ad->elementos[ad->posicao-1];
     }
     
-    ad->elementos[ad->posicao] = elemento;
+    ad->elementos[pos] = elemento;
     ad->posicao++;
     
+}
+
+void ad_insere_elemento_ordenado(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara){
+    int keep_looking=1;
+    int i;
+    
+    if(f_compara(elemento, ad_get_elemento(ad,0))<=0)
+        keep_looking=0;
+    
+    if(keep_looking && f_compara(elemento, ad_get_elemento(ad,ad->posicao-1))>0){
+        ad_insere_elemento_pos(ad, ad->posicao-1,elemento);
+        keep_looking=0;
+    }
+    
+    for(i=0;i<ad->posicao-1 && keep_looking;i++){
+        if(f_compara(elemento, ad_get_elemento(ad, 0))>=0
+                &&f_compara(elemento, ad_get_elemento(ad, 0))<0){
+            ad_insere_elemento_pos(ad, i, elemento);
+            keep_looking = 0;
+        }
+    }
+        
+}
+
+void ad_insere_elemento_pos_mode(ARRAY_DINAMICO ad,int pos, void *elemento, insert_mode_t i_mode){
+    ad_insere_elemento_pos(ad, pos, elemento);
+    if(i_mode == KEEP_SIZE)
+        ad_remove_elemento_pos(ad, ad->posicao-1);
+}
+
+void ad_insere_elemento(ARRAY_DINAMICO ad, void *elemento){
+    ad_insere_elemento_pos(ad, ad->posicao, elemento);
 }
 
 int ad_procura_elemento(ARRAY_DINAMICO ad, void *elemento,ad_compara_elems *f_compara){
@@ -70,12 +113,12 @@ int ad_procura_elemento(ARRAY_DINAMICO ad, void *elemento,ad_compara_elems *f_co
     int pos_encontrado=AD_ELEM_NAO_ENCONTRADO;
     int i=0;
     
-    for(i=0;i<ad->posicao && !encontrado;i++)
+    for(i=0;i<ad->posicao && !encontrado;i++){
         if(f_compara(elemento, ad->elementos[i])==0){
             encontrado = 1;
             pos_encontrado = i;
         }
-    
+    }
     
     return pos_encontrado;
     
