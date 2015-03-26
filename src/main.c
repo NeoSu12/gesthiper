@@ -10,9 +10,9 @@
 #include "headers/cat_produtos.h"
 #include "headers/compras.h"
 
-#define LINHA_CLIENTE_MAX 20
-#define LINHA_PRODUTO_MAX 20
-#define LINHA_COMPRA_MAX 40
+#define LINHA_CLIENTE_MAX 32
+#define LINHA_PRODUTO_MAX 32
+#define LINHA_COMPRA_MAX 64
 
 int le_ficheiros(int, char **);
 void le_clientes(FILE *, char *);

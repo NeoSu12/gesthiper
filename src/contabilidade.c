@@ -16,8 +16,6 @@ typedef enum campo {
     CMP_FACT_COMPRAS_NORMAL, CMP_FACT_COMPRAS_PROMO, CMP_FACT_COMPRAS_AMBOS
 } campo_t;
 
-
-
 struct mod_contabilidade {
     int total_global_compras[12][2];
     double total_global_fact[12][2];
@@ -330,12 +328,6 @@ double total_facturacao_promo_int_meses(Contabilidade cont, int mes_inf, int mes
 }
 
 
-
-
-
-
-
-
 ARRAY_DINAMICO lista_produtos_mais_comprados(Contabilidade cont) {
     NodoProdutos produto;
     ARRAY_DINAMICO lista = ad_inicializa_cap();
@@ -343,7 +335,7 @@ ARRAY_DINAMICO lista_produtos_mais_comprados(Contabilidade cont) {
     avl_t_init(it, cont->avl_produtos);
 
     while ((produto = avl_t_next(it)) != NULL) {
-
+        
     }
 
 }
