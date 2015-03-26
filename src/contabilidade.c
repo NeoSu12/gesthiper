@@ -17,7 +17,7 @@ struct mod_contabilidade {
 
 struct produtos {
     char *cod_produto;
-    int tabela_quantidade[12][2];
+    int tabela_qtd_vendida[12][2];
     /* Quantidade dum produto vendida num determinado mes 0-Normal / 1- Promo */
     int tabela_fact_produto[12][2];
     /* Facturacao por mes */
@@ -27,10 +27,7 @@ struct produtos {
 
 typedef struct produtos *NodoProdutos;
 /*funcoes locais*/
-int vendas_normal_mes();
-int vendas_promo_mes();
-int total_fact_normal_mes();
-int total_fact_promo_mes(); 
+NodoProdutos criaNodo(char*);
 
 
 
@@ -44,115 +41,111 @@ Contabilidade inicializa_contabilidade() {
     return res;
 }
 
-/*cod_cliente_t get_cod_cliente(COMPRA);
-preco_unit_t get_preco_unit(COMPRA);
-quantidade_t get_quantidade(COMPRA);
-promo_t get_promo(COMPRA);
-cod_produto_t get_cod_produto(COMPRA);
-mes_t get_mes(COMPRA);*/
+
 void inserir_produto(Contabilidade cont, COMPRA comp) {
-    cod_cliente_t cod_cli = comp->cod_cliente;
-    preco_unit_t preco_uni = comp->preco_unit;
-    quantidade_t quant = comp->quantidade;
-    int promo = (get_promo(comp) == 'N') ? NORMAL : PROMO;
-    cod_produto_t cod_prod = comp->cod_produto;
-    mes_t mes = comp->mes;
-    NodoProdutos nodo = criaNodo(cod_prod);
     NodoProdutos prod;
+    cod_cliente_t cod_cli   = get_cod_cliente(comp);
+    preco_unit_t preco_uni  = get_preco_unit(comp);
+    quantidade_t quant      = get_quantidade(comp);
+    promo_t promo_ch        = get_promo(comp);
+    cod_produto_t cod_prod  = get_cod_produto(comp);
+    mes_t mes               = get_mes(comp);
+    int promo = (promo_ch == 'N') ? NORMAL : PROMO;
+    NodoProdutos nodo = criaNodo(cod_prod);
+    
     if ((prod = (NodoProdutos) avl_find(cont->avl_produtos, nodo)) == NULL) {
         avl_insert(cont, nodo);
         prod = nodo;
     }
-    prod->tabela_quantidade[mes - 1][promo] += quant;
+    prod->tabela_qtd_vendida[mes - 1][promo] += quant;
     prod->tabela_fact_produto[mes - 1][promo] += quant * preco_uni;
     cont->total_global_compras[mes - 1][promo]++;
     cont->total_global_fact[mes - 1][promo] += quant * preco_uni;
     return 0;
 }
 
-/*
-int existeNodo(Contabilidade cont,NodoProdutos x){
-    return (avl_find(cont->avl_produtos,x)==NULL)?0:1;
-}
- */
-int existeCodigo(Contabilidade cont, char* cod) {
-    NodoProdutos val;
-    NodoProdutos nodo;
-    nodo = criaNodo(cod);
-    val = (NodoProdutos) avl_find(cont->avl_produtos, nodo);
-    free_nodo_produto(nodo);
-    return (val == NULL) ? 0 : 1;
+
+int existeCodigo(Contabilidade cont, char* cod_prod) {
+    NodoProdutos res;
+    NodoProdutos nodo_aux;
+    nodo_aux = criaNodo(cod_prod);
+    res = (NodoProdutos) avl_find(cont->avl_produtos, nodo_aux);
+    free_nodo_produto(nodo_aux);
+    
+    return (res == NULL) ? 0 : 1;
 }
 
-NodoProdutos criaNodo(char* cod) {
-    int i, j;
-    char *copia = (char*) malloc(sizeof (char)*(strlen(cod) + 1));
-    NodoProdutos temp = (NodoProdutos) malloc(sizeof (struct produtos));
-    strcpy(copia, cod);
-    temp->cod_produto = copia;
-    for (i = 0; i < 12; i++)
-        for (j = 0; j < 2; j++) {
-            temp->tabela_fact_produto[i][j] = 0;
-            temp->tabela_quantidade[i][j] = 0;
-        }
-
-    return temp;
-}
 
 /*querie 3 - dado um cod e um mes, saber o total facturado e total vendas*/
-int total_vendas_mes(Contabilidade cont, int mes, char* cod) {
+int total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
     int res;
-    char *copia = (char*) malloc(sizeof (char)*(strlen(cod) + 1));
-    NodoProdutos prod = (NodoProdutos) malloc(sizeof (struct produtos));
-    NodoProdutos temp = (NodoProdutos) malloc(sizeof (struct produtos));
-    strcpy(copia, cod);
-    temp->cod_produto = copia;
-    prod = (NodoProdutos) avl_find(cont->avl_produtos, temp);
-    res = vendas_normal_mes(mes, prod)+(vendas_promo_mes(mes, prod));
-    free_nodo_produto(prod);
-    free_nodo_produto(temp);
+    NodoProdutos produto;
+    NodoProdutos nodo_pesquisa = criaNodo(cod_prod);
+
+    produto = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
+
+    if (produto != NULL) {
+        res = produto->tabela_qtd_vendida[mes - 1][NORMAL] +
+                produto->tabela_qtd_vendida[mes - 1][PROMO];
+    } else {
+        res = PROD_NAO_VENDIDO;
+    }
+
+    free_nodo_produto(nodo_pesquisa);
     return res;
 }
 
-int total_fact_mes(Contabilidade cont, int mes, char* cod) {
+int total_vendas_normais_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
     int res;
-    char *copia = (char*) malloc(sizeof (char)*(strlen(cod) + 1));
-    NodoProdutos prod = (NodoProdutos) malloc(sizeof (struct produtos));
-    NodoProdutos temp = (NodoProdutos) malloc(sizeof (struct produtos));
-    strcpy(copia, cod);
-    temp->cod_produto = copia;
-    prod = (NodoProdutos) avl_find(cont->avl_produtos, temp);
-    res = total_fact_normal_mes(mes, prod)+(total_fact_promo_mes(mes, prod));
-    free_nodo_produto(prod);
-    free_nodo_produto(temp);
+    NodoProdutos produto;
+    NodoProdutos nodo_pesquisa = criaNodo(cod_prod);
+
+    produto = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
+
+    if (produto != NULL) {
+        res = produto->tabela_qtd_vendida[mes - 1][NORMAL];
+    } else {
+        res = PROD_NAO_VENDIDO;
+    }
+
+    free_nodo_produto(nodo_pesquisa);
     return res;
 }
 
-/* funcoes locais - querie 3 */
-int vendas_normal_mes(int mes, NodoProdutos prod) {
-    return (prod->tabela_quantidade[mes - 1][NORMAL]);
+int total_vendas_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    int res;
+    NodoProdutos produto;
+    NodoProdutos nodo_pesquisa = criaNodo(cod_prod);
+
+    produto = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
+
+    if (produto != NULL) {
+        res = produto->tabela_qtd_vendida[mes - 1][PROMO];
+    } else {
+        res = PROD_NAO_VENDIDO;
+    }
+
+    free_nodo_produto(nodo_pesquisa);
+    return res;
 }
 
-int vendas_promo_mes(int mes, NodoProdutos prod) {
-    return (prod->tabela_quantidade[mes - 1][PROMO]);
+int total_fact_produto_mes(Contabilidade cont, int mes, char* cod_prod) {
+    int res;
+    NodoProdutos produto;
+    NodoProdutos nodo_pesquisa = criaNodo(cod_prod);
+
+    produto = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
+
+    if (produto != NULL) {
+        res = produto->tabela_fact_produto[mes - 1][NORMAL] +
+                produto->tabela_fact_produto[mes - 1][PROMO];
+    } else {
+        res = PROD_NAO_VENDIDO;
+    }
+
+    free_nodo_produto(nodo_pesquisa);
+    return res;
 }
-
-int total_fact_normal_mes(int mes, NodoProdutos prod) {
-    return (prod->tabela_fact_produto[mes - 1][NORMAL]);
-}
-
-int total_fact_promo_mes(int mes, NodoProdutos prod) {
-    return (prod->tabela_fact_produto[mes - 1][PROMO]);
-}
-
-
-
-
-
-
-
-
-
 
 /*querie 4 - Devolver lista e numeros de produtos com 0 vendas*/
 
@@ -197,7 +190,21 @@ ARRAY_DINAMICO lista_produtos_mais_comprados(Contabilidade cont) {
 /*querie 14 - clientes zombie - FAZER NO MAIN CONJUNTAMENTE COM O MODULO COMPRAS*/
 
 
+NodoProdutos criaNodo(char* cod_prod) {
+    int i, j;
+    NodoProdutos temp = (NodoProdutos) malloc(sizeof (struct produtos));
+    char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
+    strcpy(copia, cod_prod);
+    temp->cod_produto = copia;
+    
+    for (i = 0; i < 12; i++)
+        for (j = 0; j < 2; j++) {
+            temp->tabela_fact_produto[i][j] = 0;
+            temp->tabela_qtd_vendida[i][j] = 0;
+        }
 
+    return temp;
+}
 
 void free_nodo_produto(NodoProdutos prod) {
     free(prod->cod_produto);
@@ -205,6 +212,6 @@ void free_nodo_produto(NodoProdutos prod) {
 }
 
 void free_contabilidade(Contabilidade cont) {
-    avl_destroy(cont->avl_produtos, free_produtos);
+    avl_destroy(cont->avl_produtos, free_nodo_produto);
     free(cont);
 }
