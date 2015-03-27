@@ -2,7 +2,7 @@ VPATH = src:src/headers
 
 objects = main.o erros.o compra.o avl.o cat_clientes.o \
 	   cat_produtos.o interface.o queries.o compras.o \
-		arrays_dinamicos.o
+		arrays_dinamicos.o contabilidade.o
 
 CFLAGS = -ansi -pedantic -Wall -O2
 VALFLAGS = -ansi -pedantic -Wall -O0 -g
@@ -12,6 +12,7 @@ gesthiper : $(objects)
 	$(CC) $(CFLAGS) -o gesthiper $(objects)
 
 gesval: $(objects)
+	CFLAGS = VALFLAGS
 	$(CC) $(VALFLAGS) -o gesval $(objects)
 
 runval: gesval meown
@@ -30,6 +31,8 @@ cat_clientes.o : avl.h cat_clientes.h
 cat_produtos.o : avl.h cat_produtos.h
 compras.o : compras.h avl.h compra.h 
 arrays_dinamicos.o : arrays_dinamicos.h
+contabilidade.o : compra.h avl.h arrays_dinamicos.h contabilidade.h
+
 
 .PHONY : clean
 clean :

@@ -13,34 +13,75 @@ enum insert_mode{
 };
 
 typedef enum insert_mode insert_mode_t;
-
 typedef struct array_dinamico* ARRAY_DINAMICO;
 
 
 typedef int ad_compara_elems(void *item_a, void *item_b);
 typedef void ad_elimina_elems(void *item_a);
 
+/*
+ * INICIALIZACAO E LIBERTACAO MEMORIA
+ */
+
 ARRAY_DINAMICO ad_inicializa();
 ARRAY_DINAMICO ad_inicializa_cap(int);
+void ad_clean_gc(ARRAY_DINAMICO, ad_elimina_elems *);
+void ad_deep_free(ARRAY_DINAMICO, ad_elimina_elems *);
+void ad_free(ARRAY_DINAMICO);
 
-void ad_insere_elemento_pos(ARRAY_DINAMICO ad, int pos, void *elemento);
-void ad_insere_elemento_ordenado(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara);
-void ad_insere_elemento_pos_mode(ARRAY_DINAMICO ad,int pos, void *elemento, insert_mode_t i_mode);
-void ad_insere_elemento(ARRAY_DINAMICO ad, void *elemento);
-int ad_procura_elemento(ARRAY_DINAMICO ad, void *elemento,ad_compara_elems *f_compara);
-int ad_existe_elemento(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara);
-void ad_substitui_elemento_pos(ARRAY_DINAMICO ad, int pos, void *novo_elemento);
-void ad_substitui_elemento(ARRAY_DINAMICO ad, void *novo_elemento,void *antigo_elemento, ad_compara_elems *f_compara);
-void ad_remocao_rapida_elemento(ARRAY_DINAMICO ad, int pos);
-void ad_remove_elemento_pos(ARRAY_DINAMICO ad, int pos);
-void ad_remove_elemento(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara);
-int ad_get_tamanho(ARRAY_DINAMICO ad);
-int ad_get_capacidade(ARRAY_DINAMICO ad);
-void *ad_get_elemento(ARRAY_DINAMICO ad, int pos);
-int ad_goto_pag(ARRAY_DINAMICO ad, int *pos_inicial, int pag, int elems_por_pag);
-void ad_ordena(ARRAY_DINAMICO ad, ad_compara_elems *f_comparacao);
-void ad_deep_free(ARRAY_DINAMICO ad, ad_elimina_elems *f_eliminacao);
-void ad_free(ARRAY_DINAMICO ad);
+/*
+ * TAMANHO E CAPACIDADE
+ */
+
+int ad_get_tamanho(ARRAY_DINAMICO);
+int ad_get_capacidade(ARRAY_DINAMICO);
+
+/*
+ * INSERCAO
+ */
+
+void ad_insere_elemento(ARRAY_DINAMICO, void *);
+void ad_insere_elemento_pos(ARRAY_DINAMICO, int, void *);
+void ad_insere_elemento_pos_mode(ARRAY_DINAMICO,int, void *, insert_mode_t);
+void ad_insere_elemento_ordenado(ARRAY_DINAMICO, void *, ad_compara_elems *);
+void ad_insere_elemento_ordenado_mode(ARRAY_DINAMICO, void *, ad_compara_elems *, insert_mode_t );
+
+/*
+ * PESQUISA
+ */
+
+void *ad_get_elemento(ARRAY_DINAMICO, int);
+int ad_get_pos_elem(ARRAY_DINAMICO, void *,ad_compara_elems *);
+int ad_existe_elemento(ARRAY_DINAMICO, void *, ad_compara_elems *);
+
+/*
+ * SUBSTITUICAO
+ */
+
+void ad_substitui_elemento(ARRAY_DINAMICO, void *,void *, ad_compara_elems *);
+void ad_substitui_elemento_pos(ARRAY_DINAMICO, int, void *);
+
+/*
+ * REMOCAO
+ */
+
+void ad_remove_elemento(ARRAY_DINAMICO, void *, ad_compara_elems *);
+void ad_remove_elemento_pos(ARRAY_DINAMICO, int);
+void ad_remocao_rapida_elemento(ARRAY_DINAMICO, int);
+
+/*
+ * PAGINACAO
+ */
+
+int ad_goto_pag(ARRAY_DINAMICO, int *, int, int);
+
+/*
+ * ORDENACAO
+ */
+
+void ad_ordena(ARRAY_DINAMICO, ad_compara_elems *);
+
+
 
 #endif	/* ARRAYS_DINAMICOS_H */
 
