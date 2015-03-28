@@ -14,7 +14,6 @@
 #define WHITE  "\x1B[37m"
 
 #define TAM_PAGINA 20
-#define ARRAY_PAGINA_IMPOSSIVEL -1
 
 extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
@@ -102,7 +101,7 @@ int _02_codigo_produtos_letra() {
     return sair_programa;
 }
 
-int _03_compras_mensais_prod(){
+int _03_compras_e_fact_mensal_prod(){
     return 1;
 }
 

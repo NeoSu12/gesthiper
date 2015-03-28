@@ -7,12 +7,9 @@ typedef struct mod_contabilidade *Contabilidade;
 
 
 Contabilidade inicializa_contabilidade();
+void cont_regista_produto(Contabilidade, char *);
 void cont_insere_compra(Contabilidade, COMPRA);
-int existeCodigo(Contabilidade, char*);
-
-
-int total_prods_comprados(Contabilidade);
-
+void free_contabilidade(Contabilidade);
 
 /* 
  * VENDAS PRODUTO

@@ -9,6 +9,7 @@
 #include "headers/cat_clientes.h"
 #include "headers/cat_produtos.h"
 #include "headers/compras.h"
+#include "headers/contabilidade.h"
 
 #define LINHA_CLIENTE_MAX 32
 #define LINHA_PRODUTO_MAX 32
@@ -27,6 +28,7 @@ void testes2();
 
 CatClientes catalogo_clientes;
 CatProdutos catalogo_produtos;
+Contabilidade contabilidade;
 Compras modulo_compras;
 
 /*VARIAVEIS TEMPORARIAS PARA TESTE*/
@@ -36,6 +38,7 @@ FILE *fich_info_compras;
 int main(int argc, char** argv) {
     catalogo_clientes = inicializa_catalogo_clientes();
     catalogo_produtos = inicializa_catalogo_produtos();
+    contabilidade = inicializa_contabilidade();
     modulo_compras = inicializa_compras();
     
     le_ficheiros(argc, argv);
@@ -45,6 +48,7 @@ int main(int argc, char** argv) {
     
     free_catalogo_clientes(catalogo_clientes);
     free_catalogo_produtos(catalogo_produtos);
+    free_contabilidade(contabilidade);
     free_compras(modulo_compras);
     return (EXIT_SUCCESS);
 }
@@ -59,7 +63,7 @@ int le_ficheiros(int argc, char **argv) {
     switch (argc) {
         case 1: nfclientes = "datasets/FichClientes.txt";
             nfprodutos = "datasets/FichProdutos.txt";
-            nfcompras = "datasets/Compras.txt";
+            nfcompras = "datasets/Compras1.txt";
             break;
 
         case 2: if (strcmp(argv[1], "--mini") == 0) {
@@ -149,6 +153,7 @@ void le_produtos(FILE *f_prod, char *nf) {
         
         if (produto != NULL) {
             cat_insere_produto(catalogo_produtos, produto);
+            cont_regista_produto(contabilidade, produto);
             produtos_validos++;
         }
 
@@ -200,6 +205,7 @@ void le_compras(FILE *f_comp, char *nf) {
         set_mes(compra, atoi(token));
 
         if (compra_valida_debug(compra)) {
+            cont_insere_compra(contabilidade, compra);
             facturacao_total = facturacao_total + (get_quantidade(compra) * get_preco_unit(compra));
             compras_validas++;
         }

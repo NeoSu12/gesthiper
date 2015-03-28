@@ -74,7 +74,7 @@ void ad_remocao_rapida_elemento(ARRAY_DINAMICO, int);
  * PAGINACAO
  */
 
-
+int ad_get_num_pags(ARRAY_DINAMICO, int);
 void *ad_get_elemento_pag(ARRAY_DINAMICO, int, int, int);
 int ad_goto_pag(ARRAY_DINAMICO, int *, int, int);
 

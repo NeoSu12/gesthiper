@@ -326,7 +326,7 @@ int cat_lista_prod_get_pos_and_num_elems_pag(CAT_LISTA_PRODUTOS lista, int *pos_
 }
 
 int cat_lista_prod_get_num_pags(CAT_LISTA_PRODUTOS lista){
-    return (cat_lista_prod_get_num_elems(lista) / cat_lista_prod_get_elems_por_pag(lista)) + 1;
+    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
 }
 
 int cat_lista_prod_get_elems_por_pag(CAT_LISTA_PRODUTOS lista){

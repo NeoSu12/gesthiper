@@ -70,15 +70,15 @@ int face_catalogos() {
 
 
     while (sair_menu == 0 && sair_programa == 0) {
-        printf("\033[2J\033[1;1H%s -------------------------------------------------\n|"
-                "%s*1* %sCATALOGOS%s                                     |\n|"
-                "                                                 |\n|"
-                "   1 - Listar produtos começados por letra [2]   |\n|"
-                "   2 - Listar clientes comecados por letra [6]   |\n|"
-                "                                                 |\n|"
-                "  0 - Voltar                            Q - %sSair%s |\n"
-                " -------------------------------------------------\n%s",
-                WHITE, YELLOW, BLUE, WHITE, RED, WHITE, NORMAL);
+        printf("\033[2J\033[1;1H"
+                " ------------------------------------------------- \n"
+                "| GESTHIPER >> CATALOGOS                          |\n"
+                "|                                                 |\n"
+                "|   1 - Listar produtos começados por letra [2]   |\n");
+        printf( "|   2 - Listar clientes comecados por letra [6]   |\n"
+                "|                                                 |\n"
+                "|  0 - Voltar                            Q - Sair |\n"
+                " -------------------------------------------------\n");
 
 
         printf("Insira o nº da opcao > ");
@@ -117,18 +117,19 @@ int face_contabilidade() {
     int leitura;
     
         while (sair_menu == 0 && sair_programa ==0) {
-        printf("\033[2J\033[1;1H%s ------------------------------------------------------\n|"
-                "%s*2* %sCLIENTES%s                                          |\n|"
-                "                                                      |\n|"
-                "   1 - Número de produtos comprados por cliente [5]   |\n|"
-                "   2 - Codigos de clientes começados por letra [6]    |\n|"
-                "   3 - Produtos mais comprados por cliente [9]        |\n|"
-                "   4 - Clientes regulares [10]                        |\n|"
-                "   5 - Top 3 produtos mais comprados por cliente [13] |\n", WHITE, YELLOW, BLUE, WHITE);
-
-        printf("|                                                      |\n|"
-                "  0 - Voltar                                 Q - %sSair%s |\n"
-                " ------------------------------------------------------\n%s", RED, WHITE, NORMAL);
+        printf("\033[2J\033[1;1H"
+                " --------------------------------------------------------- \n"
+                "| GESTHIPER >> CONTABILIDADE                              |\n"
+                "|                                                         |\n"
+                "|   1 - Nº vendas e facturação mensal produto [3]         |\n"
+                "|   2 - Produtos nao comprados [4]                        |\n"
+                "|   3 - Nº compras e total facturado [7]                  |\n");
+        printf( "|   4 - Criar ficheiro CSV [11]                           |\n"
+                "|   5 - Produtos nao vendidos e clientes sem compras [14] |\n"
+                "|                                                         |\n"
+                "|  0 - Voltar                                 Q - Sair    |\n"
+                " --------------------------------------------------------- \n");
+        
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
         
@@ -137,11 +138,11 @@ int face_contabilidade() {
             case '0': sair_menu=1;
                       sair_programa=0;
                       break;
-            case '1': sair_programa = _05_tabela_cliente(); break;
-            case '2': sair_programa = _06_codigos_clientes_letra(); break;
-            case '3': sair_programa = _09_produtos_mais_comprados_cliente(); break;
-            case '4': sair_programa = _10_clientes_regulares(); break;
-            case '5': sair_programa = _13_tres_prods_mais_comprados(); break;
+            case '1': sair_programa = _03_compras_e_fact_mensal_prod(); break;
+            case '2': sair_programa = _04_prods_nao_comprados(); break;
+            case '3': sair_programa = _07_compras_intervalo_meses(); break;
+            case '4': sair_programa = _11_compras_CSV(); break;
+            case '5': sair_programa = _14_clientes_prods_fantasma(); break;
             case 'Q': sair_menu = 1;
                       sair_programa=1;
                       break;
@@ -164,18 +165,20 @@ int face_compras() {
 
 
     while (sair_menu == 0 && sair_programa ==0) {
-        printf("\033[2J\033[1;1H%s ------------------------------------------------\n|"
-                "%s*3* %sCONTABILIDADE%s                               |\n|"
-                "                                                |\n|"
-                "   1 - Numero vendas num mes de um produto[3]   |\n|"
-                "   2 - Numero vendas num intervalo de meses[7]  |\n|"
-                "   3 - Criar ficheiro CSV [11]                  |\n|"
-                "   4 - N produtos mais vendidos [12]            |\n|"
-                "   5 - Clientes e produtos fantasma [14]        |\n", WHITE, YELLOW, BLUE, WHITE);
-
-        printf("|                                                |\n|"
-                "  0 - Voltar                           Q - %sSair%s |\n"
-                " ------------------------------------------------\n%s", RED, WHITE, NORMAL);
+        printf("\033[2J\033[1;1H"
+                " --------------------------------------------------------  \n"
+                "| GESTHIPER >> COMPRAS                                    |\n"
+                "|                                                         |\n"
+                "|   1 - Nº produtos comprados por cliente [5]             |\n"
+                "|   2 - Lista de clientes que compraram produto [8]       |\n"
+                "|   3 - Produtos mais comprados por cliente [9]           |\n"
+                "|   4 - Cliente que compraram todos os meses [10]         |\n");
+        printf( "|   5 - Ficheiro CSV [11]                                 |\n"
+                "|   6 - Tres pordutos mais comprados por cliente [13]     |\n"
+                "|   7 - Produtos nao vendidos e clientes sem compras [14] |\n"
+                "|                                                         |\n"
+                "|  0 - Voltar                           Q - Sair          |\n"
+                " --------------------------------------------------------  \n");
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
 
@@ -184,11 +187,13 @@ int face_compras() {
             case '0': sair_menu=1;
                       sair_programa=0;
                       break;
-            case '1': sair_programa = _03_compras_mensais_prod();break;
-            case '2': sair_programa = _07_compras_intervalo_meses();break;
-            case '3': sair_programa = _11_compras_CSV();break;
-            case '4': sair_programa = _12_prods_mais_vendidos();break;
-            case '5': sair_programa = _14_clientes_prods_fantasma();break;
+            case '1': sair_programa = _05_tabela_cliente();break;
+            case '2': sair_programa = _08_clientes_compraram_prod();break;
+            case '3': sair_programa = _09_produtos_mais_comprados_cliente();break;
+            case '4': sair_programa = _10_clientes_regulares();break;
+            case '5': sair_programa = _11_compras_CSV();break;
+            case '6': sair_programa = _13_tres_prods_mais_comprados();break;
+            case '7': sair_programa = _14_clientes_prods_fantasma();break;
             case 'Q': sair_menu = 1;
                       sair_programa = 1;
                       break;

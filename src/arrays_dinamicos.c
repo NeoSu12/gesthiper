@@ -208,6 +208,17 @@ void ad_remocao_rapida_elemento(ARRAY_DINAMICO ad, int pos){
  * PAGINACAO
  */
 
+int ad_get_num_pags(ARRAY_DINAMICO ad, int elems_por_pag){
+    int res;
+    int num_elems = ad->posicao;
+    
+    if((num_elems%elems_por_pag) ==0)
+        res = num_elems / elems_por_pag;
+    else 
+        res = (num_elems / elems_por_pag) +1;
+    
+    return res;
+}
 
 void *ad_get_elemento_pag(ARRAY_DINAMICO ad, int pag, int elems_por_pag, int n_elem){
     int indice;
