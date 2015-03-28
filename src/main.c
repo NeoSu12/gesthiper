@@ -116,7 +116,7 @@ void le_clientes(FILE *f_cli, char *nf) {
         cliente = strtok(linha_cliente, delim);
         
         if(cliente!=NULL){
-            insere_cliente(catalogo_clientes, cliente);
+            cat_insere_cliente(catalogo_clientes, cliente);
             clientes_validos++;
         }
         
@@ -148,7 +148,7 @@ void le_produtos(FILE *f_prod, char *nf) {
         produto = strtok(linha_produto, delim);
         
         if (produto != NULL) {
-            insere_produto(catalogo_produtos, produto);
+            cat_insere_produto(catalogo_produtos, produto);
             produtos_validos++;
         }
 
@@ -233,10 +233,10 @@ void mostra_numero_codigos(){
     printf("CLIENTES\tPRODUTOS\n");
     for(letra = 'A'; letra <= 'Z';letra++){
         printf("%c: %5d\t%c: %5d\n", 
-                letra, total_clientes_letra(catalogo_clientes, letra),
-                letra, total_produtos_letra(catalogo_produtos, letra));
-        tot_cli += total_clientes_letra(catalogo_clientes, letra);
-        tot_prod+= total_produtos_letra(catalogo_produtos, letra);
+                letra, cat_total_clientes_letra(catalogo_clientes, letra),
+                letra, cat_total_produtos_letra(catalogo_produtos, letra));
+        tot_cli += cat_total_clientes_letra(catalogo_clientes, letra);
+        tot_prod+= cat_total_produtos_letra(catalogo_produtos, letra);
         
     }
     printf("Tot: %d\tTot:%d\n", tot_cli, tot_prod);
@@ -244,8 +244,8 @@ void mostra_numero_codigos(){
 }
 
 int compra_valida(COMPRA compra) {
-    return     existe_cliente(catalogo_clientes,get_cod_cliente(compra))
-            && existe_produto(catalogo_produtos, get_cod_produto(compra))
+    return     cat_existe_cliente(catalogo_clientes,get_cod_cliente(compra))
+            && cat_existe_produto(catalogo_produtos, get_cod_produto(compra))
             && get_mes(compra) >= 1 && get_mes(compra) <= 12
             && get_preco_unit(compra) >= 0
             && (get_quantidade(compra) > 0)
@@ -255,13 +255,13 @@ int compra_valida(COMPRA compra) {
 int compra_valida_debug(COMPRA compra) {
     int res = 1;
 
-    if (!existe_cliente(catalogo_clientes, get_cod_cliente(compra))) {
+    if (!cat_existe_cliente(catalogo_clientes, get_cod_cliente(compra))) {
         res = 0;
         cliente_errado++;
     }
 
     if (res != 0) {
-        if (!existe_produto(catalogo_produtos, get_cod_produto(compra))) {
+        if (!cat_existe_produto(catalogo_produtos, get_cod_produto(compra))) {
             res = 0;
             produto_errado++;
         }

@@ -5,40 +5,49 @@
 #define PAGINA_IMPOSSIVEL -1
 
 typedef struct catalogo_produtos* CatProdutos;
-typedef struct iterador_produtos* IT_PRODUTOS;
-typedef struct paginacao_produtos* PagProdutos;
+typedef struct iterador_cat_produtos* IT_CAT_PRODUTOS;
+typedef struct cat_lista_produtos* CAT_LISTA_PRODUTOS;
 
 /* CatProdutos */
 
 CatProdutos inicializa_catalogo_produtos();
-int existe_produto(CatProdutos, char *);
-char *procura_produto(CatProdutos, char *);
-char *insere_produto(CatProdutos, char *);
-char *remove_produto(CatProdutos, char *);
-int total_produtos(CatProdutos);
-int total_produtos_letra(CatProdutos, char);
+int cat_existe_produto(CatProdutos, char *);
+char *cat_procura_produto(CatProdutos, char *);
+char *cat_insere_produto(CatProdutos, char *);
+char *cat_remove_produto(CatProdutos, char *);
+int cat_total_produtos(CatProdutos);
+int cat_total_produtos_letra(CatProdutos, char);
 void free_catalogo_produtos(CatProdutos);
 
-/* IT_PRODUTOS */
+/* IT_CAT_PRODUTOS */
 
-IT_PRODUTOS inicializa_it_produtos_inicio(CatProdutos);
-IT_PRODUTOS inicializa_it_produtos_fim(CatProdutos);
-IT_PRODUTOS inicializa_it_produtos_elem(CatProdutos, char *);
-IT_PRODUTOS inicializa_it_produtos_inicio_letra(CatProdutos, char);
-IT_PRODUTOS inicializa_it_produtos_fim_letra(CatProdutos, char);
-int itera_n_produtos_proximos(IT_PRODUTOS, char *[], int);
-int itera_n_produtos_anteriores(IT_PRODUTOS, char *[], int);
-char *it_produto_proximo(IT_PRODUTOS);
-char *it_produto_actual(IT_PRODUTOS);
-char *it_produto_anterior(IT_PRODUTOS);
-char *it_produto_proximo_letra(IT_PRODUTOS); 
-char *it_produto_anterior_letra(IT_PRODUTOS);
+IT_CAT_PRODUTOS inicializa_it_cat_produtos(CatProdutos cat);
+IT_CAT_PRODUTOS inicializa_it_cat_produtos_letra(CatProdutos cat, char);
+IT_CAT_PRODUTOS inicializa_it_cat_produtos_primeiro(CatProdutos);
+IT_CAT_PRODUTOS inicializa_it_cat_produtos_ultimo(CatProdutos);
+IT_CAT_PRODUTOS inicializa_it_cat_produtos_primeiro_letra(CatProdutos, char);
+IT_CAT_PRODUTOS inicializa_it_cat_produtos_ultimo_letra(CatProdutos, char);
+IT_CAT_PRODUTOS inicializa_it_cat_produtos_elem(CatProdutos, char *);
 
-/* PAGINAÇÃO */
+void free_it_cat_produto(IT_CAT_PRODUTOS);
+char *it_cat_produto_actual(IT_CAT_PRODUTOS);
+char *it_cat_produto_proximo(IT_CAT_PRODUTOS);
+char *it_cat_produto_anterior(IT_CAT_PRODUTOS);
+char *it_cat_produto_proximo_letra(IT_CAT_PRODUTOS); 
+char *it_cat_produto_anterior_letra(IT_CAT_PRODUTOS);
 
-PagProdutos inicializa_pag_produtos(CatProdutos cat, int tam_pag);
-PagProdutos inicializa_pag_produtos_letra(CatProdutos cat, int tam_pag, char letra);
-int pag_produtos_goto_pag(PagProdutos pag_produtos ,int n_pagina, char *pagina[]);
+/*
+ * LISTA PRODUTOS
+ */
 
+CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatProdutos, char, int);
+char *cat_lista_prod_get_elemento(CAT_LISTA_PRODUTOS,int p);
+int cat_lista_prod_get_pos_and_num_elems_pag(CAT_LISTA_PRODUTOS, int *, int);
+int cat_lista_prod_get_num_pags(CAT_LISTA_PRODUTOS);
+int cat_lista_prod_get_elems_por_pag(CAT_LISTA_PRODUTOS);
+int cat_lista_prod_muda_elems_por_pag(CAT_LISTA_PRODUTOS, int);
+int cat_lista_prod_get_num_elems(CAT_LISTA_PRODUTOS);
+void cat_free_lista_produtos(CAT_LISTA_PRODUTOS);
 
 #endif	/* CatProdutos_H */
+
