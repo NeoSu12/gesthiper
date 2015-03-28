@@ -31,21 +31,21 @@ struct nodo_avl_produtos{
 typedef struct nodo_avl_produtos *NodoProduto;
 typedef struct nodo_avl_clientes *NodoCliente;
 
-int compara_nodo_clientes(const void *,const void *, void *);
-int compara_nodo_produtos(const void *,const void *, void *);
-void free_nodo_produto(void *, void *);
-void free_nodo_cliente(void *, void *);
+int compras_compara_nodo_clientes_avl(const void *,const void *, void *);
+int compras_compara_nodo_produtos_avl(const void *,const void *, void *);
+void compras_free_nodo_produto_avl(void *, void *);
+void compras_free_nodo_cliente_avl(void *, void *);
 
 
 
 Compras inicializa_compras(){
     Compras res = (Compras) malloc(sizeof(struct modulo_compras));
-    res->avl_clientes = avl_create(compara_nodo_clientes, NULL, NULL);
+    res->avl_clientes = avl_create(compras_compara_nodo_clientes_avl, NULL, NULL);
     return res;
 }
 
 void free_compras(Compras compras){
-    avl_destroy(compras->avl_clientes, free_nodo_cliente);
+    avl_destroy(compras->avl_clientes, compras_free_nodo_cliente_avl);
     free(compras);
 }
 
@@ -62,7 +62,7 @@ void insere_compra(Compras compras, COMPRA compra){
         
         strcpy(novo_cliente,get_cod_cliente(compra));
         cliente->cod_cliente = novo_cliente;
-        cliente->avl_produtos = avl_create(compara_nodo_produtos, NULL, NULL);
+        cliente->avl_produtos = avl_create(compras_compara_nodo_produtos_avl, NULL, NULL);
         
         for(i=0;i<12;i++) cliente->num_prods_comprados[i]=0;
         for(i=0;i<3;i++) cliente->num_vendas_top3[i]=0;
@@ -149,25 +149,25 @@ ARRAY_DINAMICO clientes_compraram_prod(Compras compras, char *cod_cliente){
     return lista_clientes;
 }
 
-int compara_nodo_clientes(const void *avl_a,const void *avl_b, void *param){
+int compras_compara_nodo_clientes_avl(const void *avl_a,const void *avl_b, void *param){
     NodoCliente item_a = (NodoCliente) avl_a;
     NodoCliente item_b = (NodoCliente) avl_b;
     return strcmp(item_a->cod_cliente, item_b->cod_cliente);
 }
 
-int compara_nodo_produtos(const void *avl_a,const void *avl_b, void *param){
+int compras_compara_nodo_produtos_avl(const void *avl_a,const void *avl_b, void *param){
     NodoProduto item_a = (NodoProduto) avl_a;
     NodoProduto item_b = (NodoProduto) avl_b;
     return strcmp(item_a->cod_produto, item_b->cod_produto);
 }
 
-void free_nodo_cliente(void *avl_item, void *avl_param){
+void compras_free_nodo_cliente_avl(void *avl_item, void *avl_param){
     NodoCliente cliente = (NodoCliente) avl_item;
-    avl_destroy(cliente->avl_produtos,free_nodo_produto);
+    avl_destroy(cliente->avl_produtos,compras_free_nodo_produto_avl);
     free(cliente->cod_cliente);
 }
 
-void free_nodo_produto(void *avl_item, void *avl_param){
+void compras_free_nodo_produto_avl(void *avl_item, void *avl_param){
     NodoProduto produto = (NodoProduto) avl_item;
     free(produto->cod_produto);
 }

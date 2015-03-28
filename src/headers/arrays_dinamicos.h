@@ -5,6 +5,7 @@
 #define AD_ELEM_EXISTE 1
 #define AD_ELEM_NAO_EXISTE 0
 #define AD_PAGINA_IMPOSSIVEL -1
+#define AD_POSICAO_IMPOSSIVEL -1
 
 
 enum insert_mode{
@@ -73,6 +74,8 @@ void ad_remocao_rapida_elemento(ARRAY_DINAMICO, int);
  * PAGINACAO
  */
 
+
+void *ad_get_elemento_pag(ARRAY_DINAMICO, int, int, int);
 int ad_goto_pag(ARRAY_DINAMICO, int *, int, int);
 
 /*

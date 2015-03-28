@@ -38,6 +38,7 @@ typedef struct produto_venda{
 
 NodoProdutos inicializa_nodo_produto(char*);
 void free_nodo_produto_avl(void *, void *);
+NodoProdutos codigo_to_nodo(char*);
 void free_nodo_produto(NodoProdutos);
 PRODUTO_VENDA inicializa_produto_venda(char *, int);
 int ordena_produto_venda_desc(void *, void *);
@@ -86,7 +87,7 @@ void cont_insere_compra(Contabilidade cont, COMPRA comp) {
     mes = get_mes(comp);
     facturacao_compra = get_quantidade(comp) * get_preco_unit(comp);
     
-    nodo_pesquisa = codigo_to_nodo(get_cod_produto(compra));
+    nodo_pesquisa = codigo_to_nodo(get_cod_produto(comp));
     prod = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
     
     prod->total_unidades_vendidas_prod          += get_quantidade(comp);
@@ -357,51 +358,6 @@ int total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int
 }
 
 
-
-ARRAY_DINAMICO lista_produtos_mais_comprados(Contabilidade cont, int top_n) {
-    int i;
-    NodoProdutos produto;
-    PRODUTO_VENDA prod_venda;
-    ARRAY_DINAMICO lista = ad_inicializa_cap(top_n);
-    TRAVERSER it = avl_t_alloc();
-    avl_t_init(it, cont->avl_produtos);
-
-    while ((produto = avl_t_next(it)) != NULL) {
-        prod_venda = inicializa_produto_venda(produto->cod_produto, produto->total_unidades_vendidas_prod);
-        ad_insere_elemento(lista,prod_venda);
-    }
-
-    ad_ordena(lista, ordena_produto_venda_desc);
-    
-    for(i=ad_get_tamanho()-1;i>top_n;i--){
-        ad_remove_elemento_pos(lista, i);
-    }
-    
-    avl_t_free(it);
-    return lista;
-}
-
-ARRAY_DINAMICO produtos_sem_vendas(Contabilidade cont){
-    NodoProdutos produto;
-    PRODUTO_VENDA prod_venda;
-    ARRAY_DINAMICO lista = ad_inicializa_cap(2000);
-    TRAVERSER it = avl_t_alloc();
-    avl_t_init(it, cont->avl_produtos);
-
-    while ((produto = avl_t_next(it)) != NULL) {
-        prod_venda = inicializa_produto_venda(produto->cod_produto, produto->total_unidades_vendidas_prod);
-        ad_insere_elemento(lista, prod_venda);
-    }
-    
-    ad_ordena(lista, ordena_produto_venda_desc);
-
-    avl_t_free(it);
-    return lista;
-    
-}
-
-
-
 /* 
  * FUNCOES AUXILIARES PRIVADAS AO MODULO 
  */
@@ -457,7 +413,6 @@ void free_produto_venda_ad(void *item){
 }
 
 NodoProdutos codigo_to_nodo(char* cod_prod) {
-    int i, j;
     NodoProdutos prod = (NodoProdutos) malloc(sizeof (struct produtos));
     char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
     strcpy(copia, cod_prod);

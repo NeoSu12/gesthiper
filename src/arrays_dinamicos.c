@@ -208,6 +208,23 @@ void ad_remocao_rapida_elemento(ARRAY_DINAMICO ad, int pos){
  * PAGINACAO
  */
 
+
+void *ad_get_elemento_pag(ARRAY_DINAMICO ad, int pag, int elems_por_pag, int n_elem){
+    int indice;
+    void *resultado = NULL;
+    int inicio_pag;
+    int num_elems_pag = ad_goto_pag(ad, &inicio_pag, pag, elems_por_pag);
+    
+    if(inicio_pag != AD_PAGINA_IMPOSSIVEL && n_elem <= num_elems_pag){
+        indice = inicio_pag + (n_elem-1);
+        resultado = ad->elementos[indice];
+    }else{
+        resultado = NULL;
+    }
+    
+    return resultado;
+}
+
 int ad_goto_pag(ARRAY_DINAMICO ad, int *pos_inicial, int pag, int elems_por_pag){
     int num_elems_pag;
     int diferenca=-1;
@@ -218,9 +235,9 @@ int ad_goto_pag(ARRAY_DINAMICO ad, int *pos_inicial, int pag, int elems_por_pag)
         num_elems_pag = (diferenca > elems_por_pag) ? elems_por_pag : diferenca;
         *pos_inicial = comeco_pag;
     }else{
+        *pos_inicial = AD_POSICAO_IMPOSSIVEL;
         num_elems_pag = AD_PAGINA_IMPOSSIVEL;
     }
-    
     
     return num_elems_pag;
 }

@@ -14,6 +14,7 @@
 #define WHITE  "\x1B[37m"
 
 #define TAM_PAGINA 20
+#define ARRAY_PAGINA_IMPOSSIVEL -1
 
 extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
@@ -42,7 +43,7 @@ int _06_codigos_clientes_letra() {
     int sair_menu = 0, sair_programa = 0;
     int n_pagina = 1, elems_pag=0, inicio_pag = 1, fim_pag = 0;
     int resultados=0, total_pags=0, escolha_pag=0;
-    ARRAY_DINAMICO paginacao = NULL;
+    LISTA_CLIENTES lista_cli = NULL;
     char letra;
     char input[50];
     
@@ -52,12 +53,12 @@ int _06_codigos_clientes_letra() {
         letra = toupper(input[0]);
         
         if (isalpha(letra) && leitura > 0) {
-            paginacao = _06_clientes_to_ad(letra);
-            resultados = ad_get_tamanho(paginacao);
-            total_pags = (resultados / TAM_PAGINA) + 1;
+            lista_cli = lista_clientes_letra(catalogo_clientes,letra, TAM_PAGINA);
+            resultados = lista_cli_get_num_elems(lista_cli);
+            total_pags = lista_cli_get_num_pags(lista_cli);
             
             while (sair_menu == 0) {
-                elems_pag = ad_goto_pag(paginacao, &inicio_pag, n_pagina, TAM_PAGINA);
+                elems_pag = lista_cli_get_pos_and_num_elems_pag(lista_cli, &inicio_pag, n_pagina);
                 fim_pag = inicio_pag + elems_pag;
                 
                 printf("\033[2J\033[1;1H");
@@ -66,7 +67,7 @@ int _06_codigos_clientes_letra() {
                 printf("-----------------\n");
 
                 for (i = 0; i < elems_pag; i++)
-                    printf("%s\n",(char *) ad_get_elemento(paginacao,inicio_pag+i));
+                    printf("%s\n",(char *) lista_cli_get_elemento(lista_cli,inicio_pag+i));
 
                 printf("\n");
 
@@ -107,7 +108,7 @@ int _06_codigos_clientes_letra() {
             sair_menu = 1;
         }
     }
-    ad_deep_free(paginacao,free_str);
+    free_lista_clientes(lista_cli);
     return sair_programa;
 }
 
@@ -141,21 +142,4 @@ int _13_tres_prods_mais_comprados() {
 
 int _14_clientes_prods_fantasma() {
     return 1;
-}
-
-ARRAY_DINAMICO _06_clientes_to_ad(char letra) {
-    char *cliente;
-    ARRAY_DINAMICO ad = ad_inicializa(8000);
-    IT_CLIENTES it = inicializa_it_clientes_letra(catalogo_clientes, letra);
-
-    while ((cliente = it_cliente_proximo_letra(it)) != NULL) {
-        ad_insere_elemento(ad, cliente);
-    }
-    
-    free_it_cliente(it);
-    return ad;
-}
-
-void free_str(void *item) {
-    free(item);
 }

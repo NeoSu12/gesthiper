@@ -6,7 +6,7 @@
 
 typedef struct catalogo_clientes* CatClientes;
 typedef struct iterador_clientes* IT_CLIENTES;
-typedef struct paginacao_clientes* PagClientes;
+typedef struct lista_clientes* LISTA_CLIENTES;
 
 /* CatClientes */
 
@@ -42,6 +42,18 @@ char *it_cliente_anterior(IT_CLIENTES);
 char *it_cliente_proximo_letra(IT_CLIENTES); 
 char *it_cliente_anterior_letra(IT_CLIENTES);
 
+/*
+ * LISTA CLIENTES
+ */
+
+LISTA_CLIENTES lista_clientes_letra(CatClientes, char, int);
+char *lista_cli_get_elemento(LISTA_CLIENTES,int p);
+int lista_cli_get_pos_and_num_elems_pag(LISTA_CLIENTES, int *, int);
+int lista_cli_get_num_pags(LISTA_CLIENTES);
+int lista_cli_get_elems_por_pag(LISTA_CLIENTES);
+int lista_cli_muda_elems_por_pag(LISTA_CLIENTES, int);
+int lista_cli_get_num_elems(LISTA_CLIENTES);
+void free_lista_clientes(LISTA_CLIENTES);
 
 
 #endif	/* CatClientes_H */

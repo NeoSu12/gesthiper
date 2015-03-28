@@ -36,9 +36,12 @@ contabilidade.o : compra.h avl.h arrays_dinamicos.h contabilidade.h
 
 .PHONY : clean
 clean :
-	rm gesthiper
-	rm $(objects)
-	rm gesval
+	rm -f gesthiper
+	rm -f $(objects)
+	rm -f gesval
+
+cleanobjs :
+	rm -f $(objects)
 
 #Faz-me dono dos ficheiros e actualiza permissoes.
 #Util para trabalho em root.

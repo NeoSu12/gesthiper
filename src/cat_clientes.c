@@ -4,6 +4,7 @@
 #include <string.h>
 #include "headers/cat_clientes.h"
 #include "headers/avl.h"
+#include "headers/arrays_dinamicos.h"
 
 #define APENAS_LETRA 1
 #define TODO_CATALOGO 2
@@ -19,11 +20,9 @@ struct iterador_clientes {
     int indice;
 };
 
-struct paginacao_clientes{
-    IT_CLIENTES it;
-    int posicao;
-    int tamanho_pag;
-    int letra_ou_catalogo;
+struct lista_clientes{
+    ARRAY_DINAMICO lista_paginada;
+    int elems_por_pag;
 };
 
 /*
@@ -31,11 +30,9 @@ struct paginacao_clientes{
  */
 
 int compara_clientes(const void *, const void *, void *);
-void free_cliente(void *item, void *);
+void free_cliente_avl(void *item, void *);
 int calcula_indice_cliente(char l);
-int ajusta_iterador_clientes(PagClientes, int);
-int ajusta_iterador_clientes_letra(PagClientes, int);
-
+void free_cliente_ad(void *);
 
 /*
  * ÁRVORE
@@ -114,7 +111,7 @@ void free_catalogo_clientes(CatClientes cat) {
     int i = 0;
 
     for (i = 0; i <= 26; i++) {
-        avl_destroy(cat->indices[i], free_cliente);
+        avl_destroy(cat->indices[i], free_cliente_avl);
     }
 
     free(cat);
@@ -143,8 +140,6 @@ IT_CLIENTES inicializa_it_clientes_letra(CatClientes cat, char c) {
     it->catalogo = cat;
     return it;
 }
-
-
 
 IT_CLIENTES inicializa_it_clientes_primeiro(CatClientes cat) {
     IT_CLIENTES it = (IT_CLIENTES) malloc(sizeof (struct iterador_clientes));
@@ -302,6 +297,52 @@ void free_it_cliente(IT_CLIENTES it){
     free(it);
 }
 
+LISTA_CLIENTES lista_clientes_letra(CatClientes catalogo_clientes, char letra, int elems_por_pag){
+    char *cliente;
+    LISTA_CLIENTES pag = (LISTA_CLIENTES) malloc(sizeof(struct lista_clientes));
+    ARRAY_DINAMICO ad = ad_inicializa(8000);
+    IT_CLIENTES it = inicializa_it_clientes_letra(catalogo_clientes, letra);
+
+    while ((cliente = it_cliente_proximo_letra(it)) != NULL) {
+        ad_insere_elemento(ad, cliente);
+    }
+    
+    pag->elems_por_pag = elems_por_pag;
+    pag->lista_paginada = ad;
+    free_it_cliente(it);
+    return pag;
+}
+
+char *lista_cli_get_elemento(LISTA_CLIENTES lista,int p){
+    return (char *) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int lista_cli_get_pos_and_num_elems_pag(LISTA_CLIENTES lista, int *pos_inicial, int pag){
+    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+}
+
+int lista_cli_get_num_pags(LISTA_CLIENTES lista){
+    return (lista_cli_get_num_elems(lista) / lista_cli_get_elems_por_pag(lista)) + 1;
+}
+
+int lista_cli_get_elems_por_pag(LISTA_CLIENTES lista){
+    return lista->elems_por_pag;
+}
+
+int lista_cli_muda_elems_por_pag(LISTA_CLIENTES lista, int n){
+    return lista->elems_por_pag=n;
+}
+
+int lista_cli_get_num_elems(LISTA_CLIENTES lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
+void free_lista_clientes(LISTA_CLIENTES lista){
+    ad_deep_free(lista->lista_paginada, free_cliente_ad);
+    free(lista);
+}
+
+
 /*
  * Funções (privadas) auxiliares ao módulo.
  */
@@ -310,7 +351,11 @@ int compara_clientes(const void *avl_a, const void *avl_b, void *avl_param) {
     return strcmp((char *) avl_a, (char *) avl_b);
 }
 
-void free_cliente(void *item, void *param) {
+void free_cliente_avl(void *item, void *param) {
+    free(item);
+}
+
+void free_cliente_ad(void *item) {
     free(item);
 }
 
