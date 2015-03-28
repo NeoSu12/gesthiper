@@ -47,10 +47,10 @@ void free_produto_venda_ad(void *item);
 int compara_vendas_produtos(const void *, const void *,void *);
 NodoProdutos procura_nodo_avl_com_cod(Contabilidade, char *);
 void troca_meses(int * , int *);
-int total_vendas_produto_geral(Contabilidade, char*,int, int, campo_t);
-double total_fact_produto_geral(Contabilidade, char*, int, int, campo_t);
-int total_compras_geral(Contabilidade, int, int, campo_t);
-double total_facturacao_geral(Contabilidade, int, int, campo_t);
+int cont_total_vendas_produto_geral(Contabilidade, char*,int, int, campo_t);
+double cont_total_fact_produto_geral(Contabilidade, char*, int, int, campo_t);
+int cont_total_compras_geral(Contabilidade, int, int, campo_t);
+double cont_total_facturacao_geral(Contabilidade, int, int, campo_t);
 
 /* 
  * INICIALIZACAO E GESTAO MEMORIA
@@ -109,12 +109,12 @@ void free_contabilidade(Contabilidade cont) {
  * CONSULTAS
  */
 
-int existeCodigo(Contabilidade cont, char* cod_prod) {
+int cont_existe_codigo_prod(Contabilidade cont, char* cod_prod) {
     NodoProdutos res = procura_nodo_avl_com_cod(cont, cod_prod);
     return (res != NULL) ? 1 : 0;
 }
 
-int total_prods_comprados(Contabilidade cont){
+int cont_total_prods_comprados(Contabilidade cont){
     return avl_count(cont->avl_produtos);
 }
 
@@ -122,7 +122,7 @@ int total_prods_comprados(Contabilidade cont){
  * FACTURACAO GLOBAL
  */
 
-double total_facturacao_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t campo) {
+double cont_total_facturacao_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t campo) {
     double total = 0;
     int i = 0;
 
@@ -149,35 +149,35 @@ double total_facturacao_geral(Contabilidade cont, int mes_inf, int mes_sup, camp
     return total;
 }
 
-double total_facturacao_mes(Contabilidade cont, int mes){
-    return total_facturacao_geral(cont, mes, mes, TOTAL_FACT_AMBOS);
+double cont_total_facturacao_mes(Contabilidade cont, int mes){
+    return cont_total_facturacao_geral(cont, mes, mes, TOTAL_FACT_AMBOS);
 }
 
-double total_facturacao_normal_mes(Contabilidade cont, int mes){
-    return total_facturacao_geral(cont, mes, mes, TOTAL_FACT_NORMAL);
+double cont_total_facturacao_normal_mes(Contabilidade cont, int mes){
+    return cont_total_facturacao_geral(cont, mes, mes, TOTAL_FACT_NORMAL);
 }
 
-double total_facturacao_promo_mes(Contabilidade cont, int mes){
-    return total_facturacao_geral(cont, mes, mes, TOTAL_FACT_PROMO);
+double cont_total_facturacao_promo_mes(Contabilidade cont, int mes){
+    return cont_total_facturacao_geral(cont, mes, mes, TOTAL_FACT_PROMO);
 }
 
-double total_facturacao_int_meses(Contabilidade cont, int mes_inf, int mes_sup){
-    return total_facturacao_geral(cont, mes_inf, mes_sup, TOTAL_FACT_AMBOS);
+double cont_total_facturacao_int_meses(Contabilidade cont, int mes_inf, int mes_sup){
+    return cont_total_facturacao_geral(cont, mes_inf, mes_sup, TOTAL_FACT_AMBOS);
 }
 
-double total_facturacao_normal_int_meses(Contabilidade cont, int mes_inf, int mes_sup){
-    return total_facturacao_geral(cont, mes_inf, mes_sup, TOTAL_FACT_NORMAL);
+double cont_total_facturacao_normal_int_meses(Contabilidade cont, int mes_inf, int mes_sup){
+    return cont_total_facturacao_geral(cont, mes_inf, mes_sup, TOTAL_FACT_NORMAL);
 }
 
-double total_facturacao_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup){
-    return total_facturacao_geral(cont, mes_inf, mes_sup, TOTAL_FACT_PROMO);
+double cont_total_facturacao_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup){
+    return cont_total_facturacao_geral(cont, mes_inf, mes_sup, TOTAL_FACT_PROMO);
 }
 
 /* 
  * COMPRAS GLOBAIS
  */
 
-int total_compras_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t campo) {
+int cont_total_compras_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t campo) {
     int total = 0, i = 0;
 
     if (mes_inf > mes_sup) troca_meses(&mes_inf, &mes_sup);
@@ -203,35 +203,35 @@ int total_compras_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t ca
     return total;
 }
 
-int total_compras_mes(Contabilidade cont, int mes) {
-    return total_compras_geral(cont, mes, mes, TOTAL_COMPRAS_AMBOS);
+int cont_total_compras_mes(Contabilidade cont, int mes) {
+    return cont_total_compras_geral(cont, mes, mes, TOTAL_COMPRAS_AMBOS);
 }
 
-int total_compras_normais_mes(Contabilidade cont, int mes) {
-    return total_compras_geral(cont, mes, mes, TOTAL_COMPRAS_NORMAL);
+int cont_total_compras_normais_mes(Contabilidade cont, int mes) {
+    return cont_total_compras_geral(cont, mes, mes, TOTAL_COMPRAS_NORMAL);
 }
 
-int total_compras_promo_mes(Contabilidade cont, int mes) {
-    return total_compras_geral(cont, mes, mes, TOTAL_COMPRAS_NORMAL);
+int cont_total_compras_promo_mes(Contabilidade cont, int mes) {
+    return cont_total_compras_geral(cont, mes, mes, TOTAL_COMPRAS_NORMAL);
 }
 
-int total_compras_int_meses(Contabilidade cont, int mes_inf, int mes_sup) {
-    return total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_AMBOS);
+int cont_total_compras_int_meses(Contabilidade cont, int mes_inf, int mes_sup) {
+    return cont_total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_AMBOS);
 }
 
-int total_compras_normais_int_meses(Contabilidade cont, int mes_inf, int mes_sup) {
-    return total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_NORMAL);
+int cont_total_compras_normais_int_meses(Contabilidade cont, int mes_inf, int mes_sup) {
+    return cont_total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_NORMAL);
 }
 
-int total_compras_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup) {
-    return total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_NORMAL);
+int cont_total_compras_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup) {
+    return cont_total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_NORMAL);
 }
 
 /* 
  * FACTURACAO PRODUTO
  */
 
-double total_fact_produto_geral(Contabilidade cont, char* cod_prod,
+double cont_total_fact_produto_geral(Contabilidade cont, char* cod_prod,
                             int mes_inf, int mes_sup, campo_t campo) {
     double res = 0;
     int i = 0;
@@ -268,28 +268,28 @@ double total_fact_produto_geral(Contabilidade cont, char* cod_prod,
     return res;
 }
 
-double total_fact_produto_mes(Contabilidade cont,char* cod_prod, int mes) {
-    return total_fact_produto_geral(cont, cod_prod, mes, mes,PROD_FACT_AMBOS);
+double cont_total_fact_produto_mes(Contabilidade cont,char* cod_prod, int mes) {
+    return cont_total_fact_produto_geral(cont, cod_prod, mes, mes,PROD_FACT_AMBOS);
 }
 
-double total_fact_produto_int_meses(Contabilidade cont,char* cod_prod, int mes_inf, int mes_sup) {
-    return total_fact_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_FACT_AMBOS);
+double cont_total_fact_produto_int_meses(Contabilidade cont,char* cod_prod, int mes_inf, int mes_sup) {
+    return cont_total_fact_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_FACT_AMBOS);
 }
 
-double total_fact_normal_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
-    return total_fact_produto_geral(cont, cod_prod, mes, mes,PROD_FACT_NORMAL);
+double cont_total_fact_normal_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    return cont_total_fact_produto_geral(cont, cod_prod, mes, mes,PROD_FACT_NORMAL);
 }
 
-double total_fact_normal_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
-    return total_fact_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_FACT_NORMAL);
+double cont_total_fact_normal_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return cont_total_fact_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_FACT_NORMAL);
 }
 
-double total_fact_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
-    return total_fact_produto_geral(cont, cod_prod, mes, mes,PROD_FACT_PROMO);
+double cont_total_fact_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    return cont_total_fact_produto_geral(cont, cod_prod, mes, mes,PROD_FACT_PROMO);
 }
 
-double total_fact_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
-    return total_fact_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_FACT_PROMO);
+double cont_total_fact_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return cont_total_fact_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_FACT_PROMO);
 }
 
 
@@ -297,7 +297,7 @@ double total_fact_promo_produto_int_meses(Contabilidade cont, char* cod_prod, in
  * VENDAS PRODUTO
  */
 
-int total_vendas_produto_geral(Contabilidade cont, char* cod_prod,
+int cont_total_vendas_produto_geral(Contabilidade cont, char* cod_prod,
                             int mes_inf, int mes_sup, campo_t campo) {
     int res = 0, i = 0;
     NodoProdutos produto = procura_nodo_avl_com_cod(cont, cod_prod);
@@ -333,28 +333,28 @@ int total_vendas_produto_geral(Contabilidade cont, char* cod_prod,
     return res;
 }
 
-int total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
-    return total_vendas_produto_geral(cont, cod_prod, mes, mes,PROD_VENDAS_AMBOS);
+int cont_total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    return cont_total_vendas_produto_geral(cont, cod_prod, mes, mes,PROD_VENDAS_AMBOS);
 }
 
-int total_vendas_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
-    return total_vendas_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_VENDAS_AMBOS);
+int cont_total_vendas_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return cont_total_vendas_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_VENDAS_AMBOS);
 }
 
-int total_vendas_normais_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
-    return total_vendas_produto_geral(cont, cod_prod, mes, mes,PROD_VENDAS_NORMAIS);
+int cont_total_vendas_normais_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    return cont_total_vendas_produto_geral(cont, cod_prod, mes, mes,PROD_VENDAS_NORMAIS);
 }
 
-int total_vendas_normais_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
-    return total_vendas_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_VENDAS_NORMAIS);
+int cont_total_vendas_normais_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return cont_total_vendas_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_VENDAS_NORMAIS);
 }
 
-int total_vendas_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
-    return total_vendas_produto_geral(cont, cod_prod, mes, mes,PROD_VENDAS_PROMO);
+int cont_total_vendas_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
+    return cont_total_vendas_produto_geral(cont, cod_prod, mes, mes,PROD_VENDAS_PROMO);
 }
 
-int total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
-    return total_vendas_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_VENDAS_PROMO);
+int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup) {
+    return cont_total_vendas_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_VENDAS_PROMO);
 }
 
 

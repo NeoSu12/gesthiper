@@ -5,6 +5,7 @@
 #include "headers/cat_produtos.h"
 #include "headers/cat_clientes.h"
 #include "headers/arrays_dinamicos.h"
+#include "headers/contabilidade.h"
 
 #define NORMAL  "\x1B[0m"
 #define RED  "\x1B[31m"
@@ -15,8 +16,13 @@
 
 #define TAM_PAGINA 20
 
+typedef enum mes{
+    JANEIRO=1,FEVEREIRO, MARCO, ABRIL, MAIO, JUNHO, JULHO, AGOSTO, SETEMBRO, OUTUBRO, NOVEMBRO, DEZEMBRO
+}Mes;
+
 extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
+extern Contabilidade contabilidade;
 
 ARRAY_DINAMICO _06_clientes_to_ad(char);
 void free_str(void *);
@@ -101,8 +107,50 @@ int _02_codigo_produtos_letra() {
     return sair_programa;
 }
 
-int _03_compras_e_fact_mensal_prod(){
-    return 1;
+int _03_compras_e_fact_mensal_prod() {
+    int leitura;
+    int i;
+    char input[50];
+    int sair_menu = 0, sair_programa = 0;
+
+    while (sair_menu == 0) {
+        printf("--------------------------------------\n");
+        printf(" 1- Voltar | 2 - Sair\n");
+        printf("--------------------------------------\n");
+        printf("Insira o codigo de produto a procurar > ");
+        leitura = scanf("%s", input);
+
+        if (leitura > 0) {
+            switch (toupper(input[0])) {
+                case '1':
+                    sair_menu = 1;
+                    sair_programa = 0;
+                    break;
+                case'2':
+                    sair_menu = 1;
+                    sair_programa = 1;
+                    break;
+                default:
+                    break;
+            }
+            
+            if(cat_existe_produto(catalogo_produtos,input) && !sair_menu){
+            printf("Mes | Vendas N | Vendas P | Facturacao N | Facturacao P\n");
+            for(i=JANEIRO ; i<=DEZEMBRO; i++){
+                printf("%d | %d | %f | %f\n",
+                        cont_total_vendas_normais_produto_mes(contabilidade, input, i),
+                        cont_total_vendas_promo_produto_mes(contabilidade, input, i),
+                        cont_total_fact_normal_produto_mes(contabilidade, input, i),
+                        cont_total_fact_promo_produto_mes(contabilidade, input,i));
+            }
+            }else{
+                printf("Produto nao encontrado\n");
+            }
+        }
+
+    }
+    
+    return sair_programa;
 }
 
 int _04_prods_nao_comprados() {
