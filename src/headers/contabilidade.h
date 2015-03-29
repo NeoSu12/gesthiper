@@ -5,7 +5,7 @@
 #define PROD_NAO_VENDIDO -1
 
 typedef struct mod_contabilidade *Contabilidade;
-
+typedef struct cont_lista_clientes* CONT_LISTA_CLIENTES;
 
 Contabilidade inicializa_contabilidade();
 void cont_regista_produto(Contabilidade, char *);

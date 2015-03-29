@@ -26,16 +26,16 @@ void interface() {
     if(tolower(r[0])=='q') sair_programa = 1;
     
     while (sair_programa == 0) {
-        printf("\033[2J\033[1;1H%s ------------------------------------------\n|"
-                "%sGESTHIPER%s                                 |\n|"
-                "                                          |\n|"
-                "   1 - Catalogos                          |\n|"
-                "   2 - Contabilidade                      |\n|"
-                "   3 - Compras                            |\n|"
-                "                                          |\n| "
-                "BEM-VINDO                       Q - %sSair%s |\n "
-                "------------------------------------------\n%s",
-                WHITE, BLUE, WHITE, RED, WHITE, NORMAL);
+        printf("\033[2J\033[1;1H"
+                " ========================================== \n"
+                "| GESTHIPER                                |\n"
+                "|                                          |\n"
+                "|   1 - Catalogos                          |\n"
+                "|   2 - Contabilidade                      |\n"
+                "|   3 - Compras                            |\n"
+                "| ---------------------------------------- |\n"
+                "| BEM-VINDO                   Q - Sair     |\n"
+                " ==========================================\n");
 
 
         printf("Insira o nº da opcao > ");
@@ -71,14 +71,14 @@ int face_catalogos() {
 
     while (sair_menu == 0 && sair_programa == 0) {
         printf("\033[2J\033[1;1H"
-                " ------------------------------------------------- \n"
+                " ================================================= \n"
                 "| GESTHIPER >> CATALOGOS                          |\n"
                 "|                                                 |\n"
-                "|   1 - Listar produtos começados por letra [2]   |\n");
-        printf( "|   2 - Listar clientes comecados por letra [6]   |\n"
-                "|                                                 |\n"
-                "|  0 - Voltar                            Q - Sair |\n"
-                " -------------------------------------------------\n");
+                "|   1 = Listar produtos começados por letra [2]   |\n");
+        printf( "|   2 = Listar clientes comecados por letra [6]   |\n"
+                "| ----------------------------------------------- |\n"
+                "|  0 = Voltar                            Q = Sair |\n"
+                " =================================================\n");
 
 
         printf("Insira o nº da opcao > ");
@@ -118,7 +118,7 @@ int face_contabilidade() {
     
         while (sair_menu == 0 && sair_programa ==0) {
         printf("\033[2J\033[1;1H"
-                " --------------------------------------------------------- \n"
+                " ========================================================= \n"
                 "| GESTHIPER >> CONTABILIDADE                              |\n"
                 "|                                                         |\n"
                 "|   1 - Nº vendas e facturação mensal produto [3]         |\n"
@@ -126,9 +126,9 @@ int face_contabilidade() {
                 "|   3 - Nº compras e total facturado [7]                  |\n");
         printf( "|   4 - Criar ficheiro CSV [11]                           |\n"
                 "|   5 - Produtos nao vendidos e clientes sem compras [14] |\n"
-                "|                                                         |\n"
+                "| ------------------------------------------------------- |\n"
                 "|  0 - Voltar                                 Q - Sair    |\n"
-                " --------------------------------------------------------- \n");
+                " ========================================================= \n");
         
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
@@ -166,7 +166,7 @@ int face_compras() {
 
     while (sair_menu == 0 && sair_programa ==0) {
         printf("\033[2J\033[1;1H"
-                " --------------------------------------------------------  \n"
+                " ========================================================  \n"
                 "| GESTHIPER >> COMPRAS                                    |\n"
                 "|                                                         |\n"
                 "|   1 - Nº produtos comprados por cliente [5]             |\n"
@@ -174,11 +174,11 @@ int face_compras() {
                 "|   3 - Produtos mais comprados por cliente [9]           |\n"
                 "|   4 - Cliente que compraram todos os meses [10]         |\n");
         printf( "|   5 - Ficheiro CSV [11]                                 |\n"
-                "|   6 - Tres pordutos mais comprados por cliente [13]     |\n"
+                "|   6 - Tres produtos mais comprados por cliente [13]     |\n"
                 "|   7 - Produtos nao vendidos e clientes sem compras [14] |\n"
-                "|                                                         |\n"
+                "| ------------------------------------------------------- |\n"
                 "|  0 - Voltar                           Q - Sair          |\n"
-                " --------------------------------------------------------  \n");
+                " ========================================================  \n");
         printf("//O que procura(?): ");
         leitura = scanf("%s", r);
 

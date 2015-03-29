@@ -16,9 +16,9 @@
 
 #define TAM_PAGINA 20
 
-typedef enum mes{
-    JANEIRO=1,FEVEREIRO, MARCO, ABRIL, MAIO, JUNHO, JULHO, AGOSTO, SETEMBRO, OUTUBRO, NOVEMBRO, DEZEMBRO
-}Mes;
+typedef enum mes {
+    JANEIRO = 1, FEVEREIRO, MARCO, ABRIL, MAIO, JUNHO, JULHO, AGOSTO, SETEMBRO, OUTUBRO, NOVEMBRO, DEZEMBRO
+} Mes;
 
 extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
@@ -28,39 +28,61 @@ ARRAY_DINAMICO _06_clientes_to_ad(char);
 void free_str(void *);
 
 int _02_codigo_produtos_letra() {
-    int i=0, leitura = 0;
+    int i = 0, leitura = 0;
     int sair_menu = 0, sair_programa = 0;
-    int n_pagina = 1, elems_pag=0, inicio_pag = 1, fim_pag = 0;
-    int resultados=0, total_pags=0, escolha_pag=0;
+    int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
+    int resultados = 0, total_pags = 0, escolha_pag = 0;
     CAT_LISTA_PRODUTOS lista_prod = NULL;
     char letra;
     char input[50];
-    
+
     while (sair_menu == 0) {
+        printf("\033[2J\033[1;1H");
+        printf(" ====================================================  \n");
+        printf("|  GESTHIPER >> CATALOGOS >> QUERIE 2                 |\n");
+        printf("|                                                     |\n");
+        printf("|  Listar produtos começados por letra                |\n");
+        printf("| --------------------------------------------------- |\n");
+        printf("| 1- Voltar para CONTABILIDADE | 2 - Sair programa    |\n");
+        printf(" ====================================================  \n");
         printf("Insira a letra a procurar > ");
         leitura = scanf("%s", input);
         letra = toupper(input[0]);
         
-        if (isalpha(letra) && leitura > 0) {
-            lista_prod = cat_lista_produtos_letra(catalogo_produtos,letra, TAM_PAGINA);
+        if(leitura>0){
+        switch (toupper(input[0])) {
+                case '1':
+                    sair_menu = 1;
+                    sair_programa = 0;
+                    break;
+                case'2':
+                    sair_menu = 1;
+                    sair_programa = 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (isalpha(letra) && leitura > 0 && !sair_menu) {
+            lista_prod = cat_lista_produtos_letra(catalogo_produtos, letra, TAM_PAGINA);
             resultados = cat_lista_prod_get_num_elems(lista_prod);
             total_pags = cat_lista_prod_get_num_pags(lista_prod);
-            
+
             while (sair_menu == 0) {
                 elems_pag = cat_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
                 fim_pag = inicio_pag + elems_pag;
-                
+
                 printf("\033[2J\033[1;1H");
                 printf("-----------------\n");
                 printf("--Pagina %2d/%d--\n", n_pagina, total_pags);
                 printf("-----------------\n");
 
                 for (i = 0; i < elems_pag; i++)
-                    printf("%s\n",cat_lista_prod_get_elemento(lista_prod,inicio_pag+i));
+                    printf("%s\n", cat_lista_prod_get_elemento(lista_prod, inicio_pag + i));
 
                 printf("\n");
 
-                printf("A mostrar %d-%d de %d resultados\n", inicio_pag+1, fim_pag, resultados);
+                printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
                 printf("---------------------------------------------------------\n");
                 printf("1- << | 2- < | 3 - > | 4 - >> | 5 - Ir Para pag... | 0- Voltar | Q - Sair\n");
                 printf("Escolha >");
@@ -78,7 +100,7 @@ int _02_codigo_produtos_letra() {
                             n_pagina--;
                         break;
                     case '3':
-                        if(n_pagina < total_pags)
+                        if (n_pagina < total_pags)
                             n_pagina++;
                         break;
                     case'4':
@@ -99,24 +121,32 @@ int _02_codigo_produtos_letra() {
                         break;
                 }
             }
+            cat_free_lista_produtos(lista_prod);
+            
         } else {
             sair_menu = 1;
         }
     }
-    cat_free_lista_produtos(lista_prod);
     return sair_programa;
 }
 
 int _03_compras_e_fact_mensal_prod() {
-    int leitura;
-    int i;
+    int i, leitura;
     char input[50];
+    int total_vendas_n = 0, total_vendas_p = 0;
+    double total_fact_n = 0, total_fact_p = 0;
     int sair_menu = 0, sair_programa = 0;
 
+
     while (sair_menu == 0) {
-        printf("--------------------------------------\n");
-        printf(" 1- Voltar | 2 - Sair\n");
-        printf("--------------------------------------\n");
+        printf("\033[2J\033[1;1H");
+        printf(" ======================================================  \n");
+        printf("|  GESTHIPER >> CONTABILIDADE >> QUERIE 3               |\n");
+        printf("|                                                       |\n");
+        printf("|  Nº vendas e facturação mensal produto                |\n");
+        printf("| ----------------------------------------------------- |\n");
+        printf("| 1- Voltar para CONTABILIDADE | 2 - Sair programa      |\n");
+        printf(" ======================================================  \n");
         printf("Insira o codigo de produto a procurar > ");
         leitura = scanf("%s", input);
 
@@ -133,23 +163,43 @@ int _03_compras_e_fact_mensal_prod() {
                 default:
                     break;
             }
-            
-            if(cat_existe_produto(catalogo_produtos,input) && !sair_menu){
-            printf("Mes | Vendas N | Vendas P | Facturacao N | Facturacao P\n");
-            for(i=JANEIRO ; i<=DEZEMBRO; i++){
-                printf("%d | %d | %f | %f\n",
-                        cont_total_vendas_normais_produto_mes(contabilidade, input, i),
-                        cont_total_vendas_promo_produto_mes(contabilidade, input, i),
-                        cont_total_fact_normal_produto_mes(contabilidade, input, i),
-                        cont_total_fact_promo_produto_mes(contabilidade, input,i));
-            }
-            }else{
-                printf("Produto nao encontrado\n");
+
+            if (cat_existe_produto(catalogo_produtos, input) && !sair_menu) {
+                printf("\033[2J\033[1;1H");
+                printf("Codigo de produto: %s\n", input);
+                printf("========================================================= \n");
+                printf("     |  Vendas   |       ||    Facturacao     |           |\n");
+                printf(" Mes |  P  |  N  | Total ||    P    |    N    |   Total   |\n");
+                printf("========================================================== \n");
+                for (i = JANEIRO; i <= DEZEMBRO; i++) {
+                    printf("%4d | %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
+                            i,
+                            cont_total_vendas_normais_produto_mes(contabilidade, input, i),
+                            cont_total_vendas_promo_produto_mes(contabilidade, input, i),
+                            cont_total_vendas_normais_produto_mes(contabilidade, input, i) + cont_total_vendas_promo_produto_mes(contabilidade, input, i),
+                            cont_total_fact_normal_produto_mes(contabilidade, input, i),
+                            cont_total_fact_promo_produto_mes(contabilidade, input, i),
+                            cont_total_fact_normal_produto_mes(contabilidade, input, i) + cont_total_fact_promo_produto_mes(contabilidade, input, i));
+
+
+                    total_vendas_n += cont_total_vendas_normais_produto_mes(contabilidade, input, i);
+                    total_vendas_p += cont_total_vendas_promo_produto_mes(contabilidade, input, i);
+
+                    total_fact_n += cont_total_fact_normal_produto_mes(contabilidade, input, i);
+                    total_fact_p += cont_total_fact_promo_produto_mes(contabilidade, input, i);
+
+                }
+                printf("========================================================== \n");
+                printf("TOTAL| %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
+                        total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
+                        total_fact_n, total_fact_p, total_fact_n + total_fact_p);
+            } else {
+                if (!sair_menu) printf("Produto nao encontrado\n");
             }
         }
 
     }
-    
+
     return sair_programa;
 }
 
@@ -162,39 +212,62 @@ int _05_tabela_cliente() {
 }
 
 int _06_codigos_clientes_letra() {
-    int i=0, leitura = 0;
+    int i = 0, leitura = 0;
     int sair_menu = 0, sair_programa = 0;
-    int n_pagina = 1, elems_pag=0, inicio_pag = 1, fim_pag = 0;
-    int resultados=0, total_pags=0, escolha_pag=0;
+    int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
+    int resultados = 0, total_pags = 0, escolha_pag = 0;
     CAT_LISTA_CLIENTES lista_cli = NULL;
     char letra;
     char input[50];
-    
+
     while (sair_menu == 0) {
+        printf("\033[2J\033[1;1H");
+        printf(" =========================================================  \n");
+        printf("|  GESTHIPER >> CATALOGOS >> QUERIE 6                      |\n");
+        printf("|                                                          |\n");
+        printf("|  Listar clientes comecados por letra                     |\n");
+        printf("| -------------------------------------------------------- |\n");
+        printf("| 1- Voltar para CONTABILIDADE | 2 - Sair programa         |\n");
+        printf(" =========================================================  \n");
         printf("Insira a letra a procurar > ");
         leitura = scanf("%s", input);
         letra = toupper(input[0]);
         
-        if (isalpha(letra) && leitura > 0) {
-            lista_cli = cat_lista_clientes_letra(catalogo_clientes,letra, TAM_PAGINA);
+        if(leitura>0){
+        switch (toupper(input[0])) {
+                case '1':
+                    sair_menu = 1;
+                    sair_programa = 0;
+                    break;
+                case'2':
+                    sair_menu = 1;
+                    sair_programa = 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (isalpha(letra) && leitura > 0 && !sair_menu) {
+            lista_cli = cat_lista_clientes_letra(catalogo_clientes, letra, TAM_PAGINA);
             resultados = cat_lista_cli_get_num_elems(lista_cli);
             total_pags = cat_lista_cli_get_num_pags(lista_cli);
-            
+
             while (sair_menu == 0) {
                 elems_pag = cat_lista_cli_get_pos_and_num_elems_pag(lista_cli, &inicio_pag, n_pagina);
                 fim_pag = inicio_pag + elems_pag;
-                
+
                 printf("\033[2J\033[1;1H");
                 printf("-----------------\n");
                 printf("--Pagina %2d/%d--\n", n_pagina, total_pags);
                 printf("-----------------\n");
 
                 for (i = 0; i < elems_pag; i++)
-                    printf("%s\n",cat_lista_cli_get_elemento(lista_cli,inicio_pag+i));
+                    printf("%s\n", cat_lista_cli_get_elemento(lista_cli, inicio_pag + i));
 
                 printf("\n");
 
-                printf("A mostrar %d-%d de %d resultados\n", inicio_pag+1, fim_pag, resultados);
+                printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
                 printf("---------------------------------------------------------\n");
                 printf("1- << | 2- < | 3 - > | 4 - >> | 5 - Ir Para pag... | 0- Voltar | Q - Sair\n");
                 printf("Escolha >");
@@ -212,7 +285,7 @@ int _06_codigos_clientes_letra() {
                             n_pagina--;
                         break;
                     case '3':
-                        if(n_pagina < total_pags)
+                        if (n_pagina < total_pags)
                             n_pagina++;
                         break;
                     case'4':
@@ -233,11 +306,11 @@ int _06_codigos_clientes_letra() {
                         break;
                 }
             }
+            cat_free_lista_clientes(lista_cli);
         } else {
             sair_menu = 1;
         }
     }
-    cat_free_lista_clientes(lista_cli);
     return sair_programa;
 }
 

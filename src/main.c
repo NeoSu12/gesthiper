@@ -63,7 +63,7 @@ int le_ficheiros(int argc, char **argv) {
     switch (argc) {
         case 1: nfclientes = "datasets/FichClientes.txt";
             nfprodutos = "datasets/FichProdutos.txt";
-            nfcompras = "datasets/Compras1.txt";
+            nfcompras = "datasets/Compras100m.txt";
             break;
 
         case 2: if (strcmp(argv[1], "--mini") == 0) {

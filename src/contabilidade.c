@@ -31,6 +31,11 @@ typedef struct produtos {
     /* Facturacao por mes */
 }*NodoProdutos;
 
+struct cont_lista_clientes{
+    ARRAY_DINAMICO lista_paginada;
+    int elems_por_pag;
+};
+
 typedef struct produto_venda{
     char *codigo_produto;
     int n_vendas;
@@ -43,6 +48,7 @@ void free_nodo_produto(NodoProdutos);
 PRODUTO_VENDA inicializa_produto_venda(char *, int);
 int ordena_produto_venda_desc(void *, void *);
 void free_produto_venda(PRODUTO_VENDA);
+int cont_compara_nodo_avl(const void *, const void *,void *);
 void free_produto_venda_ad(void *item);
 int compara_vendas_produtos(const void *, const void *,void *);
 NodoProdutos procura_nodo_avl_com_cod(Contabilidade, char *);
@@ -51,6 +57,7 @@ int cont_total_vendas_produto_geral(Contabilidade, char*,int, int, campo_t);
 double cont_total_fact_produto_geral(Contabilidade, char*, int, int, campo_t);
 int cont_total_compras_geral(Contabilidade, int, int, campo_t);
 double cont_total_facturacao_geral(Contabilidade, int, int, campo_t);
+void cont_free_string_ad(void *);
 
 /* 
  * INICIALIZACAO E GESTAO MEMORIA
@@ -60,7 +67,7 @@ Contabilidade inicializa_contabilidade() {
     int i, j;
     Contabilidade res = (Contabilidade) malloc(sizeof (struct mod_contabilidade));
     
-    res->avl_produtos = avl_create(compara_vendas_produtos, NULL, NULL);
+    res->avl_produtos = avl_create(cont_compara_nodo_avl, NULL, NULL);
     
     for (i = 0; i < 12; i++)
         for (j = 0; j < 2; j++){
@@ -91,9 +98,11 @@ void cont_insere_compra(Contabilidade cont, COMPRA comp) {
     prod = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
     
     prod->total_unidades_vendidas_prod          += get_quantidade(comp);
-    prod->unidades_vendidas_prod[mes-1][promo]  += get_quantidade(comp);
     prod->total_facturacao_prod                 += facturacao_compra;
+    
+    prod->unidades_vendidas_prod[mes-1][promo]  += get_quantidade(comp);
     prod->facturacao_prod[mes - 1][promo]       += facturacao_compra;
+    
     cont->total_global_compras[mes - 1][promo]  += 1;
     cont->total_global_fact[mes - 1][promo]     += facturacao_compra;
     
@@ -357,6 +366,43 @@ int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod
     return cont_total_vendas_produto_geral(cont, cod_prod, mes_inf, mes_sup,PROD_VENDAS_PROMO);
 }
 
+/*
+ * LISTAGENS / PAGINAÇÃO
+ */
+
+CONT_LISTA_CLIENTES cont_lista_clientes_sem_compras(Contabilidade catalogo_produtos, char letra, int elems_por_pag){
+    return NULL;
+}
+
+char *cont_lista_cli_get_elemento(CONT_LISTA_CLIENTES lista,int p){
+    return (char *) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int cont_lista_cli_get_pos_and_num_elems_pag(CONT_LISTA_CLIENTES lista, int *pos_inicial, int pag){
+    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+}
+
+int cont_lista_cli_get_num_pags(CONT_LISTA_CLIENTES lista){
+    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
+}
+
+int cont_lista_cli_get_elems_por_pag(CONT_LISTA_CLIENTES lista){
+    return lista->elems_por_pag;
+}
+
+int cont_lista_cli_muda_elems_por_pag(CONT_LISTA_CLIENTES lista, int n){
+    return lista->elems_por_pag=n;
+}
+
+int cont_lista_cli_get_num_elems(CONT_LISTA_CLIENTES lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
+void cont_free_lista_produtos(CONT_LISTA_CLIENTES lista){
+    ad_deep_free(lista->lista_paginada, cont_free_string_ad);
+    free(lista);
+}
+
 
 /* 
  * FUNCOES AUXILIARES PRIVADAS AO MODULO 
@@ -412,6 +458,10 @@ void free_produto_venda_ad(void *item){
     free(pv);
 }
 
+void cont_free_string_ad(void *item){
+    free(item);
+}
+
 NodoProdutos codigo_to_nodo(char* cod_prod) {
     NodoProdutos prod = (NodoProdutos) malloc(sizeof (struct produtos));
     char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
@@ -419,7 +469,6 @@ NodoProdutos codigo_to_nodo(char* cod_prod) {
     prod->cod_produto = copia;
     return prod;
 }
-
 
 void free_nodo_produto_avl(void *item, void *avl_param) {
     NodoProdutos prod = (NodoProdutos) item;
@@ -430,6 +479,13 @@ void free_nodo_produto_avl(void *item, void *avl_param) {
 void free_nodo_produto(NodoProdutos prod) {
     free(prod->cod_produto);
     free(prod);
+}
+
+int cont_compara_nodo_avl(const void *avl_a, const void *avl_b,
+                                 void *avl_param){
+    NodoProdutos a = (NodoProdutos) avl_a;
+    NodoProdutos b = (NodoProdutos) avl_b;
+    return strcmp(a->cod_produto, b->cod_produto);
 }
 
 int compara_vendas_produtos(const void *avl_a, const void *avl_b,
