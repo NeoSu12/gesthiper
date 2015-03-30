@@ -126,7 +126,7 @@ int face_contabilidade() {
                 "|   2 - Produtos nao comprados [4]                        |\n"
                 "|   3 - Nº compras e total facturado [7]                  |\n");
         printf( "|   4 - Criar ficheiro CSV [11]                           |\n"
-                "|   5 - Lista N produtos mais vendidos (TESTE)[12]        |\n"
+                "|   5 - Lista N produtos mais vendidos (INC)[12]          |\n"
                 "|   6 - Produtos nao vendidos e clientes sem compras [14] |\n"
                 "| ------------------------------------------------------- |\n"
                 "|  0 - Voltar                                 Q - Sair    |\n"

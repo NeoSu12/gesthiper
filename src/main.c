@@ -32,7 +32,7 @@ Contabilidade contabilidade;
 Compras modulo_compras;
 
 /*VARIAVEIS TEMPORARIAS PARA TESTE*/
-int cliente_errado=0, produto_errado=0;
+int cliente_errado = 0, produto_errado = 0;
 FILE *fich_info_compras;
 
 int main(int argc, char** argv) {
@@ -40,12 +40,12 @@ int main(int argc, char** argv) {
     catalogo_produtos = inicializa_catalogo_produtos();
     contabilidade = inicializa_contabilidade();
     modulo_compras = inicializa_compras();
-    
+
     le_ficheiros(argc, argv);
     /* mostra_numero_codigos();*/
     interface();
-    
-    
+
+
     free_catalogo_clientes(catalogo_clientes);
     free_catalogo_produtos(catalogo_produtos);
     free_contabilidade(contabilidade);
@@ -63,7 +63,7 @@ int le_ficheiros(int argc, char **argv) {
     switch (argc) {
         case 1: nfclientes = "datasets/FichClientes.txt";
             nfprodutos = "datasets/FichProdutos.txt";
-            nfcompras = "datasets/Compras1.txt";
+            nfcompras = "datasets/Compras100m.txt";
             break;
 
         case 2: if (strcmp(argv[1], "--mini") == 0) {
@@ -95,12 +95,12 @@ int le_ficheiros(int argc, char **argv) {
     le_clientes(f_clientes, nfclientes);
     le_produtos(f_produtos, nfprodutos);
     le_compras(f_compras, nfcompras);
-    
+
     cf = clock();
     printf("------------------\n");
     printf("Tempo total leitura: %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
     printf("------------------\n");
-    
+
     fclose(f_clientes);
     fclose(f_produtos);
     fclose(f_compras);
@@ -115,16 +115,16 @@ void le_clientes(FILE *f_cli, char *nf) {
     char *delim = " \n\r";
 
     ci = clock();
-    linha_cliente = (char *) malloc(sizeof(char)*LINHA_CLIENTE_MAX);
+    linha_cliente = (char *) malloc(sizeof (char)*LINHA_CLIENTE_MAX);
 
     while (fgets(linha_cliente, LINHA_CLIENTE_MAX, f_cli) != NULL) {
         cliente = strtok(linha_cliente, delim);
-        
-        if(cliente!=NULL){
+
+        if (cliente != NULL) {
             cat_insere_cliente(catalogo_clientes, cliente);
             clientes_validos++;
         }
-        
+
         total_linhas_clientes++;
     }
 
@@ -132,7 +132,7 @@ void le_clientes(FILE *f_cli, char *nf) {
 
     printf("-----CLIENTES-----\n");
     printf("Nome do ficheiro: %s\n", nf);
-    printf("Linhas validas: %d (%d invalidas)\n", clientes_validos, total_linhas_clientes-clientes_validos);
+    printf("Linhas validas: %d (%d invalidas)\n", clientes_validos, total_linhas_clientes - clientes_validos);
     printf("Linhas lidas: %d\n", total_linhas_clientes);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
 
@@ -147,11 +147,11 @@ void le_produtos(FILE *f_prod, char *nf) {
 
     ci = clock();
 
-    linha_produto = (char *) malloc(sizeof(char)*LINHA_PRODUTO_MAX);
+    linha_produto = (char *) malloc(sizeof (char)*LINHA_PRODUTO_MAX);
 
     while (fgets(linha_produto, LINHA_PRODUTO_MAX, f_prod) != NULL) {
         produto = strtok(linha_produto, delim);
-        
+
         if (produto != NULL) {
             cat_insere_produto(catalogo_produtos, produto);
             cont_regista_produto(contabilidade, produto);
@@ -165,7 +165,7 @@ void le_produtos(FILE *f_prod, char *nf) {
 
     printf("-----PRODUTOS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
-    printf("Linhas validas: %d (%d invalidas)\n", produtos_validos, total_linhas_produtos-produtos_validos);
+    printf("Linhas validas: %d (%d invalidas)\n", produtos_validos, total_linhas_produtos - produtos_validos);
     printf("Linhas lidas: %d\n", total_linhas_produtos);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
     free(linha_produto);
@@ -177,14 +177,14 @@ void le_compras(FILE *f_comp, char *nf) {
     clock_t ci, cf;
     char *linha_compra, *token;
     char *delim = " \n\r";
-
-    ci = clock();
     
+    ci = clock();
+
     linha_compra = (char *) malloc(sizeof (char)*LINHA_COMPRA_MAX);
     compra = inicializa_compra();
 
     while (fgets(linha_compra, LINHA_COMPRA_MAX, f_comp) != NULL) {
-        
+
         /*Produto*/
         token = strtok(linha_compra, delim);
         set_cod_produto(compra, token);
@@ -210,14 +210,16 @@ void le_compras(FILE *f_comp, char *nf) {
         }
         total_linhas_compras++;
     }
-    
+
     cf = clock();
-    
+
     printf("------COMPRAS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
-    printf("Linhas validas: %d (%d invalidas)\n", compras_validas, total_linhas_compras-compras_validas);
+    printf("Linhas validas: %d (%d invalidas)\n", compras_validas, total_linhas_compras - compras_validas);
     printf("Linhas lidas: %d\n", total_linhas_compras);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
+    
+    
     /*
     printf("------------------\n");
     printf("MOTIVO DAS COMPRAS INVALIDAS:\n");
@@ -225,32 +227,32 @@ void le_compras(FILE *f_comp, char *nf) {
     printf("Codigo Cliente errado: %d\n", cliente_errado);
     printf("Codigo Produto errado: %d\n", produto_errado);
     printf("Facturacao Anual: %.2f€\n", facturacao_total);
-    */
-    
+     */
+
     free_compra(compra);
     free(linha_compra);
 }
 
-void mostra_numero_codigos(){
+void mostra_numero_codigos() {
     char letra = 'A';
-    int tot_prod=0, tot_cli=0;
+    int tot_prod = 0, tot_cli = 0;
     printf("----------------------------\n");
     printf("Nº DE CODIGOS COMECADOS POR...\n");
     printf("CLIENTES\tPRODUTOS\n");
-    for(letra = 'A'; letra <= 'Z';letra++){
-        printf("%c: %5d\t%c: %5d\n", 
+    for (letra = 'A'; letra <= 'Z'; letra++) {
+        printf("%c: %5d\t%c: %5d\n",
                 letra, cat_total_clientes_letra(catalogo_clientes, letra),
                 letra, cat_total_produtos_letra(catalogo_produtos, letra));
         tot_cli += cat_total_clientes_letra(catalogo_clientes, letra);
-        tot_prod+= cat_total_produtos_letra(catalogo_produtos, letra);
-        
+        tot_prod += cat_total_produtos_letra(catalogo_produtos, letra);
+
     }
     printf("Tot: %d\tTot:%d\n", tot_cli, tot_prod);
     printf("----------------------------\n");
 }
 
 int compra_valida(COMPRA compra) {
-    return     cat_existe_cliente(catalogo_clientes,get_cod_cliente(compra))
+    return cat_existe_cliente(catalogo_clientes, get_cod_cliente(compra))
             && cat_existe_produto(catalogo_produtos, get_cod_produto(compra))
             && get_mes(compra) >= 1 && get_mes(compra) <= 12
             && get_preco_unit(compra) >= 0

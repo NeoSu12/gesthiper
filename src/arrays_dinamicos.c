@@ -113,7 +113,12 @@ void ad_insere_elemento_ordenado_mode(ARRAY_DINAMICO ad, void *elemento, ad_comp
     int keep_looking=1;
     int i;
     
-    if(f_compara(elemento, ad_get_elemento(ad,0))<=0)
+    if(ad->posicao==0){
+        ad_insere_elemento_pos_mode(ad, 0, elemento, i_mode);
+        keep_looking=0;
+    }
+    
+    if(keep_looking && f_compara(elemento, ad_get_elemento(ad,0))<=0)
         keep_looking=0;
     
     if(keep_looking && f_compara(elemento, ad_get_elemento(ad,ad->posicao-1))>0){

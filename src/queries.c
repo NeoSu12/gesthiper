@@ -206,7 +206,7 @@ int _03_compras_e_fact_mensal_prod() {
                 printf("O produto nao existe\n");
                 printf("========================================================== \n");
             }
-            
+
             printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
             printf("4 - Procurar outro produto \n");
             printf("========================================================= \n");
@@ -260,22 +260,22 @@ int _04_prods_nao_comprados() {
         printf("GESTHIPER >> CATALOGOS >> QUERIE 4                 \n");
         printf("Lista de produtos nao comprados\n");
         printf("================================================= \n");
-        
-        if(resultados >0){
-        printf("Pagina %2d/%d \n", n_pagina, total_pags);
-        printf("\n");
 
-        for (i = 0; i < elems_pag; i++) {
-            ficha_prod = cont_lista_get_fich_prod(lista_prod, inicio_pag + i);
-            printf("%s\n", cont_get_cod_prod_ficha(ficha_prod));
-        }
+        if (resultados > 0) {
+            printf("Pagina %2d/%d \n", n_pagina, total_pags);
+            printf("\n");
 
-        printf("\n");
-        printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
-        }else{
+            for (i = 0; i < elems_pag; i++) {
+                ficha_prod = cont_lista_get_fich_prod(lista_prod, inicio_pag + i);
+                printf("%s\n", cont_get_cod_prod_ficha(ficha_prod));
+            }
+
+            printf("\n");
+            printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
+        } else {
             printf("Nao ha resultados a mostrar.\n");
         }
-        
+
         printf("==================================================== \n");
         printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair    \n");
         printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
@@ -437,7 +437,135 @@ int _06_codigos_clientes_letra() {
 }
 
 int _07_compras_intervalo_meses() {
-    return 1;
+    int i, leitura;
+    char input[50];
+    int mes_inf=1, mes_sup=1;
+    int total_vendas_n = 0, total_vendas_p = 0;
+    double total_fact_n = 0, total_fact_p = 0;
+    int estado = QUERIE_7;
+
+    while (estado == QUERIE_7) {
+        printf("\033[2J\033[1;1H");
+        printf(" ======================================================  \n");
+        printf("|  GESTHIPER >> CONTABILIDADE >> QUERIE 7               |\n");
+        printf("|                                                       |\n");
+        printf("|  Nº vendas e facturação mensal produto                |\n");
+        printf("| ----------------------------------------------------- |\n");
+        printf("| 1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair     |\n");
+        printf(" ======================================================  \n");
+        printf("Insira o codigo de produto a procurar > ");
+        leitura = scanf("%s", input);
+        
+        if (leitura > 0) {
+            switch (toupper(input[0])) {
+                case '1':
+                    estado = FACE_CONTABILIDADE;
+                    break;
+                case'2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case'3':
+                    estado = SAIR_PROGRAMA;
+                default:
+                    break;
+            }
+        }
+        
+        printf("Insira o intervalo de meses (formato xx-yy) > ");
+        leitura = scanf("%d-%d", &mes_inf, &mes_sup);
+        
+        if (leitura == 1) {
+            switch (mes_inf) {
+                case 1:
+                    estado = FACE_CONTABILIDADE;
+                    break;
+                case 2:
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case 3:
+                    estado = SAIR_PROGRAMA;
+                default:
+                    break;
+            }
+        }else{
+            if(mes_inf>mes_sup){
+                i = mes_inf;
+                mes_inf = mes_sup;
+                mes_sup = 1;
+            }
+        }
+        
+
+        if (estado == QUERIE_7) {
+            printf("\033[2J\033[1;1H");
+            printf("GESTHIPER >> CATALOGOS >> QUERIE 7                 \n");
+            printf("Nº vendas e facturação mensal produto              \n");
+            printf("========================================================= \n");
+
+            if (cat_existe_produto(catalogo_produtos, input)) {
+                printf("Codigo de produto: %s\n", input);
+                printf("========================================================= \n");
+                printf("     |  Vendas   |       ||    Facturacao     |           |\n");
+                printf(" Mes |  P  |  N  | Total ||    P    |    N    |   Total   |\n");
+                printf("--------------------------------------------------------- \n");
+                for (i = mes_inf; i <= mes_sup; i++) {
+                    printf("%4d | %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
+                            i,
+                            cont_total_vendas_normais_produto_mes(contabilidade, input, i),
+                            cont_total_vendas_promo_produto_mes(contabilidade, input, i),
+                            cont_total_vendas_normais_produto_mes(contabilidade, input, i) + cont_total_vendas_promo_produto_mes(contabilidade, input, i),
+                            cont_total_fact_normal_produto_mes(contabilidade, input, i),
+                            cont_total_fact_promo_produto_mes(contabilidade, input, i),
+                            cont_total_fact_normal_produto_mes(contabilidade, input, i) + cont_total_fact_promo_produto_mes(contabilidade, input, i));
+
+
+                    total_vendas_n += cont_total_vendas_normais_produto_mes(contabilidade, input, i);
+                    total_vendas_p += cont_total_vendas_promo_produto_mes(contabilidade, input, i);
+
+                    total_fact_n += cont_total_fact_normal_produto_mes(contabilidade, input, i);
+                    total_fact_p += cont_total_fact_promo_produto_mes(contabilidade, input, i);
+
+                }
+                printf("---------------------------------------------------------- \n");
+                printf("TOTAL| %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
+                        total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
+                        total_fact_n, total_fact_p, total_fact_n + total_fact_p);
+                printf("========================================================== \n");
+            } else {
+                printf("O produto nao existe\n");
+                printf("========================================================== \n");
+            }
+
+            printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
+            printf("4 - Procurar outro produto \n");
+            printf("========================================================= \n");
+            printf("Insira nº da opcao >");
+            leitura = scanf("%s", input);
+            switch (toupper(input[0])) {
+                case '1':
+                    estado = FACE_CONTABILIDADE;
+                    break;
+                case '2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case 'Q':
+                case '3':
+                    estado = SAIR_PROGRAMA;
+                    break;
+                case '4':
+                    estado = QUERIE_7;
+                    break;
+                default:
+                    estado = SAIR_PROGRAMA;
+                    break;
+            }
+
+        }
+
+    }/* END WHILE*/
+
+
+    return estado;
 }
 
 int _08_clientes_compraram_prod() {
@@ -465,7 +593,7 @@ int _12_prods_mais_vendidos() {
     CONT_FICHA_PRODUTO ficha_prod = NULL;
     char input[50];
 
-    lista_prod = cont_top_produtos_comprados(contabilidade,100);
+    lista_prod = cont_top_produtos_comprados(contabilidade, 100);
     resultados = cont_lista_prod_get_num_elems(lista_prod);
     total_pags = cont_lista_prod_get_num_pags(lista_prod);
 
@@ -477,22 +605,24 @@ int _12_prods_mais_vendidos() {
         printf("GESTHIPER >> CATALOGOS >> QUERIE 12                 \n");
         printf("Lista de produtos mais comprados\n");
         printf("================================================= \n");
-        
-        if(resultados >0){
-        printf("Pagina %2d/%d \n", n_pagina, total_pags);
-        printf("\n");
+        if (resultados > 0) {
+            printf("Pagina %2d/%d \n", n_pagina, total_pags);
+            printf("------------------------\n");
+            printf(" #  | Produto | Vendas |\n");
+            printf("------------------------\n");
+            for (i = 0; i < elems_pag; i++) {
+                ficha_prod = cont_lista_get_fich_prod(lista_prod, inicio_pag + i);
+                printf("%3d | %7s | %6d |\n",inicio_pag + i + 1,
+                                                cont_get_cod_prod_ficha(ficha_prod),
+                                                cont_total_vendas_fich_produto(ficha_prod));
+            }
 
-        for (i = 0; i < elems_pag; i++) {
-            ficha_prod = cont_lista_get_fich_prod(lista_prod, inicio_pag + i);
-            printf("%s\n", cont_get_cod_prod_ficha(ficha_prod));
-        }
-
-        printf("\n");
-        printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
-        }else{
+            printf("------------------------\n");
+            printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
+        } else {
             printf("Nao ha resultados a mostrar.\n");
         }
-        
+
         printf("==================================================== \n");
         printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair    \n");
         printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");

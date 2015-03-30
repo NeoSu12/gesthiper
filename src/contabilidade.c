@@ -672,9 +672,9 @@ int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b){
     CONT_FICHA_PRODUTO a = (CONT_FICHA_PRODUTO) avl_a;
     CONT_FICHA_PRODUTO b = (CONT_FICHA_PRODUTO) avl_b;
     
-    if(a->total_unidades_vendidas_prod > b->total_unidades_vendidas_prod) res = 1;
+    if(a->total_unidades_vendidas_prod > b->total_unidades_vendidas_prod) res = -1;
     else if(a->total_unidades_vendidas_prod == b->total_unidades_vendidas_prod)res = 0;
-    else res = -1;
+    else res = 1;
     
     return res;
 }
