@@ -26,7 +26,7 @@ erros.o : erros.h
 compra.o : compra.h
 avl.o : avl.h
 interface.o : interface.h queries.h
-queries.o : queries.h
+queries.o : interface.h queries.h
 cat_clientes.o : avl.h cat_clientes.h
 cat_produtos.o : avl.h cat_produtos.h
 compras.o : compras.h avl.h compra.h 

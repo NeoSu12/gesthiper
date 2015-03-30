@@ -8,20 +8,13 @@
 #define NORMAL 0
 #define PROMO 1
 
-typedef enum campo {
-    PROD_VENDAS_NORMAIS = 1, PROD_VENDAS_PROMO, PROD_VENDAS_AMBOS,
-    PROD_FACT_NORMAL, PROD_FACT_PROMO, PROD_FACT_AMBOS,
-    TOTAL_COMPRAS_NORMAL, TOTAL_COMPRAS_PROMO, TOTAL_COMPRAS_AMBOS,
-    TOTAL_FACT_NORMAL, TOTAL_FACT_PROMO, TOTAL_FACT_AMBOS
-} campo_t;
-
 struct mod_contabilidade {
     int total_global_compras[12][2];
     double total_global_fact[12][2];
     ARVORE avl_produtos;
 };
 
-typedef struct produtos {
+struct cont_ficha_produto {
     char *cod_produto;
     int total_unidades_vendidas_prod;
     double total_facturacao_prod;
@@ -29,35 +22,32 @@ typedef struct produtos {
     /* Quantidade dum produto vendida num determinado mes 0-Normal / 1- Promo */
     double facturacao_prod[12][2];
     /* Facturacao por mes */
-}*NodoProdutos;
+};
 
-struct cont_lista_clientes{
+struct cont_lista_produtos{
     ARRAY_DINAMICO lista_paginada;
     int elems_por_pag;
 };
 
-typedef struct produto_venda{
-    char *codigo_produto;
-    int n_vendas;
-}*PRODUTO_VENDA;
+struct iterador_cont {
+    TRAVERSER traverser;
+};
 
-NodoProdutos inicializa_nodo_produto(char*);
-void free_nodo_produto_avl(void *, void *);
-NodoProdutos codigo_to_nodo(char*);
-void free_nodo_produto(NodoProdutos);
-PRODUTO_VENDA inicializa_produto_venda(char *, int);
-int ordena_produto_venda_desc(void *, void *);
-void free_produto_venda(PRODUTO_VENDA);
-int cont_compara_nodo_avl(const void *, const void *,void *);
-void free_produto_venda_ad(void *item);
-int compara_vendas_produtos(const void *, const void *,void *);
-NodoProdutos procura_nodo_avl_com_cod(Contabilidade, char *);
-void troca_meses(int * , int *);
-int cont_total_vendas_produto_geral(Contabilidade, char*,int, int, campo_t);
-double cont_total_fact_produto_geral(Contabilidade, char*, int, int, campo_t);
-int cont_total_compras_geral(Contabilidade, int, int, campo_t);
-double cont_total_facturacao_geral(Contabilidade, int, int, campo_t);
-void cont_free_string_ad(void *);
+
+CONT_FICHA_PRODUTO inicializa_ficha_produto(char* cod_prod);
+CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src);
+void free_ficha_prod(CONT_FICHA_PRODUTO prod);
+CONT_FICHA_PRODUTO codigo_to_ficha(char* cod_prod);
+CONT_FICHA_PRODUTO codigo_to_ficha_noclone(char* cod_prod) ;
+CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod);
+int cont_compara_ficha_por_cod_avl(const void *avl_a, const void *avl_b, void *avl_param);
+int cont_compara_ficha_por_vendas_ad(void *avl_a,void *avl_b);
+void cont_free_string_ad(void *item);
+void free_ficha_prod_avl(void *item, void *avl_param);
+void troca_meses(int *mes1 , int *mes2);
+void free_ficha_prod_ad(void *item);
+
+
 
 /* 
  * INICIALIZACAO E GESTAO MEMORIA
@@ -67,7 +57,7 @@ Contabilidade inicializa_contabilidade() {
     int i, j;
     Contabilidade res = (Contabilidade) malloc(sizeof (struct mod_contabilidade));
     
-    res->avl_produtos = avl_create(cont_compara_nodo_avl, NULL, NULL);
+    res->avl_produtos = avl_create(cont_compara_ficha_por_cod_avl, NULL, NULL);
     
     for (i = 0; i < 12; i++)
         for (j = 0; j < 2; j++){
@@ -79,12 +69,12 @@ Contabilidade inicializa_contabilidade() {
 }
 
 void cont_regista_produto(Contabilidade cont, char *cod_prod){
-    NodoProdutos nodo = inicializa_nodo_produto(cod_prod);
+    CONT_FICHA_PRODUTO nodo = inicializa_ficha_produto(cod_prod);
     avl_insert(cont->avl_produtos, nodo);
 }
 
 void cont_insere_compra(Contabilidade cont, COMPRA comp) {
-    NodoProdutos nodo_pesquisa, prod;
+    CONT_FICHA_PRODUTO nodo_pesquisa, prod;
     int promo, mes;
     double facturacao_compra;
     
@@ -94,8 +84,8 @@ void cont_insere_compra(Contabilidade cont, COMPRA comp) {
     mes = get_mes(comp);
     facturacao_compra = get_quantidade(comp) * get_preco_unit(comp);
     
-    nodo_pesquisa = codigo_to_nodo(get_cod_produto(comp));
-    prod = (NodoProdutos) avl_find(cont->avl_produtos, nodo_pesquisa);
+    nodo_pesquisa = codigo_to_ficha(get_cod_produto(comp));
+    prod = (CONT_FICHA_PRODUTO) avl_find(cont->avl_produtos, nodo_pesquisa);
     
     prod->total_unidades_vendidas_prod          += get_quantidade(comp);
     prod->total_facturacao_prod                 += facturacao_compra;
@@ -106,11 +96,11 @@ void cont_insere_compra(Contabilidade cont, COMPRA comp) {
     cont->total_global_compras[mes - 1][promo]  += 1;
     cont->total_global_fact[mes - 1][promo]     += facturacao_compra;
     
-    free_nodo_produto(nodo_pesquisa);
+    free_ficha_prod(nodo_pesquisa);
 }
 
 void free_contabilidade(Contabilidade cont) {
-    avl_destroy(cont->avl_produtos, free_nodo_produto_avl);
+    avl_destroy(cont->avl_produtos, free_ficha_prod_avl);
     free(cont);
 }
 
@@ -119,7 +109,7 @@ void free_contabilidade(Contabilidade cont) {
  */
 
 int cont_existe_codigo_prod(Contabilidade cont, char* cod_prod) {
-    NodoProdutos res = procura_nodo_avl_com_cod(cont, cod_prod);
+    CONT_FICHA_PRODUTO res = cont_procura_ficha_com_cod_avl(cont, cod_prod);
     return (res != NULL) ? 1 : 0;
 }
 
@@ -127,9 +117,14 @@ int cont_total_prods_comprados(Contabilidade cont){
     return avl_count(cont->avl_produtos);
 }
 
+
 /* 
  * FACTURACAO GLOBAL
  */
+
+double cont_total_facturacao(Contabilidade cont){
+    return cont_total_facturacao_geral(cont, 1, 12, TOTAL_FACT_AMBOS);
+}
 
 double cont_total_facturacao_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t campo) {
     double total = 0;
@@ -186,6 +181,10 @@ double cont_total_facturacao_promo_int_meses(Contabilidade cont, int mes_inf, in
  * COMPRAS GLOBAIS
  */
 
+int cont_total_compras(Contabilidade cont){
+    return cont_total_compras_geral(cont, 1, 12, TOTAL_COMPRAS_AMBOS);
+}
+
 int cont_total_compras_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t campo) {
     int total = 0, i = 0;
 
@@ -236,35 +235,47 @@ int cont_total_compras_promo_int_meses(Contabilidade cont, int mes_inf, int mes_
     return cont_total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_NORMAL);
 }
 
+/*
+ * FUNCOES FICHA PRODUTO PUBLICAS
+ */
+
+char *cont_get_cod_prod_ficha(CONT_FICHA_PRODUTO ficha_prod) {
+    return ficha_prod->cod_produto;
+}
+
+
 /* 
  * FACTURACAO PRODUTO
  */
 
-double cont_total_fact_produto_geral(Contabilidade cont, char* cod_prod,
+double cont_total_fact_fich_produto(CONT_FICHA_PRODUTO ficha_prod){
+    return ficha_prod->total_facturacao_prod;
+}
+
+double cont_total_fact_fich_produto_geral(CONT_FICHA_PRODUTO fich_prod,
                             int mes_inf, int mes_sup, campo_t campo) {
     double res = 0;
     int i = 0;
-    NodoProdutos produto = procura_nodo_avl_com_cod(cont, cod_prod);
 
     if (mes_inf > mes_sup) 
         troca_meses(&mes_inf, &mes_sup);
 
 
-    if (produto != NULL) {
+    if (fich_prod != NULL) {
 
         switch (campo) {
             case PROD_FACT_NORMAL:
                 for (i = mes_inf; i <= mes_sup; i++)
-                    res += produto->facturacao_prod[i - 1][NORMAL];
+                    res += fich_prod->facturacao_prod[i - 1][NORMAL];
                 break;
             case PROD_FACT_PROMO:
                 for (i = mes_inf; i <= mes_sup; i++)
-                    res += produto->facturacao_prod[i - 1][PROMO];
+                    res += fich_prod->facturacao_prod[i - 1][PROMO];
                 break;
             case PROD_FACT_AMBOS:
                 for (i = mes_inf; i <= mes_sup; i++)
-                    res += produto->facturacao_prod[i - 1][NORMAL] +
-                        produto->facturacao_prod[i - 1][PROMO];
+                    res += fich_prod->facturacao_prod[i - 1][NORMAL] +
+                        fich_prod->facturacao_prod[i - 1][PROMO];
                 break;
             default:
                 break;
@@ -275,6 +286,38 @@ double cont_total_fact_produto_geral(Contabilidade cont, char* cod_prod,
     }
 
     return res;
+}
+
+double cont_total_fact_fich_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes) {
+    return cont_total_fact_fich_produto_geral(fich_prod, mes, mes,PROD_FACT_AMBOS);
+}
+
+double cont_total_fact_fich_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup) {
+    return cont_total_fact_fich_produto_geral(fich_prod, mes_inf, mes_sup,PROD_FACT_AMBOS);
+}
+
+double cont_total_fact_fich_normal_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes) {
+    return cont_total_fact_fich_produto_geral(fich_prod, mes, mes,PROD_FACT_NORMAL);
+}
+
+double cont_total_fact_fich_normal_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup) {
+    return cont_total_fact_fich_produto_geral(fich_prod, mes_inf, mes_sup,PROD_FACT_NORMAL);
+}
+
+double cont_total_fact_fich_promo_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes) {
+    return cont_total_fact_fich_produto_geral(fich_prod, mes, mes,PROD_FACT_PROMO);
+}
+
+double cont_total_fact_fich_promo_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup) {
+    return cont_total_fact_fich_produto_geral(fich_prod, mes_inf, mes_sup,PROD_FACT_PROMO);
+}
+
+/*========================================*/
+
+double cont_total_fact_produto_geral(Contabilidade cont, char* cod_prod,
+                            int mes_inf, int mes_sup, campo_t campo) {
+    CONT_FICHA_PRODUTO produto = cont_procura_ficha_com_cod_avl(cont, cod_prod);
+    return cont_total_fact_fich_produto_geral(produto, mes_inf, mes_sup, campo);
 }
 
 double cont_total_fact_produto_mes(Contabilidade cont,char* cod_prod, int mes) {
@@ -302,34 +345,33 @@ double cont_total_fact_promo_produto_int_meses(Contabilidade cont, char* cod_pro
 }
 
 
+
 /* 
  * VENDAS PRODUTO
  */
 
-int cont_total_vendas_produto_geral(Contabilidade cont, char* cod_prod,
+int cont_total_vendas_fich_produto(CONT_FICHA_PRODUTO ficha_prod){
+    return ficha_prod->total_unidades_vendidas_prod;
+}
+
+int cont_total_vendas_fich_produto_geral(CONT_FICHA_PRODUTO fich_prod,
                             int mes_inf, int mes_sup, campo_t campo) {
     int res = 0, i = 0;
-    NodoProdutos produto = procura_nodo_avl_com_cod(cont, cod_prod);
-
-    if (mes_inf > mes_sup) 
-        troca_meses(&mes_inf, &mes_sup);
-
-
-    if (produto != NULL) {
+    if (fich_prod != NULL) {
 
         switch (campo) {
             case PROD_VENDAS_NORMAIS:
                 for (i = mes_inf; i <= mes_sup; i++)
-                    res += produto->unidades_vendidas_prod[i - 1][NORMAL];
+                    res += fich_prod->unidades_vendidas_prod[i - 1][NORMAL];
                 break;
             case PROD_VENDAS_PROMO:
                 for (i = mes_inf; i <= mes_sup; i++)
-                    res += produto->unidades_vendidas_prod[i - 1][PROMO];
+                    res += fich_prod->unidades_vendidas_prod[i - 1][PROMO];
                 break;
             case PROD_VENDAS_AMBOS:
                 for (i = mes_inf; i <= mes_sup; i++)
-                    res += produto->unidades_vendidas_prod[i - 1][NORMAL] +
-                        produto->unidades_vendidas_prod[i - 1][PROMO];
+                    res += fich_prod->unidades_vendidas_prod[i - 1][NORMAL] +
+                        fich_prod->unidades_vendidas_prod[i - 1][PROMO];
                 break;
             default:
                 break;
@@ -340,6 +382,39 @@ int cont_total_vendas_produto_geral(Contabilidade cont, char* cod_prod,
     }
 
     return res;
+}
+
+int cont_total_vendas_fich_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes) {
+    return cont_total_vendas_fich_produto_geral(fich_prod, mes, mes,PROD_VENDAS_AMBOS);
+}
+
+int cont_total_vendas_fich_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup) {
+    return cont_total_vendas_fich_produto_geral(fich_prod, mes_inf, mes_sup,PROD_VENDAS_AMBOS);
+}
+
+int cont_total_vendas_fich_normais_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes) {
+    return cont_total_vendas_fich_produto_geral(fich_prod, mes, mes,PROD_VENDAS_NORMAIS);
+}
+
+int cont_total_vendas_fich_normais_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup) {
+    return cont_total_vendas_fich_produto_geral(fich_prod, mes_inf, mes_sup,PROD_VENDAS_NORMAIS);
+}
+
+int cont_total_vendas_fich_promo_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes) {
+    return cont_total_vendas_fich_produto_geral(fich_prod, mes, mes,PROD_VENDAS_PROMO);
+}
+
+int cont_total_vendas_fich_promo_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup) {
+    return cont_total_vendas_fich_produto_geral(fich_prod, mes_inf, mes_sup,PROD_VENDAS_PROMO);
+}
+
+/*===================================*/
+
+
+int cont_total_vendas_produto_geral(Contabilidade cont, char* cod_prod,
+                            int mes_inf, int mes_sup, campo_t campo) {
+    CONT_FICHA_PRODUTO produto = cont_procura_ficha_com_cod_avl(cont, cod_prod);
+    return cont_total_vendas_fich_produto_geral(produto, mes_inf, mes_sup, campo);
 }
 
 int cont_total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes) {
@@ -370,37 +445,149 @@ int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod
  * LISTAGENS / PAGINAÇÃO
  */
 
-CONT_LISTA_CLIENTES cont_lista_clientes_sem_compras(Contabilidade catalogo_produtos, char letra, int elems_por_pag){
-    return NULL;
+CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
+    CONT_FICHA_PRODUTO produto;
+    CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof(struct cont_lista_produtos));
+    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
+    IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
+    
+    while((produto = it_cont_fich_produto_proximo(iterador))!=NULL){
+        if(cont_total_vendas_fich_produto(produto)==0){
+            ad_insere_elemento(ad,produto);
+        }
+    }
+    lista->lista_paginada=ad;
+    lista->elems_por_pag=20;
+    return lista;
 }
 
-char *cont_lista_cli_get_elemento(CONT_LISTA_CLIENTES lista,int p){
-    return (char *) ad_get_elemento(lista->lista_paginada, p);
+CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n){
+    int i;
+    CONT_FICHA_PRODUTO produto;
+    CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof(struct cont_lista_produtos));
+    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
+    IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
+    
+    
+    for(i=0;i<n && (produto = it_cont_fich_produto_proximo(iterador))!=NULL;i++){
+        if(cont_total_vendas_fich_produto(produto)==0){
+            ad_insere_elemento(ad,produto);
+        }
+    }
+    ad_ordena(ad, cont_compara_ficha_por_vendas_ad);
+    
+    if(produto!=NULL){
+        while((produto = it_cont_fich_produto_proximo(iterador))!=NULL){
+            ad_insere_elemento_ordenado_mode(ad, produto, cont_compara_ficha_por_vendas_ad,KEEP_SIZE);
+        }
+    }
+    lista->lista_paginada=ad;
+    lista->elems_por_pag=20;
+    return lista;
 }
 
-int cont_lista_cli_get_pos_and_num_elems_pag(CONT_LISTA_CLIENTES lista, int *pos_inicial, int pag){
+CONT_FICHA_PRODUTO cont_lista_get_fich_prod(CONT_LISTA_PRODUTOS lista,int p){
+    return (CONT_FICHA_PRODUTO) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int cont_lista_prod_get_pos_and_num_elems_pag(CONT_LISTA_PRODUTOS lista, int *pos_inicial, int pag){
     return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
 }
 
-int cont_lista_cli_get_num_pags(CONT_LISTA_CLIENTES lista){
+int cont_lista_prod_get_num_pags(CONT_LISTA_PRODUTOS lista){
     return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
 }
 
-int cont_lista_cli_get_elems_por_pag(CONT_LISTA_CLIENTES lista){
+int cont_lista_prod_get_elems_por_pag(CONT_LISTA_PRODUTOS lista){
     return lista->elems_por_pag;
 }
 
-int cont_lista_cli_muda_elems_por_pag(CONT_LISTA_CLIENTES lista, int n){
-    return lista->elems_por_pag=n;
+void  cont_lista_prod_muda_elems_por_pag(CONT_LISTA_PRODUTOS lista, int n){
+    lista->elems_por_pag=n;
 }
 
-int cont_lista_cli_get_num_elems(CONT_LISTA_CLIENTES lista){
+int cont_lista_prod_get_num_elems(CONT_LISTA_PRODUTOS lista){
     return ad_get_tamanho(lista->lista_paginada);
 }
 
-void cont_free_lista_produtos(CONT_LISTA_CLIENTES lista){
-    ad_deep_free(lista->lista_paginada, cont_free_string_ad);
+void cont_free_lista_produtos(CONT_LISTA_PRODUTOS lista){
+    ad_deep_free(lista->lista_paginada, free_ficha_prod_ad);
     free(lista);
+}
+
+/*
+ * ITERADORES
+ */
+
+IT_CONT inicializa_it_cont_fich_produtos(Contabilidade cont) {
+    IT_CONT it = (IT_CONT) malloc(sizeof (struct iterador_cont));
+    it->traverser = avl_t_alloc();
+    avl_t_init(it->traverser, cont->avl_produtos);
+    return it;
+}
+
+IT_CONT inicializa_it_cont_fich_produtos_primeiro(Contabilidade cont) {
+    IT_CONT it = (IT_CONT) malloc(sizeof (struct iterador_cont));
+    it->traverser = avl_t_alloc();
+    avl_t_first(it->traverser, cont->avl_produtos);
+    return it;
+}
+
+IT_CONT inicializa_it_cont_fich_produtos_ultimo(Contabilidade cont) {
+    IT_CONT it;
+    it = (IT_CONT) malloc(sizeof (struct iterador_cont));
+    it->traverser = avl_t_alloc();
+    avl_t_last(it->traverser, cont->avl_produtos);
+    return it;
+}
+
+IT_CONT inicializa_it_cont_fich_produtos_elem(Contabilidade cont, char *st) {
+    IT_CONT it;
+
+    if (st != NULL) {
+        it = (IT_CONT) malloc(sizeof (struct iterador_cont));
+        it->traverser = avl_t_alloc();
+        avl_t_find(it->traverser, cont->avl_produtos, st);
+    } else {
+        it = NULL;
+    }
+
+    return it;
+}
+
+CONT_FICHA_PRODUTO it_cont_fich_produto_actual(IT_CONT it) {
+    CONT_FICHA_PRODUTO ret = NULL;
+    CONT_FICHA_PRODUTO res = avl_t_cur(it->traverser);
+
+    if (res != NULL)
+        ret = cont_ficha_prod_clone(res);
+
+    return ret;
+}
+
+CONT_FICHA_PRODUTO it_cont_fich_produto_proximo(IT_CONT it) {
+    CONT_FICHA_PRODUTO ret = NULL;
+    CONT_FICHA_PRODUTO res = avl_t_next(it->traverser);
+
+    if (res != NULL)
+        ret = cont_ficha_prod_clone(res);
+
+    return ret;
+}
+
+CONT_FICHA_PRODUTO it_cont_fich_produto_anterior(IT_CONT it) {
+    CONT_FICHA_PRODUTO ret = NULL;
+    CONT_FICHA_PRODUTO res = avl_t_prev(it->traverser);
+
+    if (res != NULL)
+        ret = cont_ficha_prod_clone(res);
+
+    return ret;
+}
+
+void free_it_cont_fich_prod(IT_CONT it){
+    avl_t_free(it->traverser);
+    free(it);
 }
 
 
@@ -408,9 +595,14 @@ void cont_free_lista_produtos(CONT_LISTA_CLIENTES lista){
  * FUNCOES AUXILIARES PRIVADAS AO MODULO 
  */
 
-NodoProdutos inicializa_nodo_produto(char* cod_prod) {
+/*
+ * FUNCOES FICHA PRODUTO
+ */
+
+
+CONT_FICHA_PRODUTO inicializa_ficha_produto(char* cod_prod) {
     int i, j;
-    NodoProdutos prod = (NodoProdutos) malloc(sizeof (struct produtos));
+    CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) malloc(sizeof (struct cont_ficha_produto));
     char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
     strcpy(copia, cod_prod);
     prod->cod_produto = copia;
@@ -426,73 +618,61 @@ NodoProdutos inicializa_nodo_produto(char* cod_prod) {
     return prod;
 }
 
-PRODUTO_VENDA inicializa_produto_venda(char *cod, int vendas){
-    PRODUTO_VENDA res = (PRODUTO_VENDA) malloc(sizeof(struct produto_venda));
-    char *copia = (char*) malloc(sizeof (char)*(strlen(cod) + 1));
-    strcpy(copia, cod);
-    res->codigo_produto=copia;
-    res->n_vendas = vendas;
-    return res;
-}
-
-int ordena_produto_venda_desc(void *item_a, void *item_b){
-    int res=0;
-    PRODUTO_VENDA a = (PRODUTO_VENDA) item_a;
-    PRODUTO_VENDA b = (PRODUTO_VENDA) item_b;
+CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src){
+    int i,j;
+    CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) malloc(sizeof (struct cont_ficha_produto));
+    char *copia = (char*) malloc(sizeof (char)*(strlen(src->cod_produto) + 1));
+    strcpy(copia, src->cod_produto);
+    prod->cod_produto = copia;
     
-    if(a->n_vendas > b->n_vendas) res=-1;
-    else if(a->n_vendas == b->n_vendas) res=0;
-    else res=1;
+    for (i = 0; i < 12; i++)
+        for (j = 0; j < 2; j++) {
+            prod->facturacao_prod[i][j] = src->facturacao_prod[i][j];
+            prod->unidades_vendidas_prod[i][j] = src->unidades_vendidas_prod[i][j];
+        }
     
-    return res;
+    prod->total_facturacao_prod=src->total_facturacao_prod;
+    prod->total_unidades_vendidas_prod=src->total_unidades_vendidas_prod;
+    return prod;
+}
+ 
+void free_ficha_prod(CONT_FICHA_PRODUTO prod) {
+    free(prod->cod_produto);
+    free(prod);
 }
 
-void free_produto_venda(PRODUTO_VENDA pv){
-    free(pv->codigo_produto);
-    free(pv);
-}
-
-void free_produto_venda_ad(void *item){
-    PRODUTO_VENDA pv = (PRODUTO_VENDA) item;
-    free(pv->codigo_produto);
-    free(pv);
-}
-
-void cont_free_string_ad(void *item){
-    free(item);
-}
-
-NodoProdutos codigo_to_nodo(char* cod_prod) {
-    NodoProdutos prod = (NodoProdutos) malloc(sizeof (struct produtos));
+CONT_FICHA_PRODUTO codigo_to_ficha(char* cod_prod) {
+    CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) malloc(sizeof (struct cont_ficha_produto));
     char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
     strcpy(copia, cod_prod);
     prod->cod_produto = copia;
     return prod;
 }
 
-void free_nodo_produto_avl(void *item, void *avl_param) {
-    NodoProdutos prod = (NodoProdutos) item;
-    free(prod->cod_produto);
-    free(prod);
+CONT_FICHA_PRODUTO codigo_to_ficha_noclone(char* cod_prod) {
+    CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) malloc(sizeof (struct cont_ficha_produto));
+    prod->cod_produto = cod_prod;
+    return prod;
 }
 
-void free_nodo_produto(NodoProdutos prod) {
-    free(prod->cod_produto);
-    free(prod);
+CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod){
+    CONT_FICHA_PRODUTO nodo_aux = codigo_to_ficha_noclone(cod_prod);
+    CONT_FICHA_PRODUTO res = (CONT_FICHA_PRODUTO) avl_find(cont->avl_produtos, nodo_aux);
+    free(nodo_aux);
+    return res;
 }
 
-int cont_compara_nodo_avl(const void *avl_a, const void *avl_b,
+int cont_compara_ficha_por_cod_avl(const void *avl_a, const void *avl_b,
                                  void *avl_param){
-    NodoProdutos a = (NodoProdutos) avl_a;
-    NodoProdutos b = (NodoProdutos) avl_b;
+    CONT_FICHA_PRODUTO a = (CONT_FICHA_PRODUTO) avl_a;
+    CONT_FICHA_PRODUTO b = (CONT_FICHA_PRODUTO) avl_b;
     return strcmp(a->cod_produto, b->cod_produto);
 }
 
-int compara_vendas_produtos(const void *avl_a, const void *avl_b,
-                                 void *avl_param){
+int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b){
     int res=0;
-    NodoProdutos a = (NodoProdutos) avl_a;
-    NodoProdutos b = (NodoProdutos) avl_b;
+    CONT_FICHA_PRODUTO a = (CONT_FICHA_PRODUTO) avl_a;
+    CONT_FICHA_PRODUTO b = (CONT_FICHA_PRODUTO) avl_b;
     
     if(a->total_unidades_vendidas_prod > b->total_unidades_vendidas_prod) res = 1;
     else if(a->total_unidades_vendidas_prod == b->total_unidades_vendidas_prod)res = 0;
@@ -501,13 +681,21 @@ int compara_vendas_produtos(const void *avl_a, const void *avl_b,
     return res;
 }
 
-NodoProdutos procura_nodo_avl_com_cod(Contabilidade cont, char *cod_prod){
-    NodoProdutos nodo_aux = inicializa_nodo_produto(cod_prod);
-    NodoProdutos res = (NodoProdutos) avl_find(cont->avl_produtos, nodo_aux);
-    free_nodo_produto(nodo_aux);
-    return res;
+void cont_free_string_ad(void *item){
+    free(item);
 }
 
+void free_ficha_prod_avl(void *item, void *avl_param) {
+    CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) item;
+    free(prod->cod_produto);
+    free(prod);
+}
+
+void free_ficha_prod_ad(void *item) {
+    CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) item;
+    free(prod->cod_produto);
+    free(prod);
+}
 void troca_meses(int *mes1 , int *mes2){
     int temp = *mes1;
     *mes1 = *mes2;

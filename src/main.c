@@ -63,7 +63,7 @@ int le_ficheiros(int argc, char **argv) {
     switch (argc) {
         case 1: nfclientes = "datasets/FichClientes.txt";
             nfprodutos = "datasets/FichProdutos.txt";
-            nfcompras = "datasets/Compras100m.txt";
+            nfcompras = "datasets/Compras3.txt";
             break;
 
         case 2: if (strcmp(argv[1], "--mini") == 0) {
@@ -99,6 +99,7 @@ int le_ficheiros(int argc, char **argv) {
     cf = clock();
     printf("------------------\n");
     printf("Tempo total leitura: %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
+    printf("------------------\n");
     
     fclose(f_clientes);
     fclose(f_produtos);
@@ -174,7 +175,6 @@ void le_compras(FILE *f_comp, char *nf) {
     COMPRA compra;
     int compras_validas = 0, total_linhas_compras = 0;
     clock_t ci, cf;
-    double facturacao_total=0;
     char *linha_compra, *token;
     char *delim = " \n\r";
 
@@ -204,9 +204,8 @@ void le_compras(FILE *f_comp, char *nf) {
         token = strtok(NULL, delim);
         set_mes(compra, atoi(token));
 
-        if (compra_valida_debug(compra)) {
+        if (compra_valida(compra)) {
             cont_insere_compra(contabilidade, compra);
-            facturacao_total = facturacao_total + (get_quantidade(compra) * get_preco_unit(compra));
             compras_validas++;
         }
         total_linhas_compras++;
@@ -219,13 +218,14 @@ void le_compras(FILE *f_comp, char *nf) {
     printf("Linhas validas: %d (%d invalidas)\n", compras_validas, total_linhas_compras-compras_validas);
     printf("Linhas lidas: %d\n", total_linhas_compras);
     printf("Leitura em %f segundos.\n", ((float) cf - ci) / CLOCKS_PER_SEC);
+    /*
     printf("------------------\n");
     printf("MOTIVO DAS COMPRAS INVALIDAS:\n");
     printf("------------------\n");
     printf("Codigo Cliente errado: %d\n", cliente_errado);
     printf("Codigo Produto errado: %d\n", produto_errado);
     printf("Facturacao Anual: %.2f€\n", facturacao_total);
-    
+    */
     
     free_compra(compra);
     free(linha_compra);

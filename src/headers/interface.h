@@ -3,6 +3,16 @@
 
 void interface();
 
+typedef enum estado_menu {
+    SAIR_PROGRAMA,
+    MENU_PRINCIPAL,
+    FACE_CATALOGOS,
+    FACE_CONTABILIDADE,
+    FACE_COMPRAS,
+    QUERIE_2, QUERIE_3, QUERIE_4, QUERIE_5, QUERIE_6, QUERIE_7,
+    QUERIE_8, QUERIE_9, QUERIE_10, QUERIE_11, QUERIE_12, QUERIE_13, QUERIE_14
+
+}Menu;
 
 #endif	/* INTERFACE_H */
 

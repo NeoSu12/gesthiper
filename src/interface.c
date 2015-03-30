@@ -19,13 +19,16 @@ int face_compras();
 
 void interface() {
     char r[50];
-    int sair_programa = 0, leitura;
+    int estado=MENU_PRINCIPAL;
+    int leitura=0;
     
     printf("Pressione qualquer tecla para continuar (q para sair): ");
     leitura = scanf("%s", r);
-    if(tolower(r[0])=='q') sair_programa = 1;
     
-    while (sair_programa == 0) {
+    if(tolower(r[0])=='q') 
+        estado = SAIR_PROGRAMA;
+    
+    while (estado == MENU_PRINCIPAL) {
         printf("\033[2J\033[1;1H"
                 " ========================================== \n"
                 "| GESTHIPER                                |\n"
@@ -42,13 +45,13 @@ void interface() {
         leitura = scanf("%s", r);
 
         switch (toupper(r[0])) {
-            case '1': sair_programa = face_catalogos();
+            case '1': estado = face_catalogos();
                 break;
-            case '2': sair_programa = face_contabilidade();
+            case '2': estado = face_contabilidade();
                 break;
-            case '3': sair_programa = face_compras();
+            case '3': estado = face_compras();
                 break;
-            case 'Q': sair_programa = 1;
+            case 'Q': estado = SAIR_PROGRAMA;
                 break;
             default:
                 /*TODO: Tratamento de erro temporario.
@@ -65,19 +68,19 @@ void interface() {
 
 int face_catalogos() {
     char r[50];
-    int sair_menu=0, leitura;
-    int sair_programa=0;
+    int estado=FACE_CATALOGOS;
+    int leitura=0;
 
 
-    while (sair_menu == 0 && sair_programa == 0) {
+    while (estado == FACE_CATALOGOS) {
         printf("\033[2J\033[1;1H"
                 " ================================================= \n"
                 "| GESTHIPER >> CATALOGOS                          |\n"
                 "|                                                 |\n"
-                "|   1 = Listar produtos começados por letra [2]   |\n");
-        printf( "|   2 = Listar clientes comecados por letra [6]   |\n"
+                "|   1 - Listar produtos começados por letra [2]   |\n");
+        printf( "|   2 - Listar clientes comecados por letra [6]   |\n"
                 "| ----------------------------------------------- |\n"
-                "|  0 = Voltar                            Q = Sair |\n"
+                "|  0 - Voltar                            Q - Sair |\n"
                 " =================================================\n");
 
 
@@ -86,18 +89,16 @@ int face_catalogos() {
         switch (toupper(r[0])) {
             case '\\':
             case '0': 
-                sair_menu = 1;
-                sair_programa = 0;
+                estado = MENU_PRINCIPAL;
                 break;
             case '1': 
-                sair_programa = _02_codigo_produtos_letra();
+                estado = _02_codigo_produtos_letra();
                 break;
             case '2': 
-                sair_programa = _06_codigos_clientes_letra();
+                estado = _06_codigos_clientes_letra();
                 break;
             case 'Q': 
-                sair_menu = 1;
-                sair_programa = 1;
+                estado = SAIR_PROGRAMA;
                 break;
             default:
                 /*TODO: Tratamento de erro temporario.
@@ -108,15 +109,15 @@ int face_catalogos() {
                 break;
         }
     }
-    return sair_programa;
+    return estado;
 }
 
 int face_contabilidade() {
     char r[50];
-    int sair_menu = 0, sair_programa=0;
-    int leitura;
+    int estado=FACE_CONTABILIDADE;
+    int leitura=0;
     
-        while (sair_menu == 0 && sair_programa ==0) {
+        while (estado ==FACE_CONTABILIDADE) {
         printf("\033[2J\033[1;1H"
                 " ========================================================= \n"
                 "| GESTHIPER >> CONTABILIDADE                              |\n"
@@ -135,16 +136,14 @@ int face_contabilidade() {
         
         switch (toupper(r[0])) {
         	case '\\':
-            case '0': sair_menu=1;
-                      sair_programa=0;
+            case '0': estado = MENU_PRINCIPAL;
                       break;
-            case '1': sair_programa = _03_compras_e_fact_mensal_prod(); break;
-            case '2': sair_programa = _04_prods_nao_comprados(); break;
-            case '3': sair_programa = _07_compras_intervalo_meses(); break;
-            case '4': sair_programa = _11_compras_CSV(); break;
-            case '5': sair_programa = _14_clientes_prods_fantasma(); break;
-            case 'Q': sair_menu = 1;
-                      sair_programa=1;
+            case '1': estado = _03_compras_e_fact_mensal_prod(); break;
+            case '2': estado = _04_prods_nao_comprados(); break;
+            case '3': estado = _07_compras_intervalo_meses(); break;
+            case '4': estado = _11_compras_CSV(); break;
+            case '5': estado = _14_clientes_prods_fantasma(); break;
+            case 'Q': estado = SAIR_PROGRAMA;
                       break;
             default: 
                 /*TODO: Tratamento de erro temporario.
@@ -155,16 +154,16 @@ int face_contabilidade() {
                 break;
         }
     }
-    return sair_programa;
+    return estado;
 }
 
 int face_compras() {
     char r[50];
-    int sair_menu = 0,sair_programa=0;
-    int leitura;
+    int estado=FACE_COMPRAS;
+    int leitura=0;
 
 
-    while (sair_menu == 0 && sair_programa ==0) {
+    while (estado ==FACE_COMPRAS) {
         printf("\033[2J\033[1;1H"
                 " ========================================================  \n"
                 "| GESTHIPER >> COMPRAS                                    |\n"
@@ -184,18 +183,16 @@ int face_compras() {
 
         switch (toupper(r[0])) {
         	case '\\':
-            case '0': sair_menu=1;
-                      sair_programa=0;
+            case '0': estado = FACE_COMPRAS;
                       break;
-            case '1': sair_programa = _05_tabela_cliente();break;
-            case '2': sair_programa = _08_clientes_compraram_prod();break;
-            case '3': sair_programa = _09_produtos_mais_comprados_cliente();break;
-            case '4': sair_programa = _10_clientes_regulares();break;
-            case '5': sair_programa = _11_compras_CSV();break;
-            case '6': sair_programa = _13_tres_prods_mais_comprados();break;
-            case '7': sair_programa = _14_clientes_prods_fantasma();break;
-            case 'Q': sair_menu = 1;
-                      sair_programa = 1;
+            case '1': estado = _05_tabela_cliente();break;
+            case '2': estado = _08_clientes_compraram_prod();break;
+            case '3': estado = _09_produtos_mais_comprados_cliente();break;
+            case '4': estado = _10_clientes_regulares();break;
+            case '5': estado = _11_compras_CSV();break;
+            case '6': estado = _13_tres_prods_mais_comprados();break;
+            case '7': estado = _14_clientes_prods_fantasma();break;
+            case 'Q': estado = FACE_COMPRAS;
                       break;
             default:
                 /*TODO: Tratamento de erro temporario.
@@ -206,5 +203,5 @@ int face_compras() {
                 break;
         }
     }
-    return sair_programa;
+    return estado;
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "headers/interface.h"
 #include "headers/queries.h"
 #include "headers/cat_produtos.h"
 #include "headers/cat_clientes.h"
@@ -14,7 +15,7 @@
 #define BLUE  "\x1B[34m"
 #define WHITE  "\x1B[37m"
 
-#define TAM_PAGINA 20
+#define TAM_PAGINA 15
 
 typedef enum mes {
     JANEIRO = 1, FEVEREIRO, MARCO, ABRIL, MAIO, JUNHO, JULHO, AGOSTO, SETEMBRO, OUTUBRO, NOVEMBRO, DEZEMBRO
@@ -24,110 +25,112 @@ extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
 extern Contabilidade contabilidade;
 
-ARRAY_DINAMICO _06_clientes_to_ad(char);
-void free_str(void *);
-
 int _02_codigo_produtos_letra() {
     int i = 0, leitura = 0;
-    int sair_menu = 0, sair_programa = 0;
+    int estado = QUERIE_2;
     int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
     int resultados = 0, total_pags = 0, escolha_pag = 0;
     CAT_LISTA_PRODUTOS lista_prod = NULL;
     char letra;
     char input[50];
 
-    while (sair_menu == 0) {
+    while (estado == QUERIE_2) {
         printf("\033[2J\033[1;1H");
         printf(" ====================================================  \n");
         printf("|  GESTHIPER >> CATALOGOS >> QUERIE 2                 |\n");
         printf("|                                                     |\n");
         printf("|  Listar produtos começados por letra                |\n");
         printf("| --------------------------------------------------- |\n");
-        printf("| 1- Voltar para CONTABILIDADE | 2 - Sair programa    |\n");
+        printf("| 1 - CATALOGOS | 2 - Menu Principal | 3 - Sair       |\n");
         printf(" ====================================================  \n");
         printf("Insira a letra a procurar > ");
         leitura = scanf("%s", input);
         letra = toupper(input[0]);
-        
-        if(leitura>0){
-        switch (toupper(input[0])) {
+
+        if (leitura > 0) {
+            switch (toupper(input[0])) {
                 case '1':
-                    sair_menu = 1;
-                    sair_programa = 0;
+                    estado = FACE_CATALOGOS;
                     break;
-                case'2':
-                    sair_menu = 1;
-                    sair_programa = 1;
+                case '2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case '3':
+                    estado = SAIR_PROGRAMA;
                     break;
                 default:
                     break;
             }
         }
-        if (isalpha(letra) && leitura > 0 && !sair_menu) {
+        if (isalpha(letra) && leitura > 0 && estado == QUERIE_2) {
             lista_prod = cat_lista_produtos_letra(catalogo_produtos, letra, TAM_PAGINA);
             resultados = cat_lista_prod_get_num_elems(lista_prod);
             total_pags = cat_lista_prod_get_num_pags(lista_prod);
 
-            while (sair_menu == 0) {
+            while (estado == QUERIE_2) {
                 elems_pag = cat_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
                 fim_pag = inicio_pag + elems_pag;
 
                 printf("\033[2J\033[1;1H");
-                printf("-----------------\n");
-                printf("--Pagina %2d/%d--\n", n_pagina, total_pags);
-                printf("-----------------\n");
+                printf("GESTHIPER >> CATALOGOS >> QUERIE 2                 \n");
+                printf("A mostrar produtos começados pela letra %c\n", letra);
+                printf("================================================= \n");
+                printf("Pagina %2d/%d \n", n_pagina, total_pags);
+                printf("\n");
 
                 for (i = 0; i < elems_pag; i++)
                     printf("%s\n", cat_lista_prod_get_elemento(lista_prod, inicio_pag + i));
 
                 printf("\n");
-
                 printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
-                printf("---------------------------------------------------------\n");
-                printf("1- << | 2- < | 3 - > | 4 - >> | 5 - Ir Para pag... | 0- Voltar | Q - Sair\n");
-                printf("Escolha >");
+                printf("==================================================== \n");
+                printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
+                printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+                printf("==================================================== \n");
+                printf("Insira nº da opcao >");
                 leitura = scanf("%s", input);
 
                 switch (toupper(input[0])) {
-                    case '0':
-                        sair_menu = 1;
-                        break;
                     case '1':
-                        n_pagina = 1;
+                        estado = FACE_CATALOGOS;
                         break;
                     case '2':
+                        estado = MENU_PRINCIPAL;
+                        break;
+                    case 'Q':
+                    case '3':
+                        estado = SAIR_PROGRAMA;
+                        break;
+                    case '4':
+                        n_pagina = 1;
+                        break;
+                    case '5':
                         if (n_pagina > 1)
                             n_pagina--;
                         break;
-                    case '3':
+                    case '6':
                         if (n_pagina < total_pags)
                             n_pagina++;
                         break;
-                    case'4':
+                    case'7':
                         n_pagina = total_pags;
                         break;
-                    case '5':
+                    case '9':
                         printf("Indique a pag para que quer ir >");
                         leitura = scanf("%d", &escolha_pag);
                         if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                             n_pagina = escolha_pag;
                         break;
-                    case 'Q':
-                        sair_menu = 1;
-                        sair_programa = 1;
-                        break;
                     default:
-                        sair_menu = 1;
+                        estado = SAIR_PROGRAMA;
                         break;
                 }
             }
             cat_free_lista_produtos(lista_prod);
-            
-        } else {
-            sair_menu = 1;
+
         }
     }
-    return sair_programa;
+    return estado;
 }
 
 int _03_compras_e_fact_mensal_prod() {
@@ -135,17 +138,16 @@ int _03_compras_e_fact_mensal_prod() {
     char input[50];
     int total_vendas_n = 0, total_vendas_p = 0;
     double total_fact_n = 0, total_fact_p = 0;
-    int sair_menu = 0, sair_programa = 0;
+    int estado = QUERIE_3;
 
-
-    while (sair_menu == 0) {
+    while (estado == QUERIE_3) {
         printf("\033[2J\033[1;1H");
         printf(" ======================================================  \n");
         printf("|  GESTHIPER >> CONTABILIDADE >> QUERIE 3               |\n");
         printf("|                                                       |\n");
         printf("|  Nº vendas e facturação mensal produto                |\n");
         printf("| ----------------------------------------------------- |\n");
-        printf("| 1- Voltar para CONTABILIDADE | 2 - Sair programa      |\n");
+        printf("| 1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair     |\n");
         printf(" ======================================================  \n");
         printf("Insira o codigo de produto a procurar > ");
         leitura = scanf("%s", input);
@@ -153,24 +155,30 @@ int _03_compras_e_fact_mensal_prod() {
         if (leitura > 0) {
             switch (toupper(input[0])) {
                 case '1':
-                    sair_menu = 1;
-                    sair_programa = 0;
+                    estado = FACE_CONTABILIDADE;
                     break;
                 case'2':
-                    sair_menu = 1;
-                    sair_programa = 1;
+                    estado = MENU_PRINCIPAL;
                     break;
+                case'3':
+                    estado = SAIR_PROGRAMA;
                 default:
                     break;
             }
+        }
 
-            if (cat_existe_produto(catalogo_produtos, input) && !sair_menu) {
-                printf("\033[2J\033[1;1H");
+        if (estado == QUERIE_3) {
+            printf("\033[2J\033[1;1H");
+            printf("GESTHIPER >> CATALOGOS >> QUERIE 3                 \n");
+            printf("Nº vendas e facturação mensal produto              \n");
+            printf("========================================================= \n");
+
+            if (cat_existe_produto(catalogo_produtos, input)) {
                 printf("Codigo de produto: %s\n", input);
                 printf("========================================================= \n");
                 printf("     |  Vendas   |       ||    Facturacao     |           |\n");
                 printf(" Mes |  P  |  N  | Total ||    P    |    N    |   Total   |\n");
-                printf("========================================================== \n");
+                printf("--------------------------------------------------------- \n");
                 for (i = JANEIRO; i <= DEZEMBRO; i++) {
                     printf("%4d | %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
                             i,
@@ -189,18 +197,46 @@ int _03_compras_e_fact_mensal_prod() {
                     total_fact_p += cont_total_fact_promo_produto_mes(contabilidade, input, i);
 
                 }
-                printf("========================================================== \n");
+                printf("---------------------------------------------------------- \n");
                 printf("TOTAL| %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
                         total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
                         total_fact_n, total_fact_p, total_fact_n + total_fact_p);
+                printf("========================================================== \n");
             } else {
-                if (!sair_menu) printf("Produto nao encontrado\n");
+                printf("O produto nao existe\n");
+                printf("========================================================== \n");
             }
+            
+            printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
+            printf("4 - Procurar outro produto \n");
+            printf("========================================================= \n");
+            printf("Insira nº da opcao >");
+            leitura = scanf("%s", input);
+            switch (toupper(input[0])) {
+                case '1':
+                    estado = FACE_CATALOGOS;
+                    break;
+                case '2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case 'Q':
+                case '3':
+                    estado = SAIR_PROGRAMA;
+                    break;
+                case '4':
+                    estado = QUERIE_3;
+                    break;
+                default:
+                    estado = SAIR_PROGRAMA;
+                    break;
+            }
+
         }
 
-    }
+    }/* END WHILE*/
 
-    return sair_programa;
+
+    return estado;
 }
 
 int _04_prods_nao_comprados() {
@@ -213,105 +249,110 @@ int _05_tabela_cliente() {
 
 int _06_codigos_clientes_letra() {
     int i = 0, leitura = 0;
-    int sair_menu = 0, sair_programa = 0;
+    int estado = QUERIE_6;
     int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
     int resultados = 0, total_pags = 0, escolha_pag = 0;
     CAT_LISTA_CLIENTES lista_cli = NULL;
     char letra;
     char input[50];
 
-    while (sair_menu == 0) {
+    while (estado == QUERIE_6) {
         printf("\033[2J\033[1;1H");
-        printf(" =========================================================  \n");
-        printf("|  GESTHIPER >> CATALOGOS >> QUERIE 6                      |\n");
-        printf("|                                                          |\n");
-        printf("|  Listar clientes comecados por letra                     |\n");
-        printf("| -------------------------------------------------------- |\n");
-        printf("| 1- Voltar para CONTABILIDADE | 2 - Sair programa         |\n");
-        printf(" =========================================================  \n");
+        printf(" ====================================================  \n");
+        printf("|  GESTHIPER >> CATALOGOS >> QUERIE 6                 |\n");
+        printf("|                                                     |\n");
+        printf("|  Listar clientes começados por letra                |\n");
+        printf("| --------------------------------------------------- |\n");
+        printf("| 1 - CATALOGOS | 2 - Menu Principal | 3 - Sair       |\n");
+        printf(" ====================================================  \n");
         printf("Insira a letra a procurar > ");
         leitura = scanf("%s", input);
         letra = toupper(input[0]);
-        
-        if(leitura>0){
-        switch (toupper(input[0])) {
+
+        if (leitura > 0) {
+            switch (toupper(input[0])) {
                 case '1':
-                    sair_menu = 1;
-                    sair_programa = 0;
+                    estado = FACE_CATALOGOS;
                     break;
-                case'2':
-                    sair_menu = 1;
-                    sair_programa = 1;
+                case '2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case '3':
+                    estado = SAIR_PROGRAMA;
                     break;
                 default:
                     break;
             }
         }
-
-        if (isalpha(letra) && leitura > 0 && !sair_menu) {
+        if (isalpha(letra) && leitura > 0 && estado == QUERIE_6) {
             lista_cli = cat_lista_clientes_letra(catalogo_clientes, letra, TAM_PAGINA);
             resultados = cat_lista_cli_get_num_elems(lista_cli);
             total_pags = cat_lista_cli_get_num_pags(lista_cli);
 
-            while (sair_menu == 0) {
+            while (estado == QUERIE_6) {
                 elems_pag = cat_lista_cli_get_pos_and_num_elems_pag(lista_cli, &inicio_pag, n_pagina);
                 fim_pag = inicio_pag + elems_pag;
 
                 printf("\033[2J\033[1;1H");
-                printf("-----------------\n");
-                printf("--Pagina %2d/%d--\n", n_pagina, total_pags);
-                printf("-----------------\n");
+                printf("GESTHIPER >> CATALOGOS >> QUERIE 6                 \n");
+                printf("A mostrar clientes começados pela letra %c\n", letra);
+                printf("================================================= \n");
+                printf("Pagina %2d/%d \n", n_pagina, total_pags);
+                printf("\n");
 
                 for (i = 0; i < elems_pag; i++)
                     printf("%s\n", cat_lista_cli_get_elemento(lista_cli, inicio_pag + i));
 
                 printf("\n");
-
                 printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
-                printf("---------------------------------------------------------\n");
-                printf("1- << | 2- < | 3 - > | 4 - >> | 5 - Ir Para pag... | 0- Voltar | Q - Sair\n");
-                printf("Escolha >");
+                printf("==================================================== \n");
+                printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
+                printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+                printf("==================================================== \n");
+                printf("Insira nº da opcao >");
                 leitura = scanf("%s", input);
 
                 switch (toupper(input[0])) {
-                    case '0':
-                        sair_menu = 1;
-                        break;
                     case '1':
-                        n_pagina = 1;
+                        estado = FACE_CATALOGOS;
                         break;
                     case '2':
+                        estado = MENU_PRINCIPAL;
+                        break;
+                    case 'Q':
+                    case '3':
+                        estado = SAIR_PROGRAMA;
+                        break;
+                    case '4':
+                        n_pagina = 1;
+                        break;
+                    case '5':
                         if (n_pagina > 1)
                             n_pagina--;
                         break;
-                    case '3':
+                    case '6':
                         if (n_pagina < total_pags)
                             n_pagina++;
                         break;
-                    case'4':
+                    case'7':
                         n_pagina = total_pags;
                         break;
-                    case '5':
+                    case '9':
                         printf("Indique a pag para que quer ir >");
                         leitura = scanf("%d", &escolha_pag);
                         if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                             n_pagina = escolha_pag;
                         break;
-                    case 'Q':
-                        sair_menu = 1;
-                        sair_programa = 1;
-                        break;
                     default:
-                        sair_menu = 1;
+                        estado = SAIR_PROGRAMA;
                         break;
                 }
             }
             cat_free_lista_clientes(lista_cli);
-        } else {
-            sair_menu = 1;
+
         }
     }
-    return sair_programa;
+    return estado;
 }
 
 int _07_compras_intervalo_meses() {

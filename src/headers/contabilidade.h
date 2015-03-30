@@ -4,43 +4,81 @@
 
 #define PROD_NAO_VENDIDO -1
 
+typedef enum campo {
+    PROD_VENDAS_NORMAIS = 1, PROD_VENDAS_PROMO, PROD_VENDAS_AMBOS,
+    PROD_FACT_NORMAL, PROD_FACT_PROMO, PROD_FACT_AMBOS,
+    TOTAL_COMPRAS_NORMAL, TOTAL_COMPRAS_PROMO, TOTAL_COMPRAS_AMBOS,
+    TOTAL_FACT_NORMAL, TOTAL_FACT_PROMO, TOTAL_FACT_AMBOS
+} campo_t;
+
+typedef struct cont_ficha_produto *CONT_FICHA_PRODUTO;
 typedef struct mod_contabilidade *Contabilidade;
-typedef struct cont_lista_clientes* CONT_LISTA_CLIENTES;
-
-Contabilidade inicializa_contabilidade();
-void cont_regista_produto(Contabilidade, char *);
-void cont_insere_compra(Contabilidade, COMPRA);
-void free_contabilidade(Contabilidade);
-
+typedef struct cont_lista_produtos* CONT_LISTA_PRODUTOS;
+typedef struct iterador_cont* IT_CONT;
 
 
 /* 
- * VENDAS PRODUTO
+ * INICIALIZACAO E GESTAO MEMORIA
  */
 
-int cont_total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes);
-int cont_total_vendas_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
-int cont_total_vendas_normais_produto_mes(Contabilidade cont, char* cod_prod, int mes);
-int cont_total_vendas_normais_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
-int cont_total_vendas_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes);
-int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
+Contabilidade inicializa_contabilidade();
+void cont_regista_produto(Contabilidade cont, char *cod_prod);
+void cont_insere_compra(Contabilidade cont, COMPRA comp);
+void free_contabilidade(Contabilidade cont);
+/* 
+ * CONSULTAS
+ */
+
+int cont_existe_codigo_prod(Contabilidade cont, char* cod_prod);
+int cont_total_prods_comprados(Contabilidade cont);
+
+/* 
+ * FACTURACAO GLOBAL
+ */
+
+double cont_total_facturacao(Contabilidade cont);
+double cont_total_facturacao_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t campo);
+double cont_total_facturacao_mes(Contabilidade cont, int mes);
+double cont_total_facturacao_normal_mes(Contabilidade cont, int mes);
+double cont_total_facturacao_promo_mes(Contabilidade cont, int mes);
+double cont_total_facturacao_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+double cont_total_facturacao_normal_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+double cont_total_facturacao_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
 
 /* 
  * COMPRAS GLOBAIS
  */
 
+int cont_total_compras(Contabilidade cont);
+int cont_total_compras_geral(Contabilidade cont, int mes_inf, int mes_sup, campo_t campo);
 int cont_total_compras_mes(Contabilidade cont, int mes);
 int cont_total_compras_normais_mes(Contabilidade cont, int mes);
 int cont_total_compras_promo_mes(Contabilidade cont, int mes);
 int cont_total_compras_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
 int cont_total_compras_normais_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
 int cont_total_compras_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+/*
+ * FUNCOES FICHA PRODUTO PUBLICAS
+ */
 
+char *cont_get_cod_prod_ficha(CONT_FICHA_PRODUTO ficha_prod);
 
 /* 
  * FACTURACAO PRODUTO
  */
 
+double cont_total_fact_fich_produto(CONT_FICHA_PRODUTO ficha_prod);
+double cont_total_fact_fich_produto_geral(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup, campo_t campo);
+double cont_total_fact_fich_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes);
+double cont_total_fact_fich_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup);
+double cont_total_fact_fich_normal_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes);
+double cont_total_fact_fich_normal_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup);
+double cont_total_fact_fich_promo_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes);
+double cont_total_fact_fich_promo_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup);
+
+/*========================================*/
+
+double cont_total_fact_produto_geral(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup, campo_t campo);
 double cont_total_fact_produto_mes(Contabilidade cont,char* cod_prod, int mes);
 double cont_total_fact_produto_int_meses(Contabilidade cont,char* cod_prod, int mes_inf, int mes_sup);
 double cont_total_fact_normal_produto_mes(Contabilidade cont, char* cod_prod, int mes);
@@ -48,15 +86,52 @@ double cont_total_fact_normal_produto_int_meses(Contabilidade cont, char* cod_pr
 double cont_total_fact_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes);
 double cont_total_fact_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
 
+
 /* 
- * FACTURACAO GLOBAL
+ * VENDAS PRODUTO
  */
 
-double cont_total_facturacao_mes(Contabilidade cont, int mes);
-double cont_total_facturacao_normal_mes(Contabilidade cont, int mes);
-double cont_total_facturacao_promo_mes(Contabilidade cont, int mes);
-double cont_total_facturacao_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
-double cont_total_facturacao_normal_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
-double cont_total_facturacao_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup);
+int cont_total_vendas_fich_produto(CONT_FICHA_PRODUTO ficha_prod);
+int cont_total_vendas_fich_produto_geral(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup, campo_t campo);
+int cont_total_vendas_fich_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes);
+int cont_total_vendas_fich_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup);
+int cont_total_vendas_fich_normais_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes);
+int cont_total_vendas_fich_normais_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup);
+int cont_total_vendas_fich_promo_produto_mes(CONT_FICHA_PRODUTO fich_prod, int mes);
+int cont_total_vendas_fich_promo_produto_int_meses(CONT_FICHA_PRODUTO fich_prod, int mes_inf, int mes_sup);
+/*===================================*/
+
+
+int cont_total_vendas_produto_geral(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup, campo_t campo);
+int cont_total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes);
+int cont_total_vendas_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
+int cont_total_vendas_normais_produto_mes(Contabilidade cont, char* cod_prod, int mes);
+int cont_total_vendas_normais_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
+int cont_total_vendas_promo_produto_mes(Contabilidade cont, char* cod_prod, int mes);
+int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);
+/*
+ * LISTAGENS / PAGINAÇÃO
+ */
+
+CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont);
+CONT_FICHA_PRODUTO cont_lista_get_fich_prod(CONT_LISTA_PRODUTOS lista,int p);
+int cont_lista_prod_get_pos_and_num_elems_pag(CONT_LISTA_PRODUTOS lista, int *pos_inicial, int pag);
+int cont_lista_prod_get_num_pags(CONT_LISTA_PRODUTOS lista);
+int cont_lista_prod_get_elems_por_pag(CONT_LISTA_PRODUTOS lista);
+void  cont_lista_prod_muda_elems_por_pag(CONT_LISTA_PRODUTOS lista, int n);
+int cont_lista_prod_get_num_elems(CONT_LISTA_PRODUTOS lista);
+void cont_free_lista_produtos(CONT_LISTA_PRODUTOS lista);
+/*
+ * ITERADORES
+ */
+
+IT_CONT inicializa_it_cont_fich_produtos(Contabilidade cont);
+IT_CONT inicializa_it_cont_fich_produtos_primeiro(Contabilidade cont);
+IT_CONT inicializa_it_cont_fich_produtos_ultimo(Contabilidade cont);
+IT_CONT inicializa_it_cont_fich_produtos_elem(Contabilidade cont, char *st);
+CONT_FICHA_PRODUTO it_cont_fich_produto_actual(IT_CONT it);
+CONT_FICHA_PRODUTO it_cont_fich_produto_proximo(IT_CONT it);
+CONT_FICHA_PRODUTO it_cont_fich_produto_anterior(IT_CONT it);
+void free_it_cont_fich_prod(IT_CONT it);
 
 #endif
