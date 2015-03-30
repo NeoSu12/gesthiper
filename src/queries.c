@@ -240,7 +240,88 @@ int _03_compras_e_fact_mensal_prod() {
 }
 
 int _04_prods_nao_comprados() {
-    return 1;
+    int i = 0, leitura = 0;
+    int estado = QUERIE_4;
+    int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
+    int resultados = 0, total_pags = 0, escolha_pag = 0;
+    CONT_LISTA_PRODUTOS lista_prod = NULL;
+    CONT_FICHA_PRODUTO ficha_prod = NULL;
+    char input[50];
+
+    lista_prod = cont_lista_prod_sem_compras(contabilidade);
+    resultados = cont_lista_prod_get_num_elems(lista_prod);
+    total_pags = cont_lista_prod_get_num_pags(lista_prod);
+
+
+    while (estado == QUERIE_4) {
+        elems_pag = cont_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
+        fim_pag = inicio_pag + elems_pag;
+        printf("\033[2J\033[1;1H");
+        printf("GESTHIPER >> CATALOGOS >> QUERIE 4                 \n");
+        printf("Lista de produtos nao comprados\n");
+        printf("================================================= \n");
+        
+        if(resultados >0){
+        printf("Pagina %2d/%d \n", n_pagina, total_pags);
+        printf("\n");
+
+        for (i = 0; i < elems_pag; i++) {
+            ficha_prod = cont_lista_get_fich_prod(lista_prod, inicio_pag + i);
+            printf("%s\n", cont_get_cod_prod_ficha(ficha_prod));
+        }
+
+        printf("\n");
+        printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
+        }else{
+            printf("Nao ha resultados a mostrar.\n");
+        }
+        
+        printf("==================================================== \n");
+        printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair    \n");
+        printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+        printf("==================================================== \n");
+        printf("Insira nº da opcao >");
+        leitura = scanf("%s", input);
+
+        switch (toupper(input[0])) {
+            case '1':
+                estado = FACE_CONTABILIDADE;
+                break;
+            case '2':
+                estado = MENU_PRINCIPAL;
+                break;
+            case 'Q':
+            case '3':
+                estado = SAIR_PROGRAMA;
+                break;
+            case '4':
+                n_pagina = 1;
+                break;
+            case '5':
+                if (n_pagina > 1)
+                    n_pagina--;
+                break;
+            case '6':
+                if (n_pagina < total_pags)
+                    n_pagina++;
+                break;
+            case'7':
+                n_pagina = total_pags;
+                break;
+            case '9':
+                printf("Indique a pag para que quer ir >");
+                leitura = scanf("%d", &escolha_pag);
+                if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
+                    n_pagina = escolha_pag;
+                break;
+            default:
+                estado = SAIR_PROGRAMA;
+                break;
+        }
+
+    }
+    cont_free_lista_produtos(lista_prod);
+    return estado;
 }
 
 int _05_tabela_cliente() {
@@ -376,7 +457,88 @@ int _11_compras_CSV() {
 }
 
 int _12_prods_mais_vendidos() {
-    return 1;
+    int i = 0, leitura = 0;
+    int estado = QUERIE_4;
+    int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
+    int resultados = 0, total_pags = 0, escolha_pag = 0;
+    CONT_LISTA_PRODUTOS lista_prod = NULL;
+    CONT_FICHA_PRODUTO ficha_prod = NULL;
+    char input[50];
+
+    lista_prod = cont_top_produtos_comprados(contabilidade,100);
+    resultados = cont_lista_prod_get_num_elems(lista_prod);
+    total_pags = cont_lista_prod_get_num_pags(lista_prod);
+
+
+    while (estado == QUERIE_4) {
+        elems_pag = cont_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
+        fim_pag = inicio_pag + elems_pag;
+        printf("\033[2J\033[1;1H");
+        printf("GESTHIPER >> CATALOGOS >> QUERIE 12                 \n");
+        printf("Lista de produtos mais comprados\n");
+        printf("================================================= \n");
+        
+        if(resultados >0){
+        printf("Pagina %2d/%d \n", n_pagina, total_pags);
+        printf("\n");
+
+        for (i = 0; i < elems_pag; i++) {
+            ficha_prod = cont_lista_get_fich_prod(lista_prod, inicio_pag + i);
+            printf("%s\n", cont_get_cod_prod_ficha(ficha_prod));
+        }
+
+        printf("\n");
+        printf("A mostrar %d-%d de %d resultados\n", inicio_pag + 1, fim_pag, resultados);
+        }else{
+            printf("Nao ha resultados a mostrar.\n");
+        }
+        
+        printf("==================================================== \n");
+        printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair    \n");
+        printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+        printf("==================================================== \n");
+        printf("Insira nº da opcao >");
+        leitura = scanf("%s", input);
+
+        switch (toupper(input[0])) {
+            case '1':
+                estado = FACE_CONTABILIDADE;
+                break;
+            case '2':
+                estado = MENU_PRINCIPAL;
+                break;
+            case 'Q':
+            case '3':
+                estado = SAIR_PROGRAMA;
+                break;
+            case '4':
+                n_pagina = 1;
+                break;
+            case '5':
+                if (n_pagina > 1)
+                    n_pagina--;
+                break;
+            case '6':
+                if (n_pagina < total_pags)
+                    n_pagina++;
+                break;
+            case'7':
+                n_pagina = total_pags;
+                break;
+            case '9':
+                printf("Indique a pag para que quer ir >");
+                leitura = scanf("%d", &escolha_pag);
+                if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
+                    n_pagina = escolha_pag;
+                break;
+            default:
+                estado = SAIR_PROGRAMA;
+                break;
+        }
+
+    }
+    cont_free_lista_produtos(lista_prod);
+    return estado;
 }
 
 int _13_tres_prods_mais_comprados() {

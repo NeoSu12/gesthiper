@@ -470,9 +470,7 @@ CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n){
     
     
     for(i=0;i<n && (produto = it_cont_fich_produto_proximo(iterador))!=NULL;i++){
-        if(cont_total_vendas_fich_produto(produto)==0){
             ad_insere_elemento(ad,produto);
-        }
     }
     ad_ordena(ad, cont_compara_ficha_por_vendas_ad);
     

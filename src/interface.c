@@ -126,7 +126,8 @@ int face_contabilidade() {
                 "|   2 - Produtos nao comprados [4]                        |\n"
                 "|   3 - Nº compras e total facturado [7]                  |\n");
         printf( "|   4 - Criar ficheiro CSV [11]                           |\n"
-                "|   5 - Produtos nao vendidos e clientes sem compras [14] |\n"
+                "|   5 - Lista N produtos mais vendidos (TESTE)[12]        |\n"
+                "|   6 - Produtos nao vendidos e clientes sem compras [14] |\n"
                 "| ------------------------------------------------------- |\n"
                 "|  0 - Voltar                                 Q - Sair    |\n"
                 " ========================================================= \n");
@@ -142,7 +143,8 @@ int face_contabilidade() {
             case '2': estado = _04_prods_nao_comprados(); break;
             case '3': estado = _07_compras_intervalo_meses(); break;
             case '4': estado = _11_compras_CSV(); break;
-            case '5': estado = _14_clientes_prods_fantasma(); break;
+            case'5' : estado = _12_prods_mais_vendidos(); break;
+            case '6': estado = _14_clientes_prods_fantasma(); break;
             case 'Q': estado = SAIR_PROGRAMA;
                       break;
             default: 
@@ -183,7 +185,7 @@ int face_compras() {
 
         switch (toupper(r[0])) {
         	case '\\':
-            case '0': estado = FACE_COMPRAS;
+            case '0': estado = MENU_PRINCIPAL;
                       break;
             case '1': estado = _05_tabela_cliente();break;
             case '2': estado = _08_clientes_compraram_prod();break;
@@ -192,7 +194,7 @@ int face_compras() {
             case '5': estado = _11_compras_CSV();break;
             case '6': estado = _13_tres_prods_mais_comprados();break;
             case '7': estado = _14_clientes_prods_fantasma();break;
-            case 'Q': estado = FACE_COMPRAS;
+            case 'Q': estado = SAIR_PROGRAMA;
                       break;
             default:
                 /*TODO: Tratamento de erro temporario.
