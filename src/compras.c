@@ -17,8 +17,6 @@ struct nodo_avl_clientes{
 	char *cod_cliente;
 	ARVORE avl_produtos;
 	int num_prods_comprados[12];
-	char *top3[3];
-	int num_vendas_top3[3];
 };
 
 struct nodo_avl_produtos{
@@ -65,7 +63,6 @@ void insere_compra(Compras compras, COMPRA compra){
         cliente->avl_produtos = avl_create(compras_compara_nodo_produtos_avl, NULL, NULL);
         
         for(i=0;i<12;i++) cliente->num_prods_comprados[i]=0;
-        for(i=0;i<3;i++) cliente->num_vendas_top3[i]=0;
         
         avl_insert(compras->avl_clientes,cliente);
     }
