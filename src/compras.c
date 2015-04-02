@@ -13,159 +13,330 @@ struct modulo_compras{
 	ARVORE avl_clientes;
 };
 
-struct nodo_avl_clientes{
+struct compras_ficha_cliente{
 	char *cod_cliente;
 	ARVORE avl_produtos;
+        int total_prods_comprados;
 	int num_prods_comprados[12];
 };
 
-struct nodo_avl_produtos{
+struct compras_ficha_produto{
 	char *cod_produto;
 	/* Numero de compras para cada mes,
          * distinguindo entre normal e promocao.*/
-	int num_compras[12][2];
+        int total_unidades_compradas;
+	int num_unidades_compradas[12][2];
 };
 
-typedef struct nodo_avl_produtos *NodoProduto;
-typedef struct nodo_avl_clientes *NodoCliente;
 
-int compras_compara_nodo_clientes_avl(const void *,const void *, void *);
-int compras_compara_nodo_produtos_avl(const void *,const void *, void *);
-void compras_free_nodo_produto_avl(void *, void *);
-void compras_free_nodo_cliente_avl(void *, void *);
+COMPRAS_FICHA_PRODUTO compras_inicializa_ficha_produto(char* cod_prod);
+COMPRAS_FICHA_CLIENTE compras_inicializa_ficha_cliente(char* cod_cli);
+COMPRAS_FICHA_PRODUTO compras_codigo_produto_to_ficha(char* cod_prod);
+COMPRAS_FICHA_CLIENTE compras_codigo_cliente_to_ficha(char* cod_cli);
+COMPRAS_FICHA_CLIENTE compras_procura_ficha_cliente_com_cod_avl(Compras compras, char *cod_cli);
+COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_cod_avl(Compras compras, char *cod_cli, char *cod_prod);
+COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_fichacli_avl(COMPRAS_FICHA_CLIENTE cliente , char *cod_prod);
+int compras_compara_fichas_cli_por_cod_cli_avl(const void *avl_a, const void *avl_b, void *param);
+int compras_compara_fichas_prod_por_cod_prod_avl(const void *avl_a, const void *avl_b, void *param);
+void compras_free_produto(void *avl_item, void *avl_param);
+void compras_free_cliente(void *avl_item, void *avl_param);
+void compras_troca_meses(int *mes1 , int *mes2);
 
-
+/*
+ * INCICIALIZACAO E GESTAO MEMORIA
+ */
 
 Compras inicializa_compras(){
     Compras res = (Compras) malloc(sizeof(struct modulo_compras));
-    res->avl_clientes = avl_create(compras_compara_nodo_clientes_avl, NULL, NULL);
+    res->avl_clientes = avl_create(compras_compara_fichas_cli_por_cod_cli_avl,NULL,NULL);
     return res;
 }
 
-void free_compras(Compras compras){
-    avl_destroy(compras->avl_clientes, compras_free_nodo_cliente_avl);
-    free(compras);
+void compras_regista_cliente(Compras compras, char *cod_cli){
+    COMPRAS_FICHA_CLIENTE cliente = compras_inicializa_ficha_cliente(cod_cli);
+    avl_insert(compras->avl_clientes, cliente);
 }
 
-void insere_compra(Compras compras, COMPRA compra){
-    int i=0, j=0;
-    char *novo_cliente=NULL, *novo_produto=NULL;
-    NodoCliente cliente;
-    NodoProduto produto;
+void compras_insere_compra(Compras compras, COMPRA comp){
+    int indice_mes, promo;
+    quantidade_t qtd;
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, get_cod_cliente(comp));
+    COMPRAS_FICHA_PRODUTO produto = compras_procura_ficha_produto_com_fichacli_avl(cliente, get_cod_produto(comp));
     
-    cliente = (NodoCliente) avl_find(compras->avl_clientes, get_cod_cliente(compra));
-    
-    if(cliente == NULL){
-        cliente = (NodoCliente) malloc(sizeof(struct nodo_avl_clientes));
-        
-        strcpy(novo_cliente,get_cod_cliente(compra));
-        cliente->cod_cliente = novo_cliente;
-        cliente->avl_produtos = avl_create(compras_compara_nodo_produtos_avl, NULL, NULL);
-        
-        for(i=0;i<12;i++) cliente->num_prods_comprados[i]=0;
-        
-        avl_insert(compras->avl_clientes,cliente);
-    }
-    
-    cliente->num_prods_comprados[get_mes(compra) - 1] += get_quantidade(compra);
-    produto = (NodoProduto) avl_find(cliente->avl_produtos, get_cod_produto(compra));
-    
-    if(produto == NULL){
-        produto = (NodoProduto) malloc(sizeof(struct nodo_avl_produtos));
-        strcpy(novo_produto,get_cod_produto(compra));
-        produto->cod_produto = novo_produto;
-        
-        for(i=0;i<12;i++){
-            for(j=0;j<2;j++) produto->num_compras[i][j] = 0;
-        }
-        
+    if(produto==NULL){
+        produto = compras_inicializa_ficha_produto(get_cod_produto(comp));
         avl_insert(cliente->avl_produtos,produto);
     }
     
-    if(get_promo(compra) == 'N') 
-        produto->num_compras[get_mes(compra) - 1][NORMAL] += get_quantidade(compra);
+    if(get_promo(comp) == 'N') promo = NORMAL;
+    else promo = PROMO;
     
-    if(get_promo(compra) == 'P') 
-        produto->num_compras[get_mes(compra) - 1][PROMO] += get_quantidade(compra);
+    indice_mes = get_mes(comp)-1;
+    qtd = get_quantidade(comp);
+    
+    cliente->total_prods_comprados                      += qtd;
+    cliente->num_prods_comprados[indice_mes]            += qtd;
+    
+    produto->total_unidades_compradas                   += qtd;
+    produto->num_unidades_compradas[indice_mes][promo]  += qtd;
     
     
 }
 
-int num_produtos_comprados_cliente(Compras compras, char *cod_cliente){
-    NodoCliente cliente_procura, cliente;
-    int resultado=0, i=0;
+void free_compras(Compras compras){
+    avl_destroy(compras->avl_clientes, compras_free_cliente);
+    free(compras);
+}
+
+/*
+ * TOTAL PRODUTOS COMPRADOS CLIENTE
+ */
+
+int compras_produtos_comprados_ficha_cliente_meses(COMPRAS_FICHA_CLIENTE cliente, int mes_inf, int mes_sup){
+    int i=0, res=0;
+    if (mes_inf > mes_sup) compras_troca_meses(&mes_inf, &mes_sup);
     
-    cliente_procura = (NodoCliente) malloc(sizeof(struct nodo_avl_clientes));
-    cliente_procura->cod_cliente = cod_cliente;
-    
-    cliente = (NodoCliente) avl_find(compras->avl_clientes,cliente_procura);
-    
-    if(cliente==NULL) resultado = -1;
-    else{
-        for(i=0;i<12;i++) 
-            resultado += cliente->num_prods_comprados[i];
+    for(i=mes_inf;i<=mes_sup;i++){
+        res += cliente->num_prods_comprados[i-1];
     }
-    
-    return resultado;
+    return res;
 }
 
-int num_produtos_comprados_cliente_mes(Compras compras, char *cod_cliente, char mes){
-    int resultado;
-    NodoCliente cliente_procura, cliente;
-    
-    cliente_procura = (NodoCliente) malloc(sizeof(struct nodo_avl_clientes));
-    cliente_procura->cod_cliente = cod_cliente;
-    
-    cliente = (NodoCliente) avl_find(compras->avl_clientes,cliente_procura);
-    
-    if(cliente==NULL) resultado = -1;
-    else resultado = cliente->num_prods_comprados[mes-1];
-    
-    return resultado;
+int compras_produtos_comprados_ficha_cliente_mes(COMPRAS_FICHA_CLIENTE cliente, int mes){
+    return compras_produtos_comprados_ficha_cliente_meses(cliente, mes, mes);
 }
 
-ARRAY_DINAMICO clientes_compraram_prod(Compras compras, char *cod_cliente){
-    NodoCliente cliente;
-    char *cliente_copia;
-    int tamanho_cliente;
-    ARRAY_DINAMICO lista_clientes = ad_inicializa(100);
-    TRAVERSER it = avl_t_alloc();
+int compras_produtos_comprados_cod_cliente_meses(Compras compras, char *cod_cliente, int mes_inf, int mes_sup){
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
+    return compras_produtos_comprados_ficha_cliente_meses(cliente, mes_inf, mes_sup);
+}
+
+int compras_produtos_comprados_cod_cliente_mes(Compras compras, char *cod_cliente, int mes){
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
+    return compras_produtos_comprados_ficha_cliente_meses(cliente, mes, mes);
+}
+
+/*
+ * PRODUTO COMPRADO POR CLIENTE
+ */
+
+int compras_produtos_comprados_ficha_produto_meses_geral(COMPRAS_FICHA_PRODUTO produto, 
+                                                            int mes_inf, int mes_sup, 
+                                                            compras_campo_t campo){
     
-    avl_t_init(it, compras->avl_clientes);
+    int i=0, res=0;
+    if (mes_inf > mes_sup) compras_troca_meses(&mes_inf, &mes_sup);
     
-    while((cliente = (NodoCliente) avl_t_next(it)) != NULL){
-        if(strcmp(cliente->cod_cliente,cod_cliente)==0){
-            tamanho_cliente = strlen(cod_cliente) + 1;
-            cliente_copia = (char *) malloc(sizeof(char)*tamanho_cliente);
-            strcpy(cliente_copia,cod_cliente);
-            ad_insere_elemento(lista_clientes,cliente_copia);
+    
+    switch (campo) {
+            case COMPRAS_NORMAL:
+                for (i = mes_inf; i <= mes_sup; i++)
+                    res += produto->num_unidades_compradas[i - 1][NORMAL];
+                break;
+            case COMPRAS_PROMO:
+                for (i = mes_inf; i <= mes_sup; i++)
+                    res += produto->num_unidades_compradas[i - 1][PROMO];
+                break;
+            case COMPRAS_AMBOS:
+                for (i = mes_inf; i <= mes_sup; i++)
+                    res += produto->num_unidades_compradas[i - 1][NORMAL] +
+                        produto->num_unidades_compradas[i - 1][PROMO];
+                break;
+            default:
+                break;
         }
-    }
     
-    avl_t_free(it);
-    return lista_clientes;
+    return res;
 }
 
-int compras_compara_nodo_clientes_avl(const void *avl_a,const void *avl_b, void *param){
-    NodoCliente item_a = (NodoCliente) avl_a;
-    NodoCliente item_b = (NodoCliente) avl_b;
-    return strcmp(item_a->cod_cliente, item_b->cod_cliente);
+int compras_produtos_comprados_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, 
+                                                            int mes_inf, int mes_sup){
+    return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes_inf, mes_sup, COMPRAS_AMBOS);
 }
 
-int compras_compara_nodo_produtos_avl(const void *avl_a,const void *avl_b, void *param){
-    NodoProduto item_a = (NodoProduto) avl_a;
-    NodoProduto item_b = (NodoProduto) avl_b;
-    return strcmp(item_a->cod_produto, item_b->cod_produto);
+int compras_produtos_comprados_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, 
+                                                            int mes){
+    return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes, mes, COMPRAS_AMBOS);
 }
 
-void compras_free_nodo_cliente_avl(void *avl_item, void *avl_param){
-    NodoCliente cliente = (NodoCliente) avl_item;
-    avl_destroy(cliente->avl_produtos,compras_free_nodo_produto_avl);
-    free(cliente->cod_cliente);
+int compras_produtos_comprados_normal_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, 
+                                                            int mes_inf, int mes_sup){
+    return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes_inf, mes_sup, COMPRAS_NORMAL);
 }
 
-void compras_free_nodo_produto_avl(void *avl_item, void *avl_param){
-    NodoProduto produto = (NodoProduto) avl_item;
+int compras_produtos_comprados_normal_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, 
+                                                            int mes){
+    return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes, mes, COMPRAS_NORMAL);
+}
+
+int compras_produtos_comprados_promo_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, 
+                                                            int mes_inf, int mes_sup){
+    return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes_inf, mes_sup, COMPRAS_PROMO);
+}
+
+int compras_produtos_comprados_promo_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, 
+                                                            int mes){
+    return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes, mes, COMPRAS_PROMO);
+}
+
+/*===================================================*/
+
+int compras_produtos_comprados_cod_produto_meses_geral(Compras compras, 
+                                                            char *cod_cli, char *cod_prod, 
+                                                            int mes_inf, int mes_sup, 
+                                                            compras_campo_t campo){
+    
+    COMPRAS_FICHA_PRODUTO produto = compras_procura_ficha_produto_com_cod_avl(compras, cod_cli, cod_prod);
+    return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes_inf, mes_sup, campo);
+}
+
+int compras_produtos_comprados_cod_produto_meses(Compras compras, 
+                                                    char *cod_cli, char *cod_prod, 
+                                                    int mes_inf, int mes_sup){
+    return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes_inf, mes_sup, COMPRAS_AMBOS);
+}
+
+int compras_produtos_comprados_cod_produto_mes(Compras compras, 
+                                                    char *cod_cli, char *cod_prod, 
+                                                    int mes){
+    return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes, mes, COMPRAS_AMBOS);
+}
+
+int compras_produtos_comprados_normal_cod_produto_meses(Compras compras, 
+                                                            char *cod_cli, char *cod_prod, 
+                                                            int mes_inf, int mes_sup){
+    return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes_inf, mes_sup, COMPRAS_NORMAL);
+}
+
+int compras_produtos_comprados_normal_cod_produto_mes(Compras compras, 
+                                                            char *cod_cli, char *cod_prod, 
+                                                            int mes){
+    return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes, mes, COMPRAS_NORMAL);
+}
+
+int compras_produtos_comprados_promo_cod_produto_meses(Compras compras, 
+                                                            char *cod_cli, char *cod_prod, 
+                                                            int mes_inf, int mes_sup){
+    return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes_inf, mes_sup, COMPRAS_PROMO);
+}
+
+int compras_produtos_comprados_promo_cod_produto_mes(Compras compras, 
+                                                        char *cod_cli, char *cod_prod, 
+                                                        int mes){
+    return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes, mes, COMPRAS_PROMO);
+}
+
+
+/*
+ * FUNCOES AUXILIARES PRIVADAS AO MODULO
+ */
+
+COMPRAS_FICHA_PRODUTO compras_inicializa_ficha_produto(char* cod_prod) {
+    int i, j;
+    COMPRAS_FICHA_PRODUTO prod = (COMPRAS_FICHA_PRODUTO) malloc(sizeof (struct compras_ficha_produto));
+    char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
+    strcpy(copia, cod_prod);
+    prod->cod_produto = copia;
+    
+    for (i = 0; i < 12; i++)
+        for (j = 0; j < 2; j++) {
+            prod->num_unidades_compradas[i][j] = 0;
+        }
+    
+    prod->total_unidades_compradas=0;
+    return prod;
+}
+
+COMPRAS_FICHA_CLIENTE compras_inicializa_ficha_cliente(char* cod_cli) {
+    int i;
+    COMPRAS_FICHA_CLIENTE cli = (COMPRAS_FICHA_CLIENTE) malloc(sizeof (struct compras_ficha_cliente));
+    char *copia = (char*) malloc(sizeof (char)*(strlen(cod_cli) + 1));
+    strcpy(copia, cod_cli);
+    
+    cli->cod_cliente = copia;
+    cli->avl_produtos = avl_create(compras_compara_fichas_prod_por_cod_prod_avl, NULL, NULL);
+    
+    for (i = 0; i < 12; i++)
+        cli->num_prods_comprados[i]=0;
+    
+    cli->total_prods_comprados=0;
+    
+    
+    return cli;
+}
+
+COMPRAS_FICHA_PRODUTO compras_codigo_produto_to_ficha(char* cod_prod) {
+    COMPRAS_FICHA_PRODUTO prod = (COMPRAS_FICHA_PRODUTO) malloc(sizeof (struct compras_ficha_produto));
+    char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
+    strcpy(copia, cod_prod);
+    prod->cod_produto = copia;
+    return prod;
+}
+
+COMPRAS_FICHA_CLIENTE compras_codigo_cliente_to_ficha(char* cod_cli) {
+    COMPRAS_FICHA_CLIENTE cli = (COMPRAS_FICHA_CLIENTE) malloc(sizeof (struct compras_ficha_cliente));
+    char *copia = (char*) malloc(sizeof (char)*(strlen(cod_cli) + 1));
+    strcpy(copia, cod_cli);
+    cli->cod_cliente = copia;
+    return cli;
+}
+
+COMPRAS_FICHA_CLIENTE compras_procura_ficha_cliente_com_cod_avl(Compras compras, char *cod_cli){
+    COMPRAS_FICHA_CLIENTE nodo_aux = compras_codigo_cliente_to_ficha(cod_cli);
+    COMPRAS_FICHA_CLIENTE res = (COMPRAS_FICHA_CLIENTE) avl_find(compras->avl_clientes, nodo_aux);
+    free(nodo_aux->cod_cliente);
+    free(nodo_aux);
+    return res;
+}
+
+COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_cod_avl(Compras compras, char *cod_cli, char *cod_prod){
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cli);
+    
+    COMPRAS_FICHA_PRODUTO nodo_aux = compras_codigo_produto_to_ficha(cod_prod);
+    COMPRAS_FICHA_PRODUTO res = (COMPRAS_FICHA_PRODUTO) avl_find(cliente->avl_produtos, nodo_aux);
+    free(nodo_aux->cod_produto);
+    free(nodo_aux);
+    return res;
+}
+
+COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_fichacli_avl(COMPRAS_FICHA_CLIENTE cliente , char *cod_prod){
+    COMPRAS_FICHA_PRODUTO nodo_aux = compras_codigo_produto_to_ficha(cod_prod);
+    COMPRAS_FICHA_PRODUTO res = (COMPRAS_FICHA_PRODUTO) avl_find(cliente->avl_produtos, nodo_aux);
+    free(nodo_aux->cod_produto);
+    free(nodo_aux);
+    return res;
+}
+
+int compras_compara_fichas_cli_por_cod_cli_avl(const void *avl_a, const void *avl_b, void *param){
+    COMPRAS_FICHA_CLIENTE a = (COMPRAS_FICHA_CLIENTE) avl_a;
+    COMPRAS_FICHA_CLIENTE b = (COMPRAS_FICHA_CLIENTE) avl_b;
+    return strcmp(a->cod_cliente, b->cod_cliente);
+}
+
+int compras_compara_fichas_prod_por_cod_prod_avl(const void *avl_a, const void *avl_b, void *param){
+    COMPRAS_FICHA_PRODUTO a = (COMPRAS_FICHA_PRODUTO) avl_a;
+    COMPRAS_FICHA_PRODUTO b = (COMPRAS_FICHA_PRODUTO) avl_b;
+    return strcmp(a->cod_produto, b->cod_produto);
+}
+
+void compras_free_produto(void *avl_item, void *avl_param){
+    COMPRAS_FICHA_PRODUTO produto = (COMPRAS_FICHA_PRODUTO) avl_item;
     free(produto->cod_produto);
+    free(produto);
 }
+
+void compras_free_cliente(void *avl_item, void *avl_param){
+    COMPRAS_FICHA_CLIENTE cliente = (COMPRAS_FICHA_CLIENTE) avl_item;
+    free(cliente->cod_cliente);
+    avl_destroy(cliente->avl_produtos, compras_free_produto);
+    free(cliente);
+    
+}
+
+void compras_troca_meses(int *mes1 , int *mes2){
+    int temp = *mes1;
+    *mes1 = *mes2;
+    *mes2 = temp;
+}
+
 

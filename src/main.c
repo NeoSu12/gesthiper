@@ -29,7 +29,7 @@ void testes2();
 CatClientes catalogo_clientes;
 CatProdutos catalogo_produtos;
 Contabilidade contabilidade;
-Compras modulo_compras;
+Compras mod_compras;
 
 /*VARIAVEIS TEMPORARIAS PARA TESTE*/
 int cliente_errado = 0, produto_errado = 0;
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     catalogo_clientes = inicializa_catalogo_clientes();
     catalogo_produtos = inicializa_catalogo_produtos();
     contabilidade = inicializa_contabilidade();
-    modulo_compras = inicializa_compras();
+    mod_compras = inicializa_compras();
 
     le_ficheiros(argc, argv);
     /* mostra_numero_codigos();*/
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     free_catalogo_clientes(catalogo_clientes);
     free_catalogo_produtos(catalogo_produtos);
     free_contabilidade(contabilidade);
-    free_compras(modulo_compras);
+    free_compras(mod_compras);
     return (EXIT_SUCCESS);
 }
 
@@ -122,6 +122,7 @@ void le_clientes(FILE *f_cli, char *nf) {
 
         if (cliente != NULL) {
             cat_insere_cliente(catalogo_clientes, cliente);
+            compras_regista_cliente(mod_compras, cliente);
             clientes_validos++;
         }
 
@@ -206,6 +207,7 @@ void le_compras(FILE *f_comp, char *nf) {
 
         if (compra_valida(compra)) {
             cont_insere_compra(contabilidade, compra);
+            compras_insere_compra(mod_compras, compra);
             compras_validas++;
         }
         total_linhas_compras++;

@@ -5,8 +5,9 @@
 #include "headers/queries.h"
 #include "headers/cat_produtos.h"
 #include "headers/cat_clientes.h"
-#include "headers/arrays_dinamicos.h"
 #include "headers/contabilidade.h"
+#include "headers/compras.h"
+#include "headers/arrays_dinamicos.h"
 
 #define NORMAL  "\x1B[0m"
 #define RED  "\x1B[31m"
@@ -24,6 +25,7 @@ typedef enum mes {
 extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
 extern Contabilidade contabilidade;
+extern Compras mod_compras;
 
 int _02_codigo_produtos_letra() {
     int i = 0, leitura = 0;

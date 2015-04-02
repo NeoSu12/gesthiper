@@ -74,7 +74,7 @@ void cont_regista_produto(Contabilidade cont, char *cod_prod){
 }
 
 void cont_insere_compra(Contabilidade cont, COMPRA comp) {
-    CONT_FICHA_PRODUTO nodo_pesquisa, prod;
+    CONT_FICHA_PRODUTO prod;
     int promo, mes;
     double facturacao_compra;
     
@@ -84,8 +84,7 @@ void cont_insere_compra(Contabilidade cont, COMPRA comp) {
     mes = get_mes(comp);
     facturacao_compra = get_quantidade(comp) * get_preco_unit(comp);
     
-    nodo_pesquisa = codigo_to_ficha(get_cod_produto(comp));
-    prod = (CONT_FICHA_PRODUTO) avl_find(cont->avl_produtos, nodo_pesquisa);
+    prod = cont_procura_ficha_com_cod_avl(cont, get_cod_produto(comp));
     
     prod->total_unidades_vendidas_prod          += get_quantidade(comp);
     prod->total_facturacao_prod                 += facturacao_compra;
@@ -96,7 +95,6 @@ void cont_insere_compra(Contabilidade cont, COMPRA comp) {
     cont->total_global_compras[mes - 1][promo]  += 1;
     cont->total_global_fact[mes - 1][promo]     += facturacao_compra;
     
-    free_ficha_prod(nodo_pesquisa);
 }
 
 void free_contabilidade(Contabilidade cont) {
@@ -357,6 +355,9 @@ int cont_total_vendas_fich_produto(CONT_FICHA_PRODUTO ficha_prod){
 int cont_total_vendas_fich_produto_geral(CONT_FICHA_PRODUTO fich_prod,
                             int mes_inf, int mes_sup, campo_t campo) {
     int res = 0, i = 0;
+    
+    if (mes_inf > mes_sup) troca_meses(&mes_inf, &mes_sup);
+    
     if (fich_prod != NULL) {
 
         switch (campo) {
@@ -654,8 +655,9 @@ CONT_FICHA_PRODUTO codigo_to_ficha_noclone(char* cod_prod) {
 }
 
 CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod){
-    CONT_FICHA_PRODUTO nodo_aux = codigo_to_ficha_noclone(cod_prod);
+    CONT_FICHA_PRODUTO nodo_aux = codigo_to_ficha(cod_prod);
     CONT_FICHA_PRODUTO res = (CONT_FICHA_PRODUTO) avl_find(cont->avl_produtos, nodo_aux);
+    free(nodo_aux->cod_produto);
     free(nodo_aux);
     return res;
 }

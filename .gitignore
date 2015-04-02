@@ -44,7 +44,7 @@ gesval
 /dist/
 /build/
 .dep.inc
-gesthiper-Makefile.mk
+*.mk
 
 # Makefile do netbeans. 
 # Usar a 'makefile' (note-se que esta tudo em minusculas) 
