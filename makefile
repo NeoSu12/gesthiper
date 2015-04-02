@@ -5,6 +5,7 @@ objects = main.o erros.o compra.o avl.o cat_clientes.o \
 		arrays_dinamicos.o contabilidade.o
 
 CFLAGS = -ansi -pedantic -Wall -g -O2
+VALFLAGS = -ansi -pedantic -Wall -g -O0
 CC = gcc
 
 gesthiper : $(objects)
@@ -23,7 +24,7 @@ run3m: gesthiper
 	./gesthiper datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras3.txt
 
 gesval: $(objects)
-	$(CC) $(CFLAGS) -o gesval $(objects)
+	$(CC) $(VALFLAGS) -o gesval $(objects)
 
 runval: gesval meown
 	valgrind --show-leak-kinds=all --leak-check=full ./gesval

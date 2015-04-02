@@ -10,6 +10,9 @@ typedef enum compras_campo {
 typedef struct modulo_compras *Compras;
 typedef struct compras_ficha_produto *COMPRAS_FICHA_PRODUTO;
 typedef struct compras_ficha_cliente *COMPRAS_FICHA_CLIENTE;
+typedef struct compras_iterador_clientes *IT_COMPRAS_CLIENTES;
+typedef struct compras_iterador_produtos *IT_COMPRAS_PRODUTOS;
+
 
 /*
  * INCICIALIZACAO E GESTAO MEMORIA
@@ -74,5 +77,48 @@ int compras_produtos_comprados_promo_cod_produto_meses(Compras compras,
 int compras_produtos_comprados_promo_cod_produto_mes(Compras compras, 
                                                         char *cod_cli, char *cod_prod, 
                                                         int mes);
+
+/*
+ * ITERADORES
+ */
+
+/*
+ * ITERADORES CLIENTES
+ */
+
+IT_COMPRAS_CLIENTES inicializa_it_compras_fich_clientes(Compras compras);
+IT_COMPRAS_CLIENTES inicializa_it_compras_fich_clientes_primeiro(Compras compras);
+IT_COMPRAS_CLIENTES inicializa_it_compras_fich_clientes_ultimo(Compras compras);
+IT_COMPRAS_CLIENTES inicializa_it_compras_fich_clientes_elem(Compras compras, char *st);
+COMPRAS_FICHA_CLIENTE it_compras_fich_cliente_actual(IT_COMPRAS_CLIENTES it);
+COMPRAS_FICHA_CLIENTE it_compras_fich_cliente_proximo(IT_COMPRAS_CLIENTES it);
+COMPRAS_FICHA_CLIENTE it_compras_fich_cliente_anterior(IT_COMPRAS_CLIENTES it);
+void free_it_compras_fich_cliente(IT_COMPRAS_CLIENTES it);
+
+/*
+ * ITERADORES PRODUTOS
+ */
+
+IT_COMPRAS_PRODUTOS inicializa_it_compras_fich_produtos(COMPRAS_FICHA_CLIENTE cliente);
+IT_COMPRAS_PRODUTOS inicializa_it_compras_fich_produtos_primeiro(COMPRAS_FICHA_CLIENTE cliente);
+IT_COMPRAS_PRODUTOS inicializa_it_compras_fich_produtos_ultimo(COMPRAS_FICHA_CLIENTE cliente);
+IT_COMPRAS_PRODUTOS inicializa_it_compras_fich_produtos_elem(COMPRAS_FICHA_CLIENTE cliente, char *st);
+COMPRAS_FICHA_PRODUTO it_compras_fich_produto_actual(IT_COMPRAS_PRODUTOS it);
+COMPRAS_FICHA_PRODUTO it_compras_fich_produto_proximo(IT_COMPRAS_PRODUTOS it);
+COMPRAS_FICHA_PRODUTO it_compras_fich_produto_anterior(IT_COMPRAS_PRODUTOS it);
+void free_it_compras_fich_produto(IT_COMPRAS_PRODUTOS it);
+
+/*
+ * ITERADORES PRODUTOS COM CODIGO
+ */
+
+IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos(Compras compras, char *cod_cliente);
+IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_primeiro(Compras compras, char *cod_cliente);
+IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_ultimo(Compras compras, char *cod_cliente);
+IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_elem(Compras compras, char *cod_cliente, char *cod_produto);
+
+
+
+
 #endif	/* COMPRAS_H */
 

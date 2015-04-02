@@ -541,16 +541,17 @@ IT_CONT inicializa_it_cont_fich_produtos_ultimo(Contabilidade cont) {
 }
 
 IT_CONT inicializa_it_cont_fich_produtos_elem(Contabilidade cont, char *st) {
-    IT_CONT it;
-
+    IT_CONT it = NULL;
+    CONT_FICHA_PRODUTO procura = NULL;
+    
     if (st != NULL) {
         it = (IT_CONT) malloc(sizeof (struct iterador_cont));
         it->traverser = avl_t_alloc();
-        avl_t_find(it->traverser, cont->avl_produtos, st);
-    } else {
-        it = NULL;
+        procura = codigo_to_ficha(st);
+        avl_t_find(it->traverser, cont->avl_produtos, procura);
+        free_ficha_prod(procura);
     }
-
+    
     return it;
 }
 
@@ -590,14 +591,12 @@ void free_it_cont_fich_prod(IT_CONT it){
 }
 
 
+/**/
+
+
 /* 
  * FUNCOES AUXILIARES PRIVADAS AO MODULO 
  */
-
-/*
- * FUNCOES FICHA PRODUTO
- */
-
 
 CONT_FICHA_PRODUTO inicializa_ficha_produto(char* cod_prod) {
     int i, j;
