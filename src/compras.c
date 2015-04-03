@@ -416,6 +416,28 @@ IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_elem(Compras compras, cha
 
 
 /*
+ * Pedidos aos modulos
+ */
+
+COMPRAS_FICHA_CLIENTE compras_n_produtos_comprados_mensal(Compras compras, char *cod_cliente){
+    int i=0, compras_mes=0;
+    COMPRAS_FICHA_PRODUTO produto;
+    COMPRAS_FICHA_CLIENTE res = compras_inicializa_ficha_cliente(cod_cliente);
+    IT_COMPRAS_PRODUTOS it = inicializa_it_compras_cod_produtos(compras, cod_cliente);
+    
+    while((produto = it_compras_fich_produto_proximo(it))!=NULL){
+        for(i=0;i<12;i++){
+            compras_mes = compras_produtos_comprados_ficha_produto_mes(produto,i+1);
+            res->num_prods_comprados[i]+=compras_mes;
+            res->total_prods_comprados+=compras_mes;
+        }
+    }
+    
+    return res;
+}
+
+
+/*
  * FUNCOES AUXILIARES PRIVADAS AO MODULO
  */
 
@@ -444,7 +466,7 @@ COMPRAS_FICHA_CLIENTE compras_inicializa_ficha_cliente(char* cod_cli) {
     cli->cod_cliente = copia;
     cli->avl_produtos = avl_create(compras_compara_fichas_prod_por_cod_prod_avl, NULL, NULL);
     
-    for (i = 0; i < 12; i++)
+    for (i = 0; i < 12; i++) 
         cli->num_prods_comprados[i]=0;
     
     cli->total_prods_comprados=0;

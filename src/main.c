@@ -183,9 +183,9 @@ void le_compras(FILE *f_comp, char *nf) {
 
     linha_compra = (char *) malloc(sizeof (char)*LINHA_COMPRA_MAX);
     compra = inicializa_compra();
-
+    
     while (fgets(linha_compra, LINHA_COMPRA_MAX, f_comp) != NULL) {
-
+        
         /*Produto*/
         token = strtok(linha_compra, delim);
         set_cod_produto(compra, token);
@@ -204,7 +204,7 @@ void le_compras(FILE *f_comp, char *nf) {
         /*Mes*/
         token = strtok(NULL, delim);
         set_mes(compra, atoi(token));
-
+                
         if (compra_valida(compra)) {
             cont_insere_compra(contabilidade, compra);
             compras_insere_compra(mod_compras, compra);

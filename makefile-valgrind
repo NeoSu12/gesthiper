@@ -1,0 +1,47 @@
+VPATH = src:src/headers
+
+objects = main.o erros.o compra.o avl.o cat_clientes.o \
+	   		cat_produtos.o interface.o queries.o compras.o \
+				arrays_dinamicos.o contabilidade.o
+
+CFLAGS = -ansi -pedantic -Wall -g -O0
+CC = gcc
+
+gesval: $(objects)
+	$(CC) $(CFLAGS) -o gesval $(objects)
+
+runval: gesval
+	valgrind --show-leak-kinds=all --leak-check=full ./gesval
+
+runvalbase: gesval
+	valgrind --show-leak-kinds=all --leak-check=full ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras.txt
+
+runval1m: gesval
+	valgrind --show-leak-kinds=all --leak-check=full ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras1.txt
+
+runval3m: gesval
+	valgrind --show-leak-kinds=all --leak-check=full ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras3.txt
+
+
+
+main.o : interface.h erros.h compra.h cat_clientes.h cat_produtos.h compras.h contabilidade.h
+erros.o : erros.h
+compra.o : compra.h
+avl.o : avl.h
+interface.o : erros.h interface.h queries.h
+queries.o : interface.h queries.h cat_produtos.h cat_clientes.h contabilidade.h compras.h arrays_dinamicos.h
+cat_clientes.o : avl.h cat_clientes.h arrays_dinamicos.h
+cat_produtos.o : avl.h cat_produtos.h arrays_dinamicos.h
+compras.o : compras.h avl.h compra.h arrays_dinamicos.h
+arrays_dinamicos.o : arrays_dinamicos.h
+contabilidade.o : compra.h avl.h arrays_dinamicos.h contabilidade.h
+
+meown :
+	chown -R andre *
+	chgrp -R andre *
+	chmod -R o+r *
+	chmod -R o-wx *
+	chmod -R ug+wr *
+	chgrp root gesval
+
+
