@@ -706,8 +706,137 @@ int _08_clientes_compraram_prod() {
     return 1;
 }
 
-int _09_produtos_mais_comprados_cliente() {
-    return 1;
+int _09_produtos_mais_comprados_cliente_mes() {
+    int i = 0, leitura = 0, mes = 0;
+    int estado = QUERIE_9;
+    clock_t ci, cf;
+    char *cod_cliente = NULL;
+    int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
+    int resultados = 0, total_pags = 0, escolha_pag = 0;
+    COMPRAS_LISTA_PRODUTOS lista_prod = NULL;
+    COMPRAS_FICHA_PRODUTO ficha_prod = NULL;
+    char input[50];
+
+
+    printf("\033[2J\033[1;1H");
+    printf(" ======================================================  \n");
+    printf("|  GESTHIPER >> COMPRAS >> QUERIE 9                     |\n");
+    printf("|                                                       |\n");
+    printf("|  Produtos mais comprados por cliente                  |\n");
+    printf("| ----------------------------------------------------- |\n");
+    printf("| 1 - COMPRAS | 2 - Menu Principal | 3 - Sair           |\n");
+    printf(" ======================================================  \n");
+    printf("Insira o codigo de cliente a procurar > ");
+    leitura = scanf("%s", input);
+
+    if (leitura > 0) {
+        switch (toupper(input[0])) {
+            case '1':
+                estado = FACE_COMPRAS;
+                break;
+            case'2':
+                estado = MENU_PRINCIPAL;
+                break;
+            case'3':
+                estado = SAIR_PROGRAMA;
+            default:
+                estado = QUERIE_9;
+                cod_cliente = (char *) malloc(sizeof (char)*(strlen(input) + 1));
+                strcpy(cod_cliente, input);
+                while(mes < 1 || mes > 12){
+                printf("Indique o mes > ");
+                leitura = scanf("%d", &mes);
+                if(mes < 1 || mes > 12) printf("Mes invalido\n");
+                }
+                break;
+        }
+    }
+
+    if (cat_existe_cliente(catalogo_clientes, cod_cliente)) {
+
+        ci = clock();
+
+        lista_prod = compras_produtos_mais_comprados_cliente_mes(mod_compras, cod_cliente, mes);
+        resultados = compras_lista_prod_get_num_elems(lista_prod);
+        total_pags = compras_lista_prod_get_num_pags(lista_prod);
+
+        cf = clock();
+
+        while (estado == QUERIE_9) {
+
+            elems_pag = compras_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
+            fim_pag = inicio_pag + elems_pag;
+            printf("\033[2J\033[1;1H");
+            printf("GESTHIPER >> COMPRAS >> QUERIE 9                 \n");
+            printf("Produtos mais comprados por cliente\n");
+            printf("================================================= \n");
+
+            if (resultados > 0) {
+                printf("Pagina %2d/%d \n", n_pagina, total_pags);
+                printf("\n");
+
+                for (i = 0; i < elems_pag; i++) {
+                    ficha_prod = compras_lista_get_fich_prod(lista_prod, inicio_pag + i);
+                    printf("%s\n", compras_get_cod_prod_ficha(ficha_prod));
+                }
+
+                printf("\n");
+                printf("A mostrar %d-%d de %d resultados (em %.2f segundos)\n", inicio_pag + 1, fim_pag, resultados, (float) (cf - ci) / CLOCKS_PER_SEC);
+            } else {
+                printf("Nao ha resultados a mostrar.\n");
+            }
+
+            printf("==================================================== \n");
+            printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair    \n");
+            printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+            printf("==================================================== \n");
+            printf("Insira nº da opcao >");
+            leitura = scanf("%s", input);
+
+            switch (toupper(input[0])) {
+                case '1':
+                    estado = FACE_COMPRAS;
+                    break;
+                case '2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case 'Q':
+                case '3':
+                    estado = SAIR_PROGRAMA;
+                    break;
+                case '4':
+                    n_pagina = 1;
+                    break;
+                case '5':
+                    if (n_pagina > 1)
+                        n_pagina--;
+                    break;
+                case '6':
+                    if (n_pagina < total_pags)
+                        n_pagina++;
+                    break;
+                case'7':
+                    n_pagina = total_pags;
+                    break;
+                case '9':
+                    printf("Indique a pag para que quer ir >");
+                    leitura = scanf("%d", &escolha_pag);
+                    if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
+                        n_pagina = escolha_pag;
+                    break;
+                default:
+                    estado = SAIR_PROGRAMA;
+                    break;
+            }
+
+        }
+        compras_free_lista_produtos(lista_prod);
+    } else {
+        printf("Cliente nao existe\n");
+    }
+
+    free(cod_cliente);
+    return estado;
 }
 
 int _10_clientes_regulares() {
@@ -938,8 +1067,59 @@ int _13_tres_prods_mais_comprados() {
 }
 
 int _14_clientes_prods_fantasma() {
-    return 1;
+    int n_produtos, n_clientes, leitura;
+    char input[TAM_INPUT];
+    clock_t ci, cf;
+    int estado = QUERIE_14;
+
+    while (estado == QUERIE_14) {
+        ci = clock();
+        n_produtos = cont_num_prod_sem_compras(contabilidade);
+        n_clientes = compras_num_cliente_sem_compras(mod_compras);
+        cf = clock();
+        printf("\033[2J\033[1;1H");
+        printf(" ======================================================  \n");
+        printf("|  GESTHIPER >> COMPRAS >> QUERIE 14                    |\n");
+        printf("|                                                       |\n");
+        printf("|  Produtos nao vendidos e clientes sem compras         |\n");
+        printf("| ----------------------------------------------------- |\n");
+        printf("| Nº produtos sem compras: %8d                     |\n", n_produtos);
+        printf("| Nº clientes sem compras: %8d                     |\n", n_clientes);
+        printf("| ----------------------------------------------------- |\n");
+        printf("| Tempo: %6.4f segundos                                |\n", (float) (cf - ci) / CLOCKS_PER_SEC);
+        printf("| ----------------------------------------------------- |\n");
+        printf("| 1 - COMPRAS | 2 - Menu Principal | 3 - Sair           |\n");
+        printf(" ======================================================  \n");
+
+        printf("Insira nº da opcao >");
+        leitura = scanf("%s", input);
+        if (leitura > 0) {
+            switch (toupper(input[0])) {
+                case '1':
+                    estado = FACE_COMPRAS;
+                    break;
+                case '2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case 'Q':
+                case '3':
+                    estado = SAIR_PROGRAMA;
+                    break;
+                case '4':
+                    estado = QUERIE_14;
+                    break;
+                default:
+                    estado = SAIR_PROGRAMA;
+                    break;
+            }
+        }
+
+    }/* END WHILE*/
+
+
+    return estado;
 }
+
 /*
  * FUNCOES AUXILIARES
  */

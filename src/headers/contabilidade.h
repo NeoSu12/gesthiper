@@ -114,6 +114,7 @@ int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod
  */
 
 CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont);
+int cont_num_prod_sem_compras(Contabilidade cont);
 CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n);
 CONT_FICHA_PRODUTO cont_lista_get_fich_prod(CONT_LISTA_PRODUTOS lista,int p);
 int cont_lista_prod_get_pos_and_num_elems_pag(CONT_LISTA_PRODUTOS lista, int *pos_inicial, int pag);

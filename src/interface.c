@@ -189,7 +189,7 @@ int face_compras() {
                       break;
             case '1': estado = _05_tabela_cliente();break;
             case '2': estado = _08_clientes_compraram_prod();break;
-            case '3': estado = _09_produtos_mais_comprados_cliente();break;
+            case '3': estado = _09_produtos_mais_comprados_cliente_mes();break;
             case '4': estado = _10_clientes_regulares();break;
             case '5': estado = _11_compras_CSV();break;
             case '6': estado = _13_tres_prods_mais_comprados();break;

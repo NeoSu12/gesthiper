@@ -41,7 +41,7 @@ CONT_FICHA_PRODUTO codigo_to_ficha(char* cod_prod);
 CONT_FICHA_PRODUTO codigo_to_ficha_noclone(char* cod_prod) ;
 CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod);
 int cont_compara_ficha_por_cod_avl(const void *avl_a, const void *avl_b, void *avl_param);
-int cont_compara_ficha_por_vendas_ad(void *avl_a,void *avl_b);
+int cont_compara_ficha_por_vendas_ad(void *avl_a,void *avl_b, void *);
 void cont_free_string_ad(void *item);
 void free_ficha_prod_avl(void *item, void *avl_param);
 void troca_meses(int *mes1 , int *mes2);
@@ -470,6 +470,23 @@ CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
     return lista;
 }
 
+int cont_num_prod_sem_compras(Contabilidade cont) {
+    int res = 0;
+    CONT_FICHA_PRODUTO produto;
+    IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
+
+    while ((produto = it_cont_fich_produto_proximo(iterador)) != NULL) {
+        if (cont_total_vendas_fich_produto(produto) == 0)
+            res++;
+
+        free_ficha_prod(produto);
+    }
+
+    free_it_cont_fich_prod(iterador);
+    return res;
+}
+
+
 /*
  * TODO: Versao ineficiente, mas que garante correcta libertação de memoria.
  *          Procurar melhorar esta implementação.
@@ -486,7 +503,7 @@ CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n) {
     for (i = 0; (produto = it_cont_fich_produto_proximo(iterador)) != NULL; i++) {
         ad_insere_elemento(ad, produto);
     }
-    ad_ordena(ad, cont_compara_ficha_por_vendas_ad);
+    ad_ordena(ad, cont_compara_ficha_por_vendas_ad, NULL);
 
     if (n < ad_get_tamanho(ad)) {
         for (i = ad_get_tamanho(ad) - 1; i >= n; i--) {
@@ -606,8 +623,6 @@ void free_it_cont_fich_prod(IT_CONT it){
 }
 
 
-/**/
-
 
 /* 
  * FUNCOES AUXILIARES PRIVADAS AO MODULO 
@@ -683,7 +698,7 @@ int cont_compara_ficha_por_cod_avl(const void *avl_a, const void *avl_b,
     return strcmp(a->cod_produto, b->cod_produto);
 }
 
-int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b){
+int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b, void *param){
     int res=0;
     CONT_FICHA_PRODUTO a = (CONT_FICHA_PRODUTO) avl_a;
     CONT_FICHA_PRODUTO b = (CONT_FICHA_PRODUTO) avl_b;

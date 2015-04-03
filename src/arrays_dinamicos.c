@@ -12,7 +12,7 @@ struct array_dinamico{
 
 ARRAY_DINAMICO ad_inicializa_gc(int);
 void ad_realloc_if_needed(ARRAY_DINAMICO);
-void quicksort(void **, ad_compara_elems *, int);
+void quicksort(void **, ad_compara_elems *, int, void *);
 
 /*
  * INICIALIZACAO E LIBERTACAO MEMORIA
@@ -105,11 +105,11 @@ void ad_insere_elemento_pos_mode(ARRAY_DINAMICO ad,int pos, void *elemento, inse
         ad_remove_elemento_pos(ad, ad->posicao-1);
 }
 
-void ad_insere_elemento_ordenado(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara){
-    ad_insere_elemento_ordenado_mode(ad, elemento,f_compara, INCREASE_SIZE);
+void ad_insere_elemento_ordenado(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara, void *param){
+    ad_insere_elemento_ordenado_mode(ad, elemento,f_compara, INCREASE_SIZE, param);
 }
 
-void ad_insere_elemento_ordenado_mode(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara, insert_mode_t i_mode){
+void ad_insere_elemento_ordenado_mode(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara, insert_mode_t i_mode, void *param){
     int keep_looking=1;
     int i;
     
@@ -118,17 +118,17 @@ void ad_insere_elemento_ordenado_mode(ARRAY_DINAMICO ad, void *elemento, ad_comp
         keep_looking=0;
     }
     
-    if(keep_looking && f_compara(elemento, ad_get_elemento(ad,0))<=0)
+    if(keep_looking && f_compara(elemento, ad_get_elemento(ad,0), param)<=0)
         keep_looking=0;
     
-    if(keep_looking && f_compara(elemento, ad_get_elemento(ad,ad->posicao-1))>0){
+    if(keep_looking && f_compara(elemento, ad_get_elemento(ad,ad->posicao-1),param)>0){
         ad_insere_elemento_pos_mode(ad, ad->posicao-1,elemento,i_mode);
         keep_looking=0;
     }
     
     for(i=0;i<ad->posicao-1 && keep_looking;i++){
-        if(f_compara(elemento, ad_get_elemento(ad, i))>=0
-                &&f_compara(elemento, ad_get_elemento(ad, i+1))<0){
+        if(f_compara(elemento, ad_get_elemento(ad, i),param)>=0
+                &&f_compara(elemento, ad_get_elemento(ad, i+1),param)<0){
             ad_insere_elemento_pos_mode(ad, i+1, elemento, i_mode);
             keep_looking = 0;
         }
@@ -144,13 +144,13 @@ void *ad_get_elemento(ARRAY_DINAMICO ad, int pos){
     return pos < ad->posicao ? ad->elementos[pos] : NULL;
 }
 
-int ad_get_pos_elem(ARRAY_DINAMICO ad, void *elemento,ad_compara_elems *f_compara){
+int ad_get_pos_elem(ARRAY_DINAMICO ad, void *elemento,ad_compara_elems *f_compara, void *param){
     int encontrado =0;
     int pos_encontrado=AD_ELEM_NAO_ENCONTRADO;
     int i=0;
     
     for(i=0;i<ad->posicao && !encontrado;i++){
-        if(f_compara(elemento, ad->elementos[i])==0){
+        if(f_compara(elemento, ad->elementos[i], param)==0){
             encontrado = 1;
             pos_encontrado = i;
         }
@@ -160,8 +160,8 @@ int ad_get_pos_elem(ARRAY_DINAMICO ad, void *elemento,ad_compara_elems *f_compar
     
 }
 
-int ad_existe_elemento(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara){
-    return ad_get_pos_elem(ad, elemento,f_compara) == AD_ELEM_NAO_ENCONTRADO ? 
+int ad_existe_elemento(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara, void *param){
+    return ad_get_pos_elem(ad, elemento,f_compara, param) == AD_ELEM_NAO_ENCONTRADO ? 
         AD_ELEM_NAO_EXISTE : AD_ELEM_EXISTE;
 }
 
@@ -169,9 +169,9 @@ int ad_existe_elemento(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_co
  * SUBSTITUICAO
  */
 
-void ad_substitui_elemento(ARRAY_DINAMICO ad, void *novo_elemento,void *antigo_elemento, ad_compara_elems *f_compara){
+void ad_substitui_elemento(ARRAY_DINAMICO ad, void *novo_elemento,void *antigo_elemento, ad_compara_elems *f_compara, void *param){
     
-    int res_procura = ad_get_pos_elem(ad, antigo_elemento,f_compara);
+    int res_procura = ad_get_pos_elem(ad, antigo_elemento,f_compara, param);
     if(res_procura != AD_ELEM_NAO_ENCONTRADO)
         ad_substitui_elemento_pos(ad,res_procura,novo_elemento);
         
@@ -186,8 +186,8 @@ void ad_substitui_elemento_pos(ARRAY_DINAMICO ad, int pos, void *novo_elemento){
  * REMOCAO
  */
 
-void ad_remove_elemento(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara){
-    int posicao = ad_get_pos_elem(ad,elemento,f_compara);
+void ad_remove_elemento(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara, void *param){
+    int posicao = ad_get_pos_elem(ad,elemento,f_compara, param);
     
     if(posicao != AD_ELEM_NAO_ENCONTRADO)
         ad_remove_elemento_pos(ad, posicao);
@@ -262,8 +262,8 @@ int ad_goto_pag(ARRAY_DINAMICO ad, int *pos_inicial, int pag, int elems_por_pag)
  * ORDENACAO
  */
 
-void ad_ordena(ARRAY_DINAMICO ad, ad_compara_elems *f_comparacao) {
-    quicksort(ad->elementos, f_comparacao, ad->posicao);
+void ad_ordena(ARRAY_DINAMICO ad, ad_compara_elems *f_comparacao, void *param) {
+    quicksort(ad->elementos, f_comparacao, ad->posicao, param);
 }
 
 
@@ -300,7 +300,7 @@ void ad_realloc_if_needed(ARRAY_DINAMICO ad){
     }
 }
 
-void quicksort(void **elems, ad_compara_elems *f_comparacao, int n){
+void quicksort(void **elems, ad_compara_elems *f_comparacao, int n, void *param){
     int i, j;
     void *p, *temp;
     
@@ -309,15 +309,15 @@ void quicksort(void **elems, ad_compara_elems *f_comparacao, int n){
     
     for (i = 0, j = n - 1;; i++, j--) {
         
-        while(f_comparacao(elems[i],p)<0) i++;
-        while(f_comparacao(p,elems[j])<0)j--;
+        while(f_comparacao(elems[i],p, param)<0) i++;
+        while(f_comparacao(p,elems[j], param)<0)j--;
         if (i >= j) break;
         
         temp = elems[i];
         elems[i] = elems[j];
         elems[j] = temp;
     }
-    quicksort(elems,f_comparacao, i);
-    quicksort(elems+i,f_comparacao, n - i);
+    quicksort(elems,f_comparacao, i, param);
+    quicksort(elems+i,f_comparacao, n - i, param);
 }
 

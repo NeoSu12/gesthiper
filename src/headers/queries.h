@@ -8,7 +8,7 @@ int _05_tabela_cliente();
 int _06_codigos_clientes_letra();
 int _07_compras_intervalo_meses();
 int _08_clientes_compraram_prod();
-int _09_produtos_mais_comprados_cliente();
+int _09_produtos_mais_comprados_cliente_mes();
 int _10_clientes_regulares();
 int _11_compras_CSV();
 int _12_prods_mais_vendidos();
