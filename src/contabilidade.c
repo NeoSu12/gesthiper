@@ -446,6 +446,11 @@ int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod
  * LISTAGENS / PAGINAÇÃO
  */
 
+
+/*
+ * TODO: Versao ineficiente, mas que garante correcta libertação de memoria.
+ *          Procurar melhorar esta implementação.
+ */
 CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
     CONT_FICHA_PRODUTO produto;
     CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof(struct cont_lista_produtos));
@@ -455,33 +460,43 @@ CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
     while((produto = it_cont_fich_produto_proximo(iterador))!=NULL){
         if(cont_total_vendas_fich_produto(produto)==0){
             ad_insere_elemento(ad,produto);
+        }else{
+            free_ficha_prod(produto);
         }
     }
     lista->lista_paginada=ad;
     lista->elems_por_pag=20;
+    free_it_cont_fich_prod(iterador);
     return lista;
 }
 
-CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n){
+/*
+ * TODO: Versao ineficiente, mas que garante correcta libertação de memoria.
+ *          Procurar melhorar esta implementação.
+ */
+
+CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n) {
     int i;
     CONT_FICHA_PRODUTO produto;
-    CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof(struct cont_lista_produtos));
+    CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof (struct cont_lista_produtos));
     ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
     IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
-    
-    
-    for(i=0;i<n && (produto = it_cont_fich_produto_proximo(iterador))!=NULL;i++){
-            ad_insere_elemento(ad,produto);
+
+
+    for (i = 0; (produto = it_cont_fich_produto_proximo(iterador)) != NULL; i++) {
+        ad_insere_elemento(ad, produto);
     }
     ad_ordena(ad, cont_compara_ficha_por_vendas_ad);
-    
-    if(produto!=NULL){
-        while((produto = it_cont_fich_produto_proximo(iterador))!=NULL){
-            ad_insere_elemento_ordenado_mode(ad, produto, cont_compara_ficha_por_vendas_ad,KEEP_SIZE);
+
+    if (n < ad_get_tamanho(ad)) {
+        for (i = ad_get_tamanho(ad) - 1; i >= n; i--) {
+            ad_remove_elemento_pos(ad, i);
         }
     }
-    lista->lista_paginada=ad;
-    lista->elems_por_pag=20;
+
+    lista->lista_paginada = ad;
+    lista->elems_por_pag = 20;
+    free_it_cont_fich_prod(iterador);
     return lista;
 }
 

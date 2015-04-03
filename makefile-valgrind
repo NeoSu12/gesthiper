@@ -4,6 +4,8 @@ objects = main.o erros.o compra.o avl.o cat_clientes.o \
 	   		cat_produtos.o interface.o queries.o compras.o \
 				arrays_dinamicos.o contabilidade.o
 
+VALFLAGS2 = --show-leak-kinds=all --leak-check=full --track-origins=yes
+VALFLAGS = --show-leak-kinds=all --leak-check=full
 CFLAGS = -ansi -pedantic -Wall -g -O0
 CC = gcc
 
@@ -11,16 +13,19 @@ gesval: $(objects)
 	$(CC) $(CFLAGS) -o gesval $(objects)
 
 runval: gesval
-	valgrind --show-leak-kinds=all --leak-check=full ./gesval
+	valgrind $(VALFLAGS) ./gesval
 
 runvalbase: gesval
-	valgrind --show-leak-kinds=all --leak-check=full ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras.txt
+	valgrind $(VALFLAGS) ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras.txt
+
+runval100m: gesval
+	valgrind $(VALFLAGS) ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras100m.txt
 
 runval1m: gesval
-	valgrind --show-leak-kinds=all --leak-check=full ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras1.txt
+	valgrind $(VALFLAGS) ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras1.txt
 
 runval3m: gesval
-	valgrind --show-leak-kinds=all --leak-check=full ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras3.txt
+	valgrind $(VALFLAGS) ./gesval datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras3.txt
 
 
 

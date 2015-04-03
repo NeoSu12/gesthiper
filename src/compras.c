@@ -36,6 +36,15 @@ struct compras_iterador_produtos{
     TRAVERSER traverser;
 };
 
+struct compras_lista_clientes{
+    ARRAY_DINAMICO lista_paginada;
+    int elems_por_pag;
+};
+
+struct compras_lista_produtos{
+    ARRAY_DINAMICO lista_paginada;
+    int elems_por_pag;
+};
 
 COMPRAS_FICHA_PRODUTO compras_inicializa_ficha_produto(char* cod_prod);
 COMPRAS_FICHA_CLIENTE compras_inicializa_ficha_cliente(char* cod_cli);
@@ -53,6 +62,9 @@ void compras_free_cliente_avl(void *avl_item, void *avl_param);
 void compras_free_produto(COMPRAS_FICHA_PRODUTO produto);
 void compras_free_cliente(COMPRAS_FICHA_CLIENTE cliente);
 void compras_troca_meses(int *mes1 , int *mes2);
+int compras_cliente_comprou_em_todos_os_meses(COMPRAS_FICHA_CLIENTE cliente);
+void compras_free_produto_ad(void *produto);
+void compras_free_cliente_ad(void *cliente);
 
 /*
  * INCICIALIZACAO E GESTAO MEMORIA
@@ -419,21 +431,100 @@ IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_elem(Compras compras, cha
  * Pedidos aos modulos
  */
 
-COMPRAS_FICHA_CLIENTE compras_n_produtos_comprados_mensal(Compras compras, char *cod_cliente){
-    int i=0, compras_mes=0;
-    COMPRAS_FICHA_PRODUTO produto;
-    COMPRAS_FICHA_CLIENTE res = compras_inicializa_ficha_cliente(cod_cliente);
-    IT_COMPRAS_PRODUTOS it = inicializa_it_compras_cod_produtos(compras, cod_cliente);
+COMPRAS_LISTA_CLIENTES compras_lista_clientes_regulares(Compras compras){
+    COMPRAS_FICHA_CLIENTE cliente;
+    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
+    COMPRAS_LISTA_CLIENTES l_clientes = (COMPRAS_LISTA_CLIENTES) malloc(sizeof(struct compras_lista_clientes));
+    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
     
-    while((produto = it_compras_fich_produto_proximo(it))!=NULL){
-        for(i=0;i<12;i++){
-            compras_mes = compras_produtos_comprados_ficha_produto_mes(produto,i+1);
-            res->num_prods_comprados[i]+=compras_mes;
-            res->total_prods_comprados+=compras_mes;
+    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
+        if(compras_cliente_comprou_em_todos_os_meses(cliente)){
+            ad_insere_elemento(ad,cliente);
+        }else{
+            compras_free_cliente(cliente);
         }
     }
     
-    return res;
+    l_clientes->lista_paginada=ad;
+    l_clientes->elems_por_pag=20;
+    free_it_compras_fich_cliente(it);
+    return l_clientes;
+}
+
+/*
+ * LISTAS CLIENTE
+ */
+
+char *compras_get_cod_cli_ficha(COMPRAS_FICHA_CLIENTE cliente){
+    return cliente->cod_cliente;
+}
+
+COMPRAS_FICHA_CLIENTE compras_lista_get_fich_cli(COMPRAS_LISTA_CLIENTES lista,int p){
+    return (COMPRAS_FICHA_CLIENTE) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int compras_lista_cli_get_pos_and_num_elems_pag(COMPRAS_LISTA_CLIENTES lista, int *pos_inicial, int pag){
+    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+}
+
+int compras_lista_cli_get_num_pags(COMPRAS_LISTA_CLIENTES lista){
+    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
+}
+
+int compras_lista_cli_get_elems_por_pag(COMPRAS_LISTA_CLIENTES lista){
+    return lista->elems_por_pag;
+}
+
+void compras_lista_cli_muda_elems_por_pag(COMPRAS_LISTA_CLIENTES lista, int n){
+    lista->elems_por_pag=n;
+}
+
+int compras_lista_cli_get_num_elems(COMPRAS_LISTA_CLIENTES lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
+void compras_free_lista_clientes(COMPRAS_LISTA_CLIENTES lista){
+    ad_deep_free(lista->lista_paginada, compras_free_cliente_ad);
+    free(lista);
+}
+
+
+/*
+ * LISTAS PRODUTO
+ */
+
+
+char *compras_get_cod_prod_ficha(COMPRAS_FICHA_PRODUTO produto){
+    return produto->cod_produto;
+}
+
+COMPRAS_FICHA_PRODUTO compras_lista_get_fich_prod(COMPRAS_LISTA_PRODUTOS lista,int p){
+    return (COMPRAS_FICHA_PRODUTO) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int compras_lista_prod_get_pos_and_num_elems_pag(COMPRAS_LISTA_PRODUTOS lista, int *pos_inicial, int pag){
+    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+}
+
+int compras_lista_prod_get_num_pags(COMPRAS_LISTA_PRODUTOS lista){
+    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
+}
+
+int compras_lista_prod_get_elems_por_pag(COMPRAS_LISTA_PRODUTOS lista){
+    return lista->elems_por_pag;
+}
+
+void compras_lista_prod_muda_elems_por_pag(COMPRAS_LISTA_PRODUTOS lista, int n){
+    lista->elems_por_pag=n;
+}
+
+int compras_lista_prod_get_num_elems(COMPRAS_LISTA_PRODUTOS lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
+void compras_free_lista_produto(COMPRAS_LISTA_PRODUTOS lista){
+    ad_deep_free(lista->lista_paginada, compras_free_produto_ad);
+    free(lista);
 }
 
 
@@ -587,10 +678,33 @@ void compras_free_cliente(COMPRAS_FICHA_CLIENTE cliente){
     free(cliente);
 }
 
+void compras_free_produto_ad(void *produto){
+    COMPRAS_FICHA_PRODUTO p = (COMPRAS_FICHA_PRODUTO) produto;
+    free(p->cod_produto);
+    free(p);
+}
+
+void compras_free_cliente_ad(void *cliente){
+    COMPRAS_FICHA_CLIENTE c = (COMPRAS_FICHA_CLIENTE) c;
+    free(c->cod_cliente);
+    free(c);
+}
+
+
 void compras_troca_meses(int *mes1 , int *mes2){
     int temp = *mes1;
     *mes1 = *mes2;
     *mes2 = temp;
 }
 
+int compras_cliente_comprou_em_todos_os_meses(COMPRAS_FICHA_CLIENTE cliente){
+    int i=0, comprou=1;
+    
+    for(i=0;i<12 && comprou;i++){
+        if(compras_produtos_comprados_ficha_cliente_mes(cliente, i+1)==0){
+            comprou=0;
+        }
+    }
+    return comprou;
+}
 

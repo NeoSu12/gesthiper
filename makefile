@@ -20,6 +20,9 @@ recompile:
 runbase: gesthiper
 	./gesthiper datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras.txt
 
+run100m: gesthiper
+	./gesthiper datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras100m.txt
+
 run1m: gesthiper
 	./gesthiper datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras1.txt
 
@@ -27,30 +30,39 @@ run3m: gesthiper
 	./gesthiper datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras3.txt
 
 valgrind:
+	make clean
 	make --file=makefile-valgrind
 
 runvalgrind:
+	make clean
 	make --file=makefile-valgrind runval
 
 runvalgrindbase:
+	make clean
 	make --file=makefile-valgrind runvalbase
 
+runvalgrind100m:
+	make clean
+	make --file=makefile-valgrind runval100m
+
 runvalgrind1m:
+	make clean
 	make --file=makefile-valgrind runval1m
 
 runvalgrind3m:
+	make clean
 	make --file=makefile-valgrind runval3m
 
-tarexe: gesthiper
+tarexe: recompile
 	tar -cf gesthiper.tar datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
-tarcomplete: gesthiper
+tarcomplete: recompile
 	tar -cf gesthiper.tar makefile makefile-valgrind src/* datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
-zipexe: gesthiper
+zipexe: recompile
 	zip gesthiper.tar datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
-zipcomplete: gesthiper
+zipcomplete: recompile
 	zip gesthiper.tar makefile makefile-valgrind src/* datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
 main.o : interface.h erros.h compra.h cat_clientes.h cat_produtos.h compras.h contabilidade.h

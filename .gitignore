@@ -33,6 +33,10 @@
 *.swp
 *.swo
 
+#zip e tar
+*.zip
+*.tar
+
 #Executavel do projecto
 #Usar o make para compilar sempre que necessario
 gesthiper
@@ -49,9 +53,7 @@ gesval
 # Makefile do netbeans. 
 # Usar a 'makefile' (note-se que esta tudo em minusculas) 
 # para correr o make pelo terminal.
-/Makefile
 DocsAux/~$queries_modulos.xlsx
-ordenado.txt
 
 
 

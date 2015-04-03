@@ -12,7 +12,8 @@ typedef struct compras_ficha_produto *COMPRAS_FICHA_PRODUTO;
 typedef struct compras_ficha_cliente *COMPRAS_FICHA_CLIENTE;
 typedef struct compras_iterador_clientes *IT_COMPRAS_CLIENTES;
 typedef struct compras_iterador_produtos *IT_COMPRAS_PRODUTOS;
-
+typedef struct compras_lista_clientes *COMPRAS_LISTA_CLIENTES;
+typedef struct compras_lista_produtos *COMPRAS_LISTA_PRODUTOS;
 
 /*
  * INCICIALIZACAO E GESTAO MEMORIA
@@ -117,6 +118,39 @@ IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_primeiro(Compras compras,
 IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_ultimo(Compras compras, char *cod_cliente);
 IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_elem(Compras compras, char *cod_cliente, char *cod_produto);
 
+
+/*
+ * Pedidos aos modulos
+ */
+
+COMPRAS_LISTA_CLIENTES compras_lista_clientes_regulares(Compras compras);
+
+/*
+ * LISTAS CLIENTE
+ */
+
+char *compras_get_cod_cli_ficha(COMPRAS_FICHA_CLIENTE cliente);
+COMPRAS_FICHA_CLIENTE compras_lista_get_fich_cli(COMPRAS_LISTA_CLIENTES lista,int p);
+int compras_lista_cli_get_pos_and_num_elems_pag(COMPRAS_LISTA_CLIENTES lista, int *pos_inicial, int pag);
+int compras_lista_cli_get_num_pags(COMPRAS_LISTA_CLIENTES lista);
+int compras_lista_cli_get_elems_por_pag(COMPRAS_LISTA_CLIENTES lista);
+void compras_lista_cli_muda_elems_por_pag(COMPRAS_LISTA_CLIENTES lista, int n);
+int compras_lista_cli_get_num_elems(COMPRAS_LISTA_CLIENTES lista);
+void compras_free_lista_clientes(COMPRAS_LISTA_CLIENTES lista);
+
+
+/*
+ * LISTAS PRODUTO
+ */
+
+char *compras_get_cod_prod_ficha(COMPRAS_FICHA_PRODUTO produto);
+COMPRAS_FICHA_PRODUTO compras_lista_get_fich_prod(COMPRAS_LISTA_PRODUTOS lista,int p);
+int compras_lista_prod_get_pos_and_num_elems_pag(COMPRAS_LISTA_PRODUTOS lista, int *pos_inicial, int pag);
+int compras_lista_prod_get_num_pags(COMPRAS_LISTA_PRODUTOS lista);
+int compras_lista_prod_get_elems_por_pag(COMPRAS_LISTA_PRODUTOS lista);
+void compras_lista_prod_muda_elems_por_pag(COMPRAS_LISTA_PRODUTOS lista, int n);
+int compras_lista_prod_get_num_elems(COMPRAS_LISTA_PRODUTOS lista);
+void compras_free_lista_produto(COMPRAS_LISTA_PRODUTOS lista);
 
 
 
