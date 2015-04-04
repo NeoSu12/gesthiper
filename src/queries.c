@@ -1070,7 +1070,6 @@ int _13_tres_prods_mais_comprados() {
     clock_t ci, cf;
     int total_vendas=0;
     int estado = QUERIE_13;
-    COMPRAS_LISTA_PRODUTOS lista_prods=NULL;
 
     while (estado == QUERIE_13) {
         printf("\033[2J\033[1;1H");
