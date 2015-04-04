@@ -14,6 +14,9 @@ typedef struct compras_iterador_clientes *IT_COMPRAS_CLIENTES;
 typedef struct compras_iterador_produtos *IT_COMPRAS_PRODUTOS;
 typedef struct compras_lista_clientes *COMPRAS_LISTA_CLIENTES;
 typedef struct compras_lista_produtos *COMPRAS_LISTA_PRODUTOS;
+typedef struct compras_num_clientes_mensais *COMPRAS_NUM_CLIENTES_MENSAIS;
+typedef struct compras_associacao_produto_clientes *COMPRAS_ASSOC_PROD_CLIENTES;
+typedef struct compras_cliente_tipo_compra *COMPRAS_CLIENTE_TIPO_COMPRA;
 
 /*
  * INCICIALIZACAO E GESTAO MEMORIA
@@ -128,6 +131,23 @@ IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_elem(Compras compras, cha
 COMPRAS_LISTA_CLIENTES compras_lista_clientes_regulares(Compras compras);
 COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compras, char *cod_cliente, int mes);
 int compras_num_cliente_sem_compras(Compras compras);
+
+/*
+ * ASSOCIACOES
+ */
+
+
+COMPRAS_ASSOC_PROD_CLIENTES compras_get_associacao_produto_clientes_tipo_compra(Compras compras, char *cod_produto);
+COMPRAS_CLIENTE_TIPO_COMPRA compras_get_cli_compra_from_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES lista,int p);
+int compras_assoc_prod_cli_get_pos_and_num_elems_pag(COMPRAS_ASSOC_PROD_CLIENTES lista, int *pos_inicial, int pag);
+int compras_assoc_prod_cli_get_num_pags(COMPRAS_ASSOC_PROD_CLIENTES lista);
+int compras_assoc_prod_cli_get_elems_por_pag(COMPRAS_ASSOC_PROD_CLIENTES lista);
+void compras_assoc_prod_cli_muda_elems_por_pag(COMPRAS_ASSOC_PROD_CLIENTES lista, int n);
+int compras_assoc_prod_cli_get_num_elems(COMPRAS_ASSOC_PROD_CLIENTES lista);
+void compras_free_assoc_prod_clientes(COMPRAS_ASSOC_PROD_CLIENTES assoc);
+char *compras_assoc_cli_compra_get_cod_cli(COMPRAS_CLIENTE_TIPO_COMPRA cliente_compra);
+char compras_assoc_cli_compra_get_tipo_compra(COMPRAS_CLIENTE_TIPO_COMPRA cliente_compra);
+
 
 /*
  * LISTAS CLIENTE

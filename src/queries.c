@@ -1063,7 +1063,122 @@ int _12_prods_mais_vendidos() {
 }
 
 int _13_tres_prods_mais_comprados() {
-    return 1;
+    int i, leitura;
+    char input[50];
+    int cliente_existe=1;
+    char *cod_cliente=NULL;
+    clock_t ci, cf;
+    int total_vendas=0;
+    int estado = QUERIE_13;
+    COMPRAS_LISTA_PRODUTOS lista_prods=NULL;
+
+    while (estado == QUERIE_13) {
+        printf("\033[2J\033[1;1H");
+        printf(" ======================================================  \n");
+        printf("|  GESTHIPER >> COMPRAS >> QUERIE 13                    |\n");
+        printf("|                                                       |\n");
+        printf("|  Tres produtos mais comprados por cliente             |\n");
+        printf("| ----------------------------------------------------- |\n");
+        printf("| 1 - COMPRAS | 2 - Menu Principal | 3 - Sair           |\n");
+        printf(" ======================================================  \n");
+        printf("Insira o codigo de cliente a procurar > ");
+        leitura = scanf("%s", input);
+
+        if (leitura > 0) {
+            switch (toupper(input[0])) {
+                case '1':
+                    estado = FACE_COMPRAS;
+                    break;
+                case'2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case'3':
+                    estado = SAIR_PROGRAMA;
+                default:
+                    break;
+            }
+        }
+
+        
+        if (estado == QUERIE_13) {
+            printf("\033[2J\033[1;1H");
+            printf("GESTHIPER >> COMPRAS >> QUERIE 13                 \n");
+            printf("Tres produtos mais comprados por cliente         \n");
+            printf("=========================== \n");
+
+            if (cat_existe_cliente(catalogo_clientes, input)) {
+                cliente_existe=1;
+                cod_cliente = (char *) malloc(sizeof(char)*(strlen(input)+1));
+                strcpy(cod_cliente, input);
+                
+                
+                printf("Codigo de cliente: %s\n", cod_cliente);
+                printf("=========================== \n");
+                printf("     | Vendas | \n");
+                printf(" Mes | Total  | \n");
+                printf("--------------- \n");
+                ci=clock();
+                for (i = 0; i < 3; i++) {
+                    printf("%4d | %6d | \n",
+                            i,
+                            compras_produtos_comprados_cod_cliente_mes(mod_compras, cod_cliente, i));
+
+                    total_vendas += compras_produtos_comprados_cod_cliente_mes(mod_compras, cod_cliente, i);
+                    
+
+                }
+                cf=clock();
+                printf("--------------- \n");
+                printf("TOTAL| %6d |\n", total_vendas);
+                printf("============== \n");
+                printf("Tempo: %5.3f \n",
+                        (float)(cf-ci)/CLOCKS_PER_SEC);
+            } else {
+                cliente_existe=0;
+                printf("O cliente nao existe\n");
+                printf("=========================================================== \n");
+            }
+
+            printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair        \n");
+            printf("4 - Ver outro cliente | 5 - Guardar em ficheiro \n");
+            printf("========================================================== \n");
+            printf("Insira nº da opcao >");
+            leitura = scanf("%s", input);
+            switch (toupper(input[0])) {
+                case '1':
+                    estado = FACE_COMPRAS;
+                    break;
+                case '2':
+                    estado = MENU_PRINCIPAL;
+                    break;
+                case 'Q':
+                case '3':
+                    estado = SAIR_PROGRAMA;
+                    break;
+                case '4':
+                    estado = QUERIE_5;
+                    break;
+                case '5':
+                    if(cliente_existe){
+                        estado = _05_aux_guarda_ficheiro(mod_compras, cod_cliente);
+                    } else{
+                        printf("Nao é possivel criar nenhum ficheiro visto o cliente nao existir\n"
+                                "Clique em qualquer tecla para continuar > ");
+                        leitura = scanf("%s", input);
+                        estado = QUERIE_5;
+                    }
+                    break;
+                default:
+                    estado = SAIR_PROGRAMA;
+                    break;
+            }
+
+        }
+
+    }/* END WHILE*/
+
+    free(cod_cliente);
+    return estado;
 }
 
 int _14_clientes_prods_fantasma() {
@@ -1200,5 +1315,3 @@ int _05_aux_guarda_ficheiro(Compras mod_compras, char *cod_cli) {
 
     return estado;
 }
-
-

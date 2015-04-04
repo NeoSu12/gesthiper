@@ -25,6 +25,7 @@ void mostra_compra(COMPRA);
 void mostra_numero_codigos();
 void testes();
 void testes2();
+void para_o_bruno();
 
 CatClientes catalogo_clientes;
 CatProdutos catalogo_produtos;
@@ -290,3 +291,53 @@ void mostra_compra(COMPRA compra) {
 
 }
 
+void para_o_bruno() {
+    int i;
+    FILE *fich = fopen("compras_clientes.txt", "w");
+    CONT_FICHA_PRODUTO produto;
+    IT_CONT it = inicializa_it_cont_fich_produtos(contabilidade);
+    int vendas_n, vendas_p, total_vendas_n, total_vendas_p;
+    double fact_n, fact_p, total_fact_n, total_fact_p;
+    
+    while ((produto = it_cont_fich_produto_proximo(it)) != NULL) {
+        total_vendas_n = 0;
+        total_vendas_p = 0;
+        total_fact_n=0;
+        total_fact_p=0;
+        
+        fprintf(fich,"Codigo de produto: %s\n", cont_get_cod_prod_ficha(produto));
+        fprintf(fich,"========================================================= \n");
+        fprintf(fich,"     |  Vendas   |       ||    Facturacao     |           |\n");
+        fprintf(fich," Mes |  P  |  N  | Total ||    P    |    N    |   Total   |\n");
+        fprintf(fich,"--------------------------------------------------------- \n");
+        for (i = 1; i <= 12; i++) {
+            vendas_n=cont_total_vendas_fich_normais_produto_mes(produto,i);
+            vendas_p=cont_total_vendas_fich_promo_produto_mes(produto,i);
+            fact_n = cont_total_fact_fich_normal_produto_mes(produto,i);
+            fact_p = cont_total_fact_fich_promo_produto_mes(produto,i);
+            fprintf(fich,"%4d | %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
+                    i,
+                    vendas_n,
+                    vendas_p,
+                    vendas_n+vendas_p,
+                    fact_n,
+                    fact_p,
+                    fact_n + fact_p);
+
+
+            total_vendas_n += vendas_n;
+            total_vendas_p += vendas_p;
+
+            total_fact_n += fact_n;
+            total_fact_p += fact_p;
+
+        }
+        fprintf(fich,"---------------------------------------------------------- \n");
+        fprintf(fich,"TOTAL| %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
+                total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
+                total_fact_n, total_fact_p, total_fact_n + total_fact_p);
+        fprintf(fich,"========================================================== \n");
+    }
+
+    fclose(fich);
+}
