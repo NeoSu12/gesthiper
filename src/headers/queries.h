@@ -3,6 +3,7 @@
 
 int _02_codigo_produtos_letra();
 int _03_compras_e_fact_mensal_prod();
+int _03_compras_e_fact_mensal_prod_old();
 int _04_prods_nao_comprados();
 int _05_tabela_cliente();
 int _06_codigos_clientes_letra();

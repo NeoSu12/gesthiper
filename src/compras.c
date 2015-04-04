@@ -141,6 +141,10 @@ void free_compras(Compras compras){
  */
 
 int compras_total_produtos_comprados_ficha_cliente(COMPRAS_FICHA_CLIENTE cliente){
+    return avl_count(cliente->avl_produtos);
+}
+
+int compras_total_unidades_compradas_ficha_cliente(COMPRAS_FICHA_CLIENTE cliente){
     return cliente->total_prods_comprados;
 }
 
@@ -171,6 +175,10 @@ int compras_produtos_comprados_cod_cliente_mes(Compras compras, char *cod_client
 /*
  * PRODUTO COMPRADO POR CLIENTE
  */
+
+int compras_total_produtos_comprados_ficha(COMPRAS_FICHA_PRODUTO produto){
+    return produto->total_unidades_compradas;
+}
 
 int compras_produtos_comprados_ficha_produto_meses_geral(COMPRAS_FICHA_PRODUTO produto, 
                                                             int mes_inf, int mes_sup, 
@@ -501,7 +509,7 @@ COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compr
 }
 
 COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras compras, char *cod_cliente, int n){
-    int i;
+    int i, total_prods_comprados;
     COMPRAS_FICHA_CLIENTE cliente = NULL;
     COMPRAS_FICHA_PRODUTO produto = NULL;
     IT_COMPRAS_PRODUTOS it = NULL;
@@ -511,8 +519,8 @@ COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras com
     ARRAY_DINAMICO lista_top = ad_inicializa_cap(64);
     
     cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
+    total_prods_comprados = compras_total_produtos_comprados_ficha_cliente(cliente);
     it = inicializa_it_compras_fich_produtos(cliente);
-    
     
     while((produto = it_compras_fich_produto_proximo(it))!=NULL){
             ad_insere_elemento(ad,produto);
@@ -520,7 +528,7 @@ COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras com
     
     ad_ordena(ad, compras_compara_fichas_prod_por_vendas_ad, NULL);
     
-    for(i=0;i<n;i++){
+    for(i=0;i<n && i< total_prods_comprados;i++){
         tops[i] = compras_clone_ficha_produto(ad_get_elemento(ad,i));
         ad_insere_elemento(lista_top, tops[i]);
     }
@@ -554,7 +562,7 @@ COMPRAS_NUM_CLIENTES_MENSAIS compras_num_clientes_por_mes(Compras compras){
     return res;
 }
 
-int compras_get_num_compras_mes(COMPRAS_NUM_CLIENTES_MENSAIS compras_meses, int mes){
+int compras_get_num_clientes_mes(COMPRAS_NUM_CLIENTES_MENSAIS compras_meses, int mes){
     return (mes >=1 && mes<=12)? compras_meses->num_clientes[mes-1] : 0;
 }
 

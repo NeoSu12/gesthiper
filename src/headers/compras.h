@@ -32,7 +32,7 @@ void free_compras(Compras compras);
  */
 
 int compras_total_produtos_comprados_ficha_cliente(COMPRAS_FICHA_CLIENTE cliente);
-
+int compras_total_unidades_compradas_ficha_cliente(COMPRAS_FICHA_CLIENTE cliente);
 int compras_produtos_comprados_ficha_cliente_meses(COMPRAS_FICHA_CLIENTE cliente, int mes_inf, int mes_sup);
 int compras_produtos_comprados_ficha_cliente_mes(COMPRAS_FICHA_CLIENTE cliente, int mes);
 int compras_produtos_comprados_cod_cliente_meses(Compras compras, char *cod_cliente, int mes_inf, int mes_sup);
@@ -41,6 +41,8 @@ int compras_produtos_comprados_cod_cliente_mes(Compras compras, char *cod_client
 /*
  * PRODUTO COMPRADO POR CLIENTE
  */
+
+int compras_total_produtos_comprados_ficha(COMPRAS_FICHA_PRODUTO produto);
 
 int compras_produtos_comprados_ficha_produto_meses_geral(COMPRAS_FICHA_PRODUTO produto, 
                                                             int mes_inf, int mes_sup, 
@@ -130,6 +132,9 @@ IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_elem(Compras compras, cha
 
 COMPRAS_LISTA_CLIENTES compras_lista_clientes_regulares(Compras compras);
 COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compras, char *cod_cliente, int mes);
+COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras compras, char *cod_cliente, int n);
+COMPRAS_NUM_CLIENTES_MENSAIS compras_num_clientes_por_mes(Compras compras);
+int compras_get_num_clientes_mes(COMPRAS_NUM_CLIENTES_MENSAIS compras_meses, int mes);
 int compras_num_cliente_sem_compras(Compras compras);
 
 /*
