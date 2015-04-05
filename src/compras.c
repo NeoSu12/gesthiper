@@ -505,6 +505,7 @@ COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compr
     ad_ordena(ad, compras_compara_fichas_prod_por_vendas_ad, &mes);
     l_produtos->lista_paginada=ad;
     l_produtos->elems_por_pag=20;
+    free_it_compras_fich_produto(it);
     return l_produtos;
 }
 
@@ -537,6 +538,7 @@ COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras com
     l_produtos->elems_por_pag=20;
     
     ad_deep_free(ad, compras_free_produto_ad);
+    free_it_compras_fich_produto(it);
     return l_produtos;
 }
 
@@ -560,6 +562,10 @@ COMPRAS_NUM_CLIENTES_MENSAIS compras_num_clientes_por_mes(Compras compras){
     
     free_it_compras_fich_cliente(it);
     return res;
+}
+
+void compras_free_num_clientes_mensais(COMPRAS_NUM_CLIENTES_MENSAIS num_cli_mensais){
+    free(num_cli_mensais);
 }
 
 int compras_get_num_clientes_mes(COMPRAS_NUM_CLIENTES_MENSAIS compras_meses, int mes){

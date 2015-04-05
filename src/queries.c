@@ -506,6 +506,8 @@ int _05_tabela_cliente() {
                 strcpy(cod_cliente, input);
                 printf("Codigo de cliente: %s\n", cod_cliente);
                 printf("=========================== \n");
+                printf("\n");
+                printf("--------------- \n");
                 printf("     | Vendas | \n");
                 printf(" Mes | Total  | \n");
                 printf("--------------- \n");
@@ -522,8 +524,9 @@ int _05_tabela_cliente() {
                 cf=clock();
                 printf("--------------- \n");
                 printf("TOTAL| %6d |\n", total_vendas);
-                printf("============== \n");
-                printf("Tempo: %5.3f \n",
+                printf("--------------- \n");
+                printf("\n");
+                printf("Tempo: %5.3f ============================================== \n",
                         (float)(cf-ci)/CLOCKS_PER_SEC);
             } else {
                 cliente_existe=0;
@@ -802,7 +805,7 @@ int _08_clientes_compraram_prod() {
     int resultados = 0, total_pags = 0, escolha_pag = 0;
     COMPRAS_ASSOC_PROD_CLIENTES lista_assoc = NULL;
     COMPRAS_CLIENTE_TIPO_COMPRA cliente_t_compra = NULL;
-    char *cod_produto;
+    char *cod_produto= NULL;
     char input[50];
     
     while (estado == QUERIE_8) {
@@ -915,6 +918,7 @@ int _08_clientes_compraram_prod() {
 
         }
     }
+    free(cod_produto);
     return estado;
 }
 
@@ -1182,8 +1186,7 @@ int _11_compras_CSV() {
         printf("TOTAL| %10d | %11d |\n", total_compras, total_clientes);
         printf("-------------------------------- \n");
         printf("\n");
-        printf("========================================================== \n");
-        printf("Tempo: %5.3f \n", (float) (cf - ci) / CLOCKS_PER_SEC);
+        printf("Tempo: %5.3f ============================================= \n", (float) (cf - ci) / CLOCKS_PER_SEC);
         printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair       \n");
         printf("4 - Guardar em ficheiro                           \n");
         printf("========================================================== \n");
@@ -1214,7 +1217,7 @@ int _11_compras_CSV() {
         }
 
     }/* END WHILE*/
-    
+    compras_free_num_clientes_mensais(n_clientes_meses);
     return estado;
 }
 
@@ -1409,6 +1412,8 @@ int _13_tres_prods_mais_comprados() {
                 
                 printf("Codigo de cliente: %s\n", cod_cliente);
                 printf("======================= \n");
+                printf("\n");
+                printf("----------------------- \n");
                 printf(" # |  Codigo  | Vendas |\n");
                 printf("----------------------- \n");
                 for (i = 0; i < 3; i++) {
@@ -1416,9 +1421,9 @@ int _13_tres_prods_mais_comprados() {
                     printf("%2d | %8s | %6d |\n", i+1, compras_get_cod_prod_ficha(produto),
                                                         compras_total_produtos_comprados_ficha(produto));
                 }
-                
-                printf("======================= \n");
-                printf("Tempo: %5.3f \n",(float)(cf-ci)/CLOCKS_PER_SEC);
+                printf("----------------------- \n");
+                printf("\n");
+                printf("Tempo: %5.3f ============================================== \n",(float)(cf-ci)/CLOCKS_PER_SEC);
             } else {
                 printf("O cliente nao existe\n");
                 printf("=========================================================== \n");
