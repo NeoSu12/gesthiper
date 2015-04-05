@@ -186,7 +186,7 @@ int _03_compras_e_fact_mensal_prod() {
 
         if (estado == QUERIE_3) {
             printf("\033[2J\033[1;1H");
-            printf("GESTHIPER >> CATALOGOS >> QUERIE 3                 \n");
+            printf("GESTHIPER >> CONTABILIDADE >> QUERIE 3                 \n");
             printf("Nº vendas e facturação mensal produto              \n");
             printf("========================================================= \n");
 
@@ -224,7 +224,7 @@ int _03_compras_e_fact_mensal_prod() {
                 printf("=========================================================== \n");
             }
 
-            printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
+            printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair        \n");
             printf("4 - Procurar outro produto \n");
             printf("========================================================== \n");
             printf("Insira nº da opcao >");
@@ -293,7 +293,7 @@ int _03_compras_e_fact_mensal_prod_old() {
 
         if (estado == QUERIE_3) {
             printf("\033[2J\033[1;1H");
-            printf("GESTHIPER >> CATALOGOS >> QUERIE 3                 \n");
+            printf("GESTHIPER >> CONTABILIDADE >> QUERIE 3                 \n");
             printf("Nº vendas e facturação mensal produto              \n");
             printf("========================================================= \n");
 
@@ -337,7 +337,7 @@ int _03_compras_e_fact_mensal_prod_old() {
                 printf("=========================================================== \n");
             }
 
-            printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
+            printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair        \n");
             printf("4 - Procurar outro produto \n");
             printf("========================================================== \n");
             printf("Insira nº da opcao > ");
@@ -390,7 +390,7 @@ int _04_prods_nao_comprados() {
         elems_pag = cont_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
         fim_pag = inicio_pag + elems_pag;
         printf("\033[2J\033[1;1H");
-        printf("GESTHIPER >> CATALOGOS >> QUERIE 4                 \n");
+        printf("GESTHIPER >> CONTABILIDADE >> QUERIE 4                 \n");
         printf("Lista de produtos nao comprados\n");
         printf("================================================= \n");
 
@@ -686,7 +686,7 @@ int _06_codigos_clientes_letra() {
 int _07_compras_intervalo_meses() {
     int i, leitura;
     char input[50];
-    int mes_inf=1, mes_sup=1;
+    int mes_inf = 1, mes_sup = 1;
     clock_t ci, cf;
     int total_vendas_n = 0, total_vendas_p = 0;
     double total_fact_n = 0, total_fact_p = 0;
@@ -697,97 +697,76 @@ int _07_compras_intervalo_meses() {
         printf(" ======================================================  \n");
         printf("|  GESTHIPER >> CONTABILIDADE >> QUERIE 7               |\n");
         printf("|                                                       |\n");
-        printf("|  Nº vendas e facturação mensal produto                |\n");
+        printf("|  Nº compras e facturação mensal produto               |\n");
         printf("| ----------------------------------------------------- |\n");
         printf("| 1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair     |\n");
         printf(" ======================================================  \n");
-        printf("Insira o codigo de produto a procurar > ");
-        leitura = scanf("%s", input);
+        printf("Insira o intervalo de meses (formato xx-yy) > ");
+        leitura = scanf("%d-%d", &mes_inf, &mes_sup);
 
-        if (leitura > 0) {
-            switch (toupper(input[0])) {
-                case '1':
+        if (leitura == 1) {
+            switch (mes_inf) {
+                case 1:
                     estado = FACE_CONTABILIDADE;
                     break;
-                case'2':
+                case 2:
                     estado = MENU_PRINCIPAL;
                     break;
-                case'3':
+                case 3:
                     estado = SAIR_PROGRAMA;
                 default:
-                    printf("Insira o intervalo de meses (formato xx-yy) > ");
-                    leitura = scanf("%d-%d", &mes_inf, &mes_sup);
-
-                    if (leitura == 1) {
-                        switch (mes_inf) {
-                            case 1:
-                                estado = FACE_CONTABILIDADE;
-                                break;
-                            case 2:
-                                estado = MENU_PRINCIPAL;
-                                break;
-                            case 3:
-                                estado = SAIR_PROGRAMA;
-                            default:
-                                break;
-                        }
-                    } else {
-                        if (mes_inf > mes_sup) {
-                            i = mes_inf;
-                            mes_inf = mes_sup;
-                            mes_sup = 1;
-                        }
-                    }
-                    /*END SWITCH*/
                     break;
             }
+        } else {
+            if (mes_inf > mes_sup) {
+                i = mes_inf;
+                mes_inf = mes_sup;
+                mes_sup = 1;
+            }
         }
-        
+
+
         if (estado == QUERIE_7) {
             printf("\033[2J\033[1;1H");
             printf("GESTHIPER >> CONTABILIDADE >> QUERIE 7                 \n");
-            printf("Nº vendas e facturação mensal produto              \n");
+            printf("Nº compras e facturação mensal global              \n");
             printf("========================================================= \n");
 
-            if (cat_existe_produto(catalogo_produtos, input)) {
-                ci = clock();
-                printf("Codigo de produto: %s\n", input);
-                printf("========================================================= \n");
-                printf("     |  Vendas   |       ||    Facturacao     |           |\n");
-                printf(" Mes |  P  |  N  | Total ||    P    |    N    |   Total   |\n");
-                printf("--------------------------------------------------------- \n");
-                for (i = mes_inf; i <= mes_sup; i++) {
-                    printf("%4d | %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
-                            i,
-                            cont_total_vendas_normais_produto_mes(contabilidade, input, i),
-                            cont_total_vendas_promo_produto_mes(contabilidade, input, i),
-                            cont_total_vendas_normais_produto_mes(contabilidade, input, i) + cont_total_vendas_promo_produto_mes(contabilidade, input, i),
-                            cont_total_fact_normal_produto_mes(contabilidade, input, i),
-                            cont_total_fact_promo_produto_mes(contabilidade, input, i),
-                            cont_total_fact_normal_produto_mes(contabilidade, input, i) + cont_total_fact_promo_produto_mes(contabilidade, input, i));
+            ci = clock();
+            printf("\n");
+            printf("------------------------------------------------------------------------ \n");
+            printf("     |    Compras    |       ||        Facturacao         |             |\n");
+            printf(" Mes |   N   |   P   | Total ||      N      |      P      |    Total    |\n");
+            printf("------------------------------------------------------------------------ \n");
+            for (i = mes_inf; i <= mes_sup; i++) {
+                printf("%4d | %5d | %5d | %5d || %11.2f | %11.2f | %11.2f |\n",
+                        i,
+                        cont_total_compras_normais_mes(contabilidade, i),
+                        cont_total_compras_promo_mes(contabilidade, i),
+                        cont_total_compras_mes(contabilidade, i),
+                        cont_total_facturacao_normal_mes(contabilidade, i),
+                        cont_total_facturacao_promo_mes(contabilidade, i),
+                        cont_total_facturacao_mes(contabilidade, i));
 
 
-                    total_vendas_n += cont_total_vendas_normais_produto_mes(contabilidade, input, i);
-                    total_vendas_p += cont_total_vendas_promo_produto_mes(contabilidade, input, i);
+                total_vendas_n += cont_total_compras_normais_mes(contabilidade, i);
+                total_vendas_p += cont_total_compras_promo_mes(contabilidade, i);
 
-                    total_fact_n += cont_total_fact_normal_produto_mes(contabilidade, input, i);
-                    total_fact_p += cont_total_fact_promo_produto_mes(contabilidade, input, i);
+                total_fact_n += cont_total_facturacao_normal_mes(contabilidade, i);
+                total_fact_p += cont_total_facturacao_promo_mes(contabilidade, i);
 
-                }
-                cf=clock();
-                printf("---------------------------------------------------------- \n");
-                printf("TOTAL| %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
-                        total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
-                        total_fact_n, total_fact_p, total_fact_n + total_fact_p);
-                printf("========================================================== \n");
-                printf("Tempo: %5.3f ============================================= \n", (float)(cf-ci)/CLOCKS_PER_SEC);
-            } else {
-                printf("O produto nao existe\n");
-                printf("========================================================== \n");
             }
+            cf = clock();
+            printf("------------------------------------------------------------------------ \n");
+            printf("TOTAL| %5d | %5d | %5d || %11.2f | %11.2f | %11.2f |\n",
+                    total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
+                    total_fact_n, total_fact_p, total_fact_n + total_fact_p);
+            printf("------------------------------------------------------------------------ \n");
+            printf("\n");
+            printf("Tempo: %5.3f ============================================= \n", (float) (cf - ci) / CLOCKS_PER_SEC);
 
-            printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
-            printf("4 - Procurar outro produto \n");
+
+            printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair        \n");
             printf("========================================================= \n");
             printf("Insira nº da opcao >");
             leitura = scanf("%s", input);
@@ -802,11 +781,8 @@ int _07_compras_intervalo_meses() {
                 case '3':
                     estado = SAIR_PROGRAMA;
                     break;
-                case '4':
-                    estado = QUERIE_7;
-                    break;
                 default:
-                    estado = SAIR_PROGRAMA;
+                    estado = MENU_PRINCIPAL;
                     break;
             }
 
@@ -836,7 +812,7 @@ int _08_clientes_compraram_prod() {
         printf("|                                                     |\n");
         printf("|  Lista de clientes que compraram produto            |\n");
         printf("| --------------------------------------------------- |\n");
-        printf("| 1 - CATALOGOS | 2 - Menu Principal | 3 - Sair       |\n");
+        printf("| 1 - COMPRAS | 2 - Menu Principal | 3 - Sair         |\n");
         printf(" ====================================================  \n");
         printf("Insira codigo de produto > ");
         leitura = scanf("%s", input);
@@ -871,7 +847,7 @@ int _08_clientes_compraram_prod() {
                 fim_pag = inicio_pag + elems_pag;
 
                 printf("\033[2J\033[1;1H");
-                printf("GESTHIPER >> CATALOGOS >> QUERIE 8                 \n");
+                printf("GESTHIPER >> COMPRAS >> QUERIE 8                 \n");
                 printf("Lista de clientes que compraram produto\n");
                 printf("================================================= \n");
                 printf("Codigo Produto: %s\n", cod_produto);
@@ -1244,11 +1220,12 @@ int _11_compras_CSV() {
 
 int _12_prods_mais_vendidos() {
     int i = 0, leitura = 0;
-    int estado = QUERIE_4;
+    int estado = QUERIE_12;
     clock_t ci, cf;
     int n_top = 0;
     int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
     int resultados = 0, total_pags = 0, escolha_pag = 0;
+    int *n_clientes = NULL;
     CONT_LISTA_PRODUTOS lista_prod = NULL;
     CONT_FICHA_PRODUTO ficha_prod = NULL;
     char input[50];
@@ -1256,11 +1233,11 @@ int _12_prods_mais_vendidos() {
 
     printf("\033[2J\033[1;1H");
     printf(" ======================================================  \n");
-    printf("|  GESTHIPER >> CONTABILIDADE >> QUERIE 12              |\n");
+    printf("|  GESTHIPER >> COMPRAS >> QUERIE 12                    |\n");
     printf("|                                                       |\n");
     printf("|  Lista de produtos mais comprados                     |\n");
     printf("| ----------------------------------------------------- |\n");
-    printf("| w - CONTABILIDADE | e - Menu Principal | q - Sair     |\n");
+    printf("| w - COMPRAS | e - Menu Principal | q - Sair           |\n");
     printf(" ======================================================  \n");
     printf("Indique quantos produtos quer ver > ");
     leitura = scanf("%s", input);
@@ -1268,7 +1245,7 @@ int _12_prods_mais_vendidos() {
     if (leitura > 0) {
         switch (toupper(input[0])) {
             case 'W':
-                estado = FACE_CONTABILIDADE;
+                estado = FACE_COMPRAS;
                 break;
             case'E':
                 estado = MENU_PRINCIPAL;
@@ -1290,41 +1267,47 @@ int _12_prods_mais_vendidos() {
     }
 
 
-    if (estado == QUERIE_4) {
+    if (estado == QUERIE_12) {
         ci = clock();
         lista_prod = cont_top_produtos_comprados(contabilidade, n_top);
         resultados = cont_lista_prod_get_num_elems(lista_prod);
         total_pags = cont_lista_prod_get_num_pags(lista_prod);
+        n_clientes = (int *) malloc(sizeof(int)*resultados);
+        for(i=0;i<resultados;i++){
+            ficha_prod = cont_lista_get_fich_prod(lista_prod, i);
+            n_clientes[i] = compras_num_clientes_compraram_prod(mod_compras,cont_get_cod_prod_ficha(ficha_prod));
+        }
         cf = clock();
 
 
-        while (estado == QUERIE_4) {
+        while (estado == QUERIE_12) {
             elems_pag = cont_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
             fim_pag = inicio_pag + elems_pag;
             printf("\033[2J\033[1;1H");
-            printf("GESTHIPER >> CONTABILIDADE >> QUERIE 12                 \n");
+            printf("GESTHIPER >> COMPRAS >> QUERIE 12                 \n");
             printf("Lista de produtos mais comprados\n");
             printf("================================================= \n");
             if (resultados > 0) {
                 printf("Pagina %2d/%d \n", n_pagina, total_pags);
-                printf("------------------------\n");
-                printf(" #  | Produto | Vendas |\n");
-                printf("------------------------\n");
+                printf("-------------------------------- \n");
+                printf(" #  | Produto | Vendas | Nº Cli |\n");
+                printf("-------------------------------- \n");
                 for (i = 0; i < elems_pag; i++) {
                     ficha_prod = cont_lista_get_fich_prod(lista_prod, inicio_pag + i);
-                    printf("%3d | %7s | %6d |\n", inicio_pag + i + 1,
+                    printf("%3d | %7s | %6d | %6d |\n", inicio_pag + i + 1,
                             cont_get_cod_prod_ficha(ficha_prod),
-                            cont_total_vendas_fich_produto(ficha_prod));
+                            cont_total_vendas_fich_produto(ficha_prod),
+                            n_clientes[inicio_pag+i]);
                 }
 
-                printf("------------------------\n");
+                printf("-------------------------------- \n");
                 printf("A mostrar %d-%d de %d resultados (em %.2f segundos)\n", inicio_pag + 1, fim_pag, resultados, (float) (cf - ci) / CLOCKS_PER_SEC);
             } else {
                 printf("Nao ha resultados a mostrar.\n");
             }
 
             printf("==================================================== \n");
-            printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair    \n");
+            printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair          \n");
             printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
             printf("==================================================== \n");
             printf("Insira nº da opcao >");
@@ -1332,7 +1315,7 @@ int _12_prods_mais_vendidos() {
 
             switch (toupper(input[0])) {
                 case '1':
-                    estado = FACE_CONTABILIDADE;
+                    estado = FACE_COMPRAS;
                     break;
                 case '2':
                     estado = MENU_PRINCIPAL;
@@ -1368,6 +1351,7 @@ int _12_prods_mais_vendidos() {
 
         }
         cont_free_lista_produtos(lista_prod);
+        free(n_clientes);
     }
 
     return estado;

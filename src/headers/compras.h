@@ -136,6 +136,7 @@ COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras com
 COMPRAS_NUM_CLIENTES_MENSAIS compras_num_clientes_por_mes(Compras compras);
 int compras_get_num_clientes_mes(COMPRAS_NUM_CLIENTES_MENSAIS compras_meses, int mes);
 int compras_num_cliente_sem_compras(Compras compras);
+int compras_num_clientes_compraram_prod(Compras compras, char *cod_produto);
 
 /*
  * ASSOCIACOES

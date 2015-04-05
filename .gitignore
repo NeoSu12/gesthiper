@@ -33,6 +33,9 @@
 *.swp
 *.swo
 
+#Lixo
+lixo/
+
 #zip e tar
 *.zip
 *.tar

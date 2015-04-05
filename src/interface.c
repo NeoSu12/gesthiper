@@ -117,7 +117,7 @@ int face_contabilidade() {
     int estado=FACE_CONTABILIDADE;
     int leitura=0;
     
-        while (estado ==FACE_CONTABILIDADE) {
+        while (estado ==FACE_CONTABILIDADE || estado == FACE_COMPRAS) {
         printf("\033[2J\033[1;1H"
                 " ========================================================= \n"
                 "| GESTHIPER >> CONTABILIDADE                              |\n"
@@ -125,11 +125,8 @@ int face_contabilidade() {
                 "|   1 - Nº vendas e facturação mensal produto         [3] |\n"
                 "|   2 - Nº vendas e facturação produto todos os meses [3] |\n"
                 "|   3 - Produtos nao comprados                        [4] |\n"
-                "|   4 - Nº compras e total facturado                  [7] |\n");
-        printf( "|   5 - Nº Compras e clientes mensais (CSV)          [11] |\n"
-                "|   6 - Lista N produtos mais vendidos (INC)         [12] |\n"
-                "|   7 - Produtos nao vendidos e clientes sem compras [14] |\n"
-                "| ------------------------------------------------------- |\n"
+                "|   4 - Nº compras e total facturado intervalo meses  [7] |\n");
+        printf( "| ------------------------------------------------------- |\n"
                 "|  0 - Voltar                                 Q - Sair    |\n"
                 " ========================================================= \n");
         
@@ -144,9 +141,6 @@ int face_contabilidade() {
             case '2': estado = _03_compras_e_fact_mensal_prod_old(); break;
             case '3': estado = _04_prods_nao_comprados(); break;
             case '4': estado = _07_compras_intervalo_meses(); break;
-            case '5': estado = _11_compras_CSV(); break;
-            case '6': estado = _12_prods_mais_vendidos(); break;
-            case '7': estado = _14_clientes_prods_fantasma(); break;
             case 'Q': estado = SAIR_PROGRAMA;
                       break;
             default: 
@@ -164,7 +158,7 @@ int face_compras() {
     int leitura=0;
 
     
-    while (estado ==FACE_COMPRAS) {
+    while (estado ==FACE_COMPRAS || estado == FACE_CONTABILIDADE) {
         printf("\033[2J\033[1;1H"
                 " ========================================================  \n"
                 "| GESTHIPER >> COMPRAS                                    |\n"
@@ -173,9 +167,10 @@ int face_compras() {
                 "|   2 - Lista de clientes que compraram produto       [8] |\n"
                 "|   3 - Produtos mais comprados por cliente           [9] |\n"
                 "|   4 - Cliente que compraram todos os meses         [10] |\n");
-        printf( "|   5 - Ficheiro CSV                                 [11] |\n"
-                "|   6 - Tres produtos mais comprados por cliente     [13] |\n"
-                "|   7 - Produtos nao vendidos e clientes sem compras [14] |\n"
+        printf( "|   5 - Nº compras e clientes por mes (CSV)          [11] |\n"
+                "|   6 - N produtos mais vendidos                     [12] |\n"
+                "|   7 - Tres produtos mais comprados por cliente     [13] |\n"
+                "|   8 - Produtos nao vendidos e clientes sem compras [14] |\n"
                 "| ------------------------------------------------------- |\n"
                 "|  0 - Voltar                           Q - Sair          |\n"
                 " ========================================================  \n");
@@ -191,8 +186,9 @@ int face_compras() {
             case '3': estado = _09_produtos_mais_comprados_cliente_mes();break;
             case '4': estado = _10_clientes_regulares();break;
             case '5': estado = _11_compras_CSV();break;
-            case '6': estado = _13_tres_prods_mais_comprados();break;
-            case '7': estado = _14_clientes_prods_fantasma();break;
+            case '6': estado = _12_prods_mais_vendidos();break;
+            case '7': estado = _13_tres_prods_mais_comprados();break;
+            case '8': estado = _14_clientes_prods_fantasma();break;
             case 'Q': estado = SAIR_PROGRAMA;
                       break;
             default:

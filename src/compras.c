@@ -582,6 +582,28 @@ int compras_num_cliente_sem_compras(Compras compras){
     return res;
 }
 
+int compras_num_clientes_compraram_prod(Compras compras, char *cod_produto){
+    int res=0;
+    COMPRAS_FICHA_CLIENTE cliente;
+    COMPRAS_FICHA_PRODUTO produto = compras_codigo_produto_to_ficha(cod_produto);
+    
+    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
+    
+    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
+        if(avl_find(cliente->avl_produtos, produto)!=NULL)
+            res++;
+        
+        compras_free_cliente(cliente);
+    }
+    
+    free_it_compras_fich_cliente(it);
+    
+    
+    compras_free_produto(produto);
+    return res;
+}
+
+
 /*
  * ASSOCIACOES
  */
