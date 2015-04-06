@@ -745,11 +745,11 @@ int _07_compras_intervalo_meses() {
             ci = clock();
             printf("\n");
             printf("------------------------------------------------------------------------ \n");
-            printf("     |    Compras    |       ||        Facturacao         |             |\n");
-            printf(" Mes |   N   |   P   | Total ||      N      |      P      |    Total    |\n");
+            printf("     |      Compras      |         ||        Facturacao         |             |\n");
+            printf(" Mes |    N    |    P    |  Total  ||      N      |      P      |    Total    |\n");
             printf("------------------------------------------------------------------------ \n");
             for (i = mes_inf; i <= mes_sup; i++) {
-                printf("%4d | %5d | %5d | %5d || %11.2f | %11.2f | %11.2f |\n",
+                printf("%4d | %7d | %7d | %7d || %11.2f | %11.2f | %11.2f |\n",
                         i,
                         cont_total_compras_normais_mes(contabilidade, i),
                         cont_total_compras_promo_mes(contabilidade, i),
@@ -768,7 +768,7 @@ int _07_compras_intervalo_meses() {
             }
             cf = clock();
             printf("------------------------------------------------------------------------ \n");
-            printf("TOTAL| %5d | %5d | %5d || %11.2f | %11.2f | %11.2f |\n",
+            printf("TOTAL| %5d | %7d | %7d || %11.2f | %11.2f | %11.2f |\n",
                     total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
                     total_fact_n, total_fact_p, total_fact_n + total_fact_p);
             printf("------------------------------------------------------------------------ \n");

@@ -74,14 +74,14 @@ int face_catalogos() {
 
     while (estado == FACE_CATALOGOS) {
         printf("\033[2J\033[1;1H"
-                " ================================================= \n"
-                "| GESTHIPER >> CATALOGOS                          |\n"
-                "|                                                 |\n"
-                "|   1 - Listar produtos começados por letra [2]   |\n");
-        printf( "|   2 - Listar clientes comecados por letra [6]   |\n"
-                "| ----------------------------------------------- |\n"
-                "|  0 - Voltar                            Q - Sair |\n"
-                " =================================================\n");
+                " =================================================== \n"
+                "| GESTHIPER >> CATALOGOS                            |\n"
+                "|                                                   |\n"
+                "|   1 - Listar produtos começados por letra ... [2] |\n");
+        printf( "|   2 - Listar clientes comecados por letra ... [6] |\n"
+                "| ------------------------------------------------- |\n"
+                "|  0 - Voltar | Q - Sair                            |\n"
+                " =================================================== \n");
 
 
         printf("Escolha uma opcao > ");
@@ -117,18 +117,18 @@ int face_contabilidade() {
     int estado=FACE_CONTABILIDADE;
     int leitura=0;
     
-        while (estado ==FACE_CONTABILIDADE || estado == FACE_COMPRAS) {
+        while (estado ==FACE_CONTABILIDADE) {
         printf("\033[2J\033[1;1H"
-                " ========================================================= \n"
-                "| GESTHIPER >> CONTABILIDADE                              |\n"
-                "|                                                         |\n"
-                "|   1 - Nº vendas e facturação mensal produto         [3] |\n"
-                "|   2 - Nº vendas e facturação produto todos os meses [3] |\n"
-                "|   3 - Produtos nao comprados                        [4] |\n"
-                "|   4 - Nº compras e total facturado intervalo meses  [7] |\n");
-        printf( "| ------------------------------------------------------- |\n"
-                "|  0 - Voltar                                 Q - Sair    |\n"
-                " ========================================================= \n");
+                " ================================================================ \n"
+                "| GESTHIPER >> CONTABILIDADE                                     |\n"
+                "|                                                                |\n"
+                "|   1 - Nº vendas e facturação mensal produto .............. [3] |\n"
+                "|   2 - Nº vendas e facturação produto todos os meses .. [extra] |\n"
+                "|   3 - Produtos nao comprados ............................. [4] |\n"
+                "|   4 - Nº compras e total facturado intervalo meses ....... [7] |\n");
+        printf( "| -------------------------------------------------------------- |\n"
+                "|  0 - Voltar | Q - Sair                                         |\n"
+                " ================================================================ \n");
         
         printf("Escolha uma opcao > ");
         leitura = scanf("%s", r);
@@ -158,22 +158,22 @@ int face_compras() {
     int leitura=0;
 
     
-    while (estado ==FACE_COMPRAS || estado == FACE_CONTABILIDADE) {
+    while (estado ==FACE_COMPRAS) {
         printf("\033[2J\033[1;1H"
-                " ========================================================  \n"
-                "| GESTHIPER >> COMPRAS                                    |\n"
-                "|                                                         |\n"
-                "|   1 - Nº produtos comprados por cliente             [5] |\n"
-                "|   2 - Lista de clientes que compraram produto       [8] |\n"
-                "|   3 - Produtos mais comprados por cliente           [9] |\n"
-                "|   4 - Cliente que compraram todos os meses         [10] |\n");
-        printf( "|   5 - Nº compras e clientes por mes (CSV)          [11] |\n"
-                "|   6 - N produtos mais vendidos                     [12] |\n"
-                "|   7 - Tres produtos mais comprados por cliente     [13] |\n"
-                "|   8 - Produtos nao vendidos e clientes sem compras [14] |\n"
-                "| ------------------------------------------------------- |\n"
-                "|  0 - Voltar                           Q - Sair          |\n"
-                " ========================================================  \n");
+                " ====================================================================== \n"
+                "| GESTHIPER >> COMPRAS                                                 |\n"
+                "|                                                                      |\n"
+                "|   1 - Nº produtos comprados por cliente ........................ [5] |\n");
+        printf( "|   2 - Lista de clientes que compraram produto .................. [8] |\n"
+                "|   3 - Produtos mais comprados por cliente ...................... [9] |\n"
+                "|   4 - Clientes que compraram todos os meses ................... [10] |\n");
+        printf( "|   5 - Nº compras e clientes por mes (CSV) ..................... [11] |\n"
+                "|   6 - N produtos mais vendidos ................................ [12] |\n"
+                "|   7 - Top 3 produtos mais comprados por cliente ............... [13] |\n");
+        printf( "|   8 - Nº de produtos nao vendidos e de clientes sem compras ... [14] |\n"
+                "| -------------------------------------------------------------------- |\n"
+                "|  0 - Voltar | Q - Sair                                               |\n"
+                " ====================================================================== \n");
         printf("Escolha uma opcao > ");
         leitura = scanf("%s", r);
 

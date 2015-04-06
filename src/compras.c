@@ -539,6 +539,7 @@ COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras com
     
     ad_deep_free(ad, compras_free_produto_ad);
     free_it_compras_fich_produto(it);
+    free(tops);
     return l_produtos;
 }
 
@@ -946,7 +947,7 @@ void compras_free_produto_ad(void *produto){
 }
 
 void compras_free_cliente_ad(void *cliente){
-    COMPRAS_FICHA_CLIENTE c = (COMPRAS_FICHA_CLIENTE) c;
+    COMPRAS_FICHA_CLIENTE c = (COMPRAS_FICHA_CLIENTE) cliente;
     free(c->cod_cliente);
     free(c);
 }

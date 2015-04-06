@@ -16,12 +16,10 @@ struct mod_contabilidade {
 
 struct cont_ficha_produto {
     char *cod_produto;
-    int total_unidades_vendidas_prod;
-    double total_facturacao_prod;
     int unidades_vendidas_prod[12][2];
-    /* Quantidade dum produto vendida num determinado mes 0-Normal / 1- Promo */
+    int total_unidades_vendidas_prod;
     double facturacao_prod[12][2];
-    /* Facturacao por mes */
+    double total_facturacao_prod;
 };
 
 struct cont_lista_produtos{
