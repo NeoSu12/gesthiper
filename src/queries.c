@@ -86,14 +86,17 @@ int _02_codigo_produtos_letra() {
                 printf("GESTHIPER >> CATALOGOS >> QUERIE 2                 \n");
                 printf("A mostrar produtos começados pela letra %c\n", letra);
                 printf("================================================= \n");
+                if(resultados > 0){
                 printf("Pagina %2d/%d \n", n_pagina, total_pags);
                 printf("\n");
-
                 for (i = 0; i < elems_pag; i++)
                     printf("%s\n", cat_lista_prod_get_elemento(lista_prod, inicio_pag + i));
-
                 printf("\n");
-                printf("A mostrar %d-%d de %d resultados (em %.2f segundos)\n", inicio_pag + 1, fim_pag, resultados, (float)(cf-ci)/CLOCKS_PER_SEC);
+                printf("A mostrar %d-%d de %d resultados (em %.2f segundos)\n", 
+                        inicio_pag + 1, fim_pag, resultados, (float)(cf-ci)/CLOCKS_PER_SEC);
+                }else{
+                    printf("Nao existem produtos comecados pela letra %c\n", letra);
+                }
                 printf("==================================================== \n");
                 printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
                 printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
@@ -628,6 +631,7 @@ int _06_codigos_clientes_letra() {
                 printf("GESTHIPER >> CATALOGOS >> QUERIE 6                 \n");
                 printf("A mostrar clientes começados pela letra %c\n", letra);
                 printf("================================================= \n");
+                if(resultados > 0){
                 printf("Pagina %2d/%d \n", n_pagina, total_pags);
                 printf("\n");
 
@@ -636,6 +640,9 @@ int _06_codigos_clientes_letra() {
 
                 printf("\n");
                 printf("A mostrar %d-%d de %d resultados (em %.2f segundos)\n", inicio_pag + 1, fim_pag, resultados, (float)(cf-ci)/CLOCKS_PER_SEC);
+                }else{
+                    printf("Nao existem clientes comecados pela letra %c\n", letra);
+                }
                 printf("==================================================== \n");
                 printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
                 printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
