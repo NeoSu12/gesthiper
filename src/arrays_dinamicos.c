@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "headers/arrays_dinamicos.h"
 
+#define AD_PAG_DEFAULT 15
+
 
 struct array_dinamico{
     void **elementos;
@@ -10,9 +12,17 @@ struct array_dinamico{
     struct array_dinamico* garbage_collector;
 };
 
+
+
 ARRAY_DINAMICO ad_inicializa_gc(int);
 void ad_realloc_if_needed(ARRAY_DINAMICO);
 void quicksort(void **, ad_compara_elems *, int, void *);
+
+struct ad_pagina{
+    int posicao_inicial;
+    int num_pag;
+    int elems_por_pag;
+};
 
 /*
  * INICIALIZACAO E LIBERTACAO MEMORIA
@@ -241,7 +251,31 @@ void *ad_get_elemento_pag(ARRAY_DINAMICO ad, int pag, int elems_por_pag, int n_e
     return resultado;
 }
 
-int ad_goto_pag(ARRAY_DINAMICO ad, int *pos_inicial, int pag, int elems_por_pag){
+AD_PAGINA ad_inicializa_pag(int ){
+    AD_PAGINA pag_res = (AD_PAGINA) malloc(sizeof(struct ad_pagina));
+    pag_res->posicao_inicial = 0;
+    pag_res->num_pag = 0;
+    pag_res->elems_por_pag = AD_PAG_DEFAULT;
+    return pag_res;
+}
+
+int ad_get_pos_inicial(AD_PAGINA pag){
+    return pag->posicao_inicial;
+}
+
+int ad_get_elems_por_pag(AD_PAGINA pag){
+    return pag->elems_por_pag;
+}
+
+int ad_get_num_pag(AD_PAGINA pag){
+    return pag->num_pag;
+}
+
+void ad_free_pag(AD_PAGINA pag){
+    free(pag);
+}
+
+AD_PAGINA ad_goto_pag(ARRAY_DINAMICO ad, int *pos_inicial, int pag, int elems_por_pag){
     int num_elems_pag;
     int diferenca=-1;
     int comeco_pag = elems_por_pag * (pag-1);

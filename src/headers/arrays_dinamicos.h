@@ -15,6 +15,7 @@ enum insert_mode{
 
 typedef enum insert_mode insert_mode_t;
 typedef struct array_dinamico* ARRAY_DINAMICO;
+typedef struct ad_pagina* AD_PAGINA;
 
 
 typedef int ad_compara_elems(void *item_a, void *item_b, void *param);
