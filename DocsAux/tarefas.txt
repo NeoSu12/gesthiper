@@ -2,10 +2,8 @@
 INTERFACE - Colocar tabelas na interface de todas as queries.
 
 #2
-QUERIES - Relacionado com a paginação, na interface, acrescentar a funcionalidade de permitir ao utilizador do programa mudar o nº de elementos por página que quer ver usando a funçao ...muda_elems_pag()
-
-#5
-CONTABILIDADE - Funcionalidade de remover produto e remover compra (este ultimo esclarecer com professor). Talvez fazer também querie extra para isto.
+QUERIES - Relacionado com a paginação, na interface, acrescentar a funcionalidade de permitir ao utilizador do
+ programa mudar o nº de elementos por página que quer ver usando a funçao ...muda_elems_pag()
 
 #6
 CATALOGOS - Acrescentar querie extra + funcao aos catalogos que permita ver o catalogo todo paginado (em vez de apenas uma letra).
@@ -13,9 +11,7 @@ CATALOGOS - Acrescentar querie extra + funcao aos catalogos que permita ver o ca
 #7
 Analisar cada querie individualmente para procurar espaço para optimizaçoes e reduçao de tempo.
 
-
 --------
-
 
 #1 - FEITO
 TODOS OS MODULOS - Nao pedir os elementos por pagina nas funçoes de devolução de informação ao main. Assumir um valor por defeito (p.e 10) e fornecer função separada no main para mudar esse valor (já feita).
@@ -27,5 +23,5 @@ COMPRA - O modulo da compra faz copias desnecessarias, que necessariamente afect
 #4 - FEITO
 CATALOGO - Mudar valores de retorno das funções de inserção e remoção do catálogo.
 
-#5
+#5 - FEITO
 CONTABILIDADE - Funcionalidade de remover produto e remover compra (este ultimo esclarecer com professor). Talvez fazer também querie extra para isto.
