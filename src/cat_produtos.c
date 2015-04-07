@@ -75,21 +75,19 @@ char *cat_procura_produto(CatProdutos cat, char *elem) {
     return res == NULL ? NULL : elem;
 }
 
-char *cat_insere_produto(CatProdutos cat, char *str) {
+void cat_insere_produto(CatProdutos cat, char *str) {
     int ind = cat_calcula_indice_produto(str[0]);
     int tamanho = strlen(str);
-    char *res;
     char *new = (char *) malloc(tamanho + 1);
 
     strncpy(new, str, tamanho + 1);
-    res = avl_insert(cat->indices[ind], new);
-
-    return res == NULL ? NULL : str;
+    avl_insert(cat->indices[ind], new);
+    
 }
 
-char *cat_remove_produto(CatProdutos cat, char *str) {
+void cat_remove_produto(CatProdutos cat, char *str) {
     int ind = cat_calcula_indice_produto(str[0]);
-    return avl_delete(cat->indices[ind], str);
+    avl_delete(cat->indices[ind], str);
 }
 
 int cat_total_produtos(CatProdutos cat) {
@@ -116,6 +114,57 @@ void free_catalogo_produtos(CatProdutos cat) {
 
     free(cat);
 }
+
+/*
+ * PAGINACAO PRODUTOS
+ */
+
+CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatProdutos catalogo_produtos, char letra){
+    char *produto;
+    CAT_LISTA_PRODUTOS pag = (CAT_LISTA_PRODUTOS) malloc(sizeof(struct cat_lista_produtos));
+    ARRAY_DINAMICO ad = ad_inicializa(8000);
+    IT_CAT_PRODUTOS it = inicializa_it_cat_produtos_letra(catalogo_produtos, letra);
+
+    while ((produto = it_cat_produto_proximo_letra(it)) != NULL) {
+        ad_insere_elemento(ad, produto);
+    }
+    
+    pag->elems_por_pag = CAT_PRODUTOS_ELEMS_PAG;
+    pag->lista_paginada = ad;
+    free_it_cat_produto(it);
+    return pag;
+}
+
+char *cat_lista_prod_get_elemento(CAT_LISTA_PRODUTOS lista,int p){
+    return (char *) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int cat_lista_prod_get_pos_and_num_elems_pag(CAT_LISTA_PRODUTOS lista, int *pos_inicial, int pag){
+    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+}
+
+int cat_lista_prod_get_num_pags(CAT_LISTA_PRODUTOS lista){
+    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
+}
+
+int cat_lista_prod_get_elems_por_pag(CAT_LISTA_PRODUTOS lista){
+    return lista->elems_por_pag;
+}
+
+void cat_lista_prod_muda_elems_por_pag(CAT_LISTA_PRODUTOS lista, int n){
+    lista->elems_por_pag=n;
+}
+
+int cat_lista_prod_get_num_elems(CAT_LISTA_PRODUTOS lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
+void cat_free_lista_produtos(CAT_LISTA_PRODUTOS lista){
+    ad_deep_free(lista->lista_paginada, cat_free_produto_ad);
+    free(lista);
+}
+
+
 
 /*
  * ITERADORES PRODUTOS
@@ -295,55 +344,6 @@ char *it_cat_produto_anterior_letra(IT_CAT_PRODUTOS it) {
 void free_it_cat_produto(IT_CAT_PRODUTOS it){
     avl_t_free(it->traverser);
     free(it);
-}
-
-/*
- * PAGINACAO PRODUTOS
- */
-
-CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatProdutos catalogo_produtos, char letra, int elems_por_pag){
-    char *produto;
-    CAT_LISTA_PRODUTOS pag = (CAT_LISTA_PRODUTOS) malloc(sizeof(struct cat_lista_produtos));
-    ARRAY_DINAMICO ad = ad_inicializa(8000);
-    IT_CAT_PRODUTOS it = inicializa_it_cat_produtos_letra(catalogo_produtos, letra);
-
-    while ((produto = it_cat_produto_proximo_letra(it)) != NULL) {
-        ad_insere_elemento(ad, produto);
-    }
-    
-    pag->elems_por_pag = elems_por_pag;
-    pag->lista_paginada = ad;
-    free_it_cat_produto(it);
-    return pag;
-}
-
-char *cat_lista_prod_get_elemento(CAT_LISTA_PRODUTOS lista,int p){
-    return (char *) ad_get_elemento(lista->lista_paginada, p);
-}
-
-int cat_lista_prod_get_pos_and_num_elems_pag(CAT_LISTA_PRODUTOS lista, int *pos_inicial, int pag){
-    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
-}
-
-int cat_lista_prod_get_num_pags(CAT_LISTA_PRODUTOS lista){
-    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
-}
-
-int cat_lista_prod_get_elems_por_pag(CAT_LISTA_PRODUTOS lista){
-    return lista->elems_por_pag;
-}
-
-int cat_lista_prod_muda_elems_por_pag(CAT_LISTA_PRODUTOS lista, int n){
-    return lista->elems_por_pag=n;
-}
-
-int cat_lista_prod_get_num_elems(CAT_LISTA_PRODUTOS lista){
-    return ad_get_tamanho(lista->lista_paginada);
-}
-
-void cat_free_lista_produtos(CAT_LISTA_PRODUTOS lista){
-    ad_deep_free(lista->lista_paginada, cat_free_produto_ad);
-    free(lista);
 }
 
 

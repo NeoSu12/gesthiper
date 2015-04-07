@@ -131,6 +131,34 @@ void compras_insere_compra(Compras compras, COMPRA comp){
     
 }
 
+void compras_remove_cliente(Compras compras, char *cod_cli){
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cli);
+    
+    avl_destroy(cliente->avl_produtos, compras_free_produto_avl);
+    avl_delete(compras->avl_clientes, cliente);
+}
+
+void compras_remove_produto_de_cliente(Compras compras, char *cod_cli, char *cod_prod){
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cli);
+    COMPRAS_FICHA_PRODUTO produto = compras_procura_ficha_produto_com_fichacli_avl(cliente, cod_prod);
+    avl_delete(cliente->avl_produtos, produto);
+}
+
+void compras_remove_produto(Compras compras, char *cod_prod){
+    COMPRAS_FICHA_PRODUTO produto = compras_codigo_produto_to_ficha(cod_prod);
+    COMPRAS_FICHA_CLIENTE cliente;
+    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
+    
+    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
+        avl_delete(cliente->avl_produtos, produto);
+        compras_free_cliente(cliente);
+    }
+    
+    free_it_compras_fich_cliente(it);
+    compras_free_produto(produto);
+}
+
+
 void free_compras(Compras compras){
     avl_destroy(compras->avl_clientes, compras_free_cliente_avl);
     free(compras);
@@ -482,7 +510,7 @@ COMPRAS_LISTA_CLIENTES compras_lista_clientes_regulares(Compras compras){
     }
     
     l_clientes->lista_paginada=ad;
-    l_clientes->elems_por_pag=20;
+    l_clientes->elems_por_pag=COMPRAS_ELEMS_PAG;
     free_it_compras_fich_cliente(it);
     return l_clientes;
 }
@@ -504,7 +532,7 @@ COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compr
     
     ad_ordena(ad, compras_compara_fichas_prod_por_vendas_ad, &mes);
     l_produtos->lista_paginada=ad;
-    l_produtos->elems_por_pag=20;
+    l_produtos->elems_por_pag=COMPRAS_ELEMS_PAG;
     free_it_compras_fich_produto(it);
     return l_produtos;
 }
@@ -535,7 +563,7 @@ COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras com
     }
 
     l_produtos->lista_paginada=lista_top;
-    l_produtos->elems_por_pag=20;
+    l_produtos->elems_por_pag=COMPRAS_ELEMS_PAG;
     
     ad_deep_free(ad, compras_free_produto_ad);
     free_it_compras_fich_produto(it);

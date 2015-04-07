@@ -3,6 +3,7 @@
 #include "compra.h"
 
 #define PROD_NAO_VENDIDO -1
+#define CONT_ELEMS_PAG 10
 
 typedef enum campo {
     PROD_VENDAS_NORMAIS = 1, PROD_VENDAS_PROMO, PROD_VENDAS_AMBOS,
@@ -24,6 +25,7 @@ typedef struct iterador_cont* IT_CONT;
 Contabilidade inicializa_contabilidade();
 void cont_regista_produto(Contabilidade cont, char *cod_prod);
 void cont_insere_compra(Contabilidade cont, COMPRA comp);
+void cont_remove_produto(Contabilidade cont, char *cod_cliente);
 void free_contabilidade(Contabilidade cont);
 /* 
  * CONSULTAS
@@ -120,7 +122,7 @@ CONT_FICHA_PRODUTO cont_lista_get_fich_prod(CONT_LISTA_PRODUTOS lista,int p);
 int cont_lista_prod_get_pos_and_num_elems_pag(CONT_LISTA_PRODUTOS lista, int *pos_inicial, int pag);
 int cont_lista_prod_get_num_pags(CONT_LISTA_PRODUTOS lista);
 int cont_lista_prod_get_elems_por_pag(CONT_LISTA_PRODUTOS lista);
-void  cont_lista_prod_muda_elems_por_pag(CONT_LISTA_PRODUTOS lista, int n);
+void cont_lista_prod_muda_elems_por_pag(CONT_LISTA_PRODUTOS lista, int n);
 int cont_lista_prod_get_num_elems(CONT_LISTA_PRODUTOS lista);
 void cont_free_lista_produtos(CONT_LISTA_PRODUTOS lista);
 /*

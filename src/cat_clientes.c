@@ -9,7 +9,6 @@
 #define APENAS_LETRA 1
 #define TODO_CATALOGO 2
 
-
 struct catalogo_clientes {
     ARVORE indices[27];
 };
@@ -29,7 +28,7 @@ struct cat_lista_clientes{
  * FUNÇÕES PRIVADAS AO MÓDULO
  */
 
-int cat_compara_clientes_av(const void *, const void *, void *);
+int cat_compara_clientes_avl(const void *, const void *, void *);
 void cat_free_cliente_avl(void *item, void *);
 int cat_calcula_indice_cliente(char l);
 void cat_free_cliente_ad(void *);
@@ -43,7 +42,7 @@ CatClientes inicializa_catalogo_clientes() {
     CatClientes res = (CatClientes) malloc(sizeof (struct catalogo_clientes));
 
     for (i = 0; i <= 26; i++) {
-        res->indices[i] = avl_create(cat_compara_clientes_av, NULL, NULL);
+        res->indices[i] = avl_create(cat_compara_clientes_avl, NULL, NULL);
     }
 
     return res;
@@ -75,21 +74,19 @@ char *cat_procura_cliente(CatClientes cat, char *elem) {
     return res == NULL ? NULL : elem;
 }
 
-char *cat_insere_cliente(CatClientes cat, char *str) {
+void cat_insere_cliente(CatClientes cat, char *str) {
     int ind = cat_calcula_indice_cliente(str[0]);
     int tamanho = strlen(str);
-    char *res;
     char *new = (char *) malloc(tamanho + 1);
 
     strncpy(new, str, tamanho + 1);
-    res = avl_insert(cat->indices[ind], new);
+    avl_insert(cat->indices[ind], new);
 
-    return res == NULL ? NULL : str;
 }
 
-char *cat_remove_cliente(CatClientes cat, char *str) {
+void cat_remove_cliente(CatClientes cat, char *str) {
     int ind = cat_calcula_indice_cliente(str[0]);
-    return avl_delete(cat->indices[ind], str);
+    avl_delete(cat->indices[ind], str);
 }
 
 int cat_total_clientes(CatClientes cat) {
@@ -116,6 +113,57 @@ void free_catalogo_clientes(CatClientes cat) {
 
     free(cat);
 }
+
+/*
+ * INFO AOS MODULOS
+ */
+
+CAT_LISTA_CLIENTES cat_lista_clientes_letra(CatClientes catalogo_clientes, char letra){
+    char *cliente;
+    CAT_LISTA_CLIENTES pag = (CAT_LISTA_CLIENTES) malloc(sizeof(struct cat_lista_clientes));
+    ARRAY_DINAMICO ad = ad_inicializa(8000);
+    IT_CAT_CLIENTES it = inicializa_it_cat_clientes_letra(catalogo_clientes, letra);
+
+    while ((cliente = it_cat_cliente_proximo_letra(it)) != NULL) {
+        ad_insere_elemento(ad, cliente);
+    }
+    
+    pag->elems_por_pag = CAT_CLIENTES_ELEMS_PAG;
+    pag->lista_paginada = ad;
+    free_it_cat_cliente(it);
+    return pag;
+}
+
+char *cat_lista_cli_get_elemento(CAT_LISTA_CLIENTES lista,int p){
+    return (char *) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int cat_lista_cli_get_pos_and_num_elems_pag(CAT_LISTA_CLIENTES lista, int *pos_inicial, int pag){
+    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+}
+
+int cat_lista_cli_get_num_pags(CAT_LISTA_CLIENTES lista){
+    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
+}
+
+int cat_lista_cli_get_elems_por_pag(CAT_LISTA_CLIENTES lista){
+    return lista->elems_por_pag;
+}
+
+void cat_lista_cli_muda_elems_por_pag(CAT_LISTA_CLIENTES lista, int n){
+    lista->elems_por_pag=n;
+}
+
+int cat_lista_cli_get_num_elems(CAT_LISTA_CLIENTES lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
+void cat_free_lista_clientes(CAT_LISTA_CLIENTES lista){
+    ad_deep_free(lista->lista_paginada, cat_free_cliente_ad);
+    free(lista);
+}
+
+
 
 /*
  * ITERADORES CLIENTES
@@ -297,61 +345,12 @@ void free_it_cat_cliente(IT_CAT_CLIENTES it){
     free(it);
 }
 
-/*
- * PAGINACAO CLIENTES
- */
-
-CAT_LISTA_CLIENTES cat_lista_clientes_letra(CatClientes catalogo_clientes, char letra, int elems_por_pag){
-    char *cliente;
-    CAT_LISTA_CLIENTES pag = (CAT_LISTA_CLIENTES) malloc(sizeof(struct cat_lista_clientes));
-    ARRAY_DINAMICO ad = ad_inicializa(8000);
-    IT_CAT_CLIENTES it = inicializa_it_cat_clientes_letra(catalogo_clientes, letra);
-
-    while ((cliente = it_cat_cliente_proximo_letra(it)) != NULL) {
-        ad_insere_elemento(ad, cliente);
-    }
-    
-    pag->elems_por_pag = elems_por_pag;
-    pag->lista_paginada = ad;
-    free_it_cat_cliente(it);
-    return pag;
-}
-
-char *cat_lista_cli_get_elemento(CAT_LISTA_CLIENTES lista,int p){
-    return (char *) ad_get_elemento(lista->lista_paginada, p);
-}
-
-int cat_lista_cli_get_pos_and_num_elems_pag(CAT_LISTA_CLIENTES lista, int *pos_inicial, int pag){
-    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
-}
-
-int cat_lista_cli_get_num_pags(CAT_LISTA_CLIENTES lista){
-    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
-}
-
-int cat_lista_cli_get_elems_por_pag(CAT_LISTA_CLIENTES lista){
-    return lista->elems_por_pag;
-}
-
-int cat_lista_cli_muda_elems_por_pag(CAT_LISTA_CLIENTES lista, int n){
-    return lista->elems_por_pag=n;
-}
-
-int cat_lista_cli_get_num_elems(CAT_LISTA_CLIENTES lista){
-    return ad_get_tamanho(lista->lista_paginada);
-}
-
-void cat_free_lista_clientes(CAT_LISTA_CLIENTES lista){
-    ad_deep_free(lista->lista_paginada, cat_free_cliente_ad);
-    free(lista);
-}
-
 
 /*
  * Funções (privadas) auxiliares ao módulo.
  */
 
-int cat_compara_clientes_av(const void *avl_a, const void *avl_b, void *avl_param) {
+int cat_compara_clientes_avl(const void *avl_a, const void *avl_b, void *avl_param) {
     return strcmp((char *) avl_a, (char *) avl_b);
 }
 

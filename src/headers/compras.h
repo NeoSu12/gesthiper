@@ -1,6 +1,7 @@
 #ifndef COMPRAS_H
 #define	COMPRAS_H
 
+#define COMPRAS_ELEMS_PAG 10
 #include "compra.h"
 
 typedef enum compras_campo {
@@ -25,6 +26,9 @@ typedef struct compras_cliente_tipo_compra *COMPRAS_CLIENTE_TIPO_COMPRA;
 Compras inicializa_compras();
 void compras_regista_cliente(Compras compras, char *cod_cli);
 void compras_insere_compra(Compras compras, COMPRA comp);
+void compras_remove_cliente(Compras compras, char *cod_cli);
+void compras_remove_produto_de_cliente(Compras compras, char *cod_cli, char *cod_prod);
+void compras_remove_produto(Compras compras, char *cod_prod);
 void free_compras(Compras compras);
 
 /*

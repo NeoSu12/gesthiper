@@ -95,6 +95,11 @@ void cont_insere_compra(Contabilidade cont, COMPRA comp) {
     
 }
 
+void cont_remove_produto(Contabilidade cont, char *cod_cliente){
+    CONT_FICHA_PRODUTO produto = cont_procura_ficha_com_cod_avl(cont, cod_cliente);
+    avl_delete(cont->avl_produtos, produto);
+}
+
 void free_contabilidade(Contabilidade cont) {
     avl_destroy(cont->avl_produtos, free_ficha_prod_avl);
     free(cont);
@@ -463,7 +468,7 @@ CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
         }
     }
     lista->lista_paginada=ad;
-    lista->elems_por_pag=20;
+    lista->elems_por_pag=CONT_ELEMS_PAG;
     free_it_cont_fich_prod(iterador);
     return lista;
 }
@@ -510,7 +515,7 @@ CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n) {
     }
 
     lista->lista_paginada = ad;
-    lista->elems_por_pag = 20;
+    lista->elems_por_pag = CONT_ELEMS_PAG;
     free_it_cont_fich_prod(iterador);
     return lista;
 }

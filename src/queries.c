@@ -74,7 +74,8 @@ int _02_codigo_produtos_letra() {
         }
         if (isalpha(letra) && leitura > 0 && estado == QUERIE_2) {
             ci = clock();
-            lista_prod = cat_lista_produtos_letra(catalogo_produtos, letra, TAM_PAGINA);
+            lista_prod = cat_lista_produtos_letra(catalogo_produtos, letra);
+            cat_lista_prod_muda_elems_por_pag(lista_prod, TAM_PAGINA);
             resultados = cat_lista_prod_get_num_elems(lista_prod);
             total_pags = cat_lista_prod_get_num_pags(lista_prod);
             cf = clock();
@@ -288,7 +289,7 @@ int _03_compras_e_fact_mensal_prod_old() {
                     estado = MENU_PRINCIPAL;
                     break;
                 case'3':
-                    estado = SAIR_PROGRAMA;
+                    estado = MENU_PRINCIPAL;
                 default:
                     break;
             }
@@ -360,7 +361,7 @@ int _03_compras_e_fact_mensal_prod_old() {
                     estado = QUERIE_3;
                     break;
                 default:
-                    estado = SAIR_PROGRAMA;
+                    estado = MENU_PRINCIPAL;
                     break;
             }
 
@@ -385,6 +386,7 @@ int _04_prods_nao_comprados() {
     ci = clock();
     
     lista_prod = cont_lista_prod_sem_compras(contabilidade);
+    cont_lista_prod_muda_elems_por_pag(lista_prod, TAM_PAGINA);
     resultados = cont_lista_prod_get_num_elems(lista_prod);
     total_pags = cont_lista_prod_get_num_pags(lista_prod);
 
@@ -567,7 +569,7 @@ int _05_tabela_cliente() {
                     }
                     break;
                 default:
-                    estado = SAIR_PROGRAMA;
+                    estado = MENU_PRINCIPAL;
                     break;
             }
 
@@ -619,7 +621,8 @@ int _06_codigos_clientes_letra() {
         }
         if (isalpha(letra) && leitura > 0 && estado == QUERIE_6) {
             ci=clock();
-            lista_cli = cat_lista_clientes_letra(catalogo_clientes, letra, TAM_PAGINA);
+            lista_cli = cat_lista_clientes_letra(catalogo_clientes, letra);
+            cat_lista_cli_muda_elems_por_pag(lista_cli, TAM_PAGINA);
             resultados = cat_lista_cli_get_num_elems(lista_cli);
             total_pags = cat_lista_cli_get_num_pags(lista_cli);
             cf=clock();
@@ -682,7 +685,7 @@ int _06_codigos_clientes_letra() {
                             n_pagina = escolha_pag;
                         break;
                     default:
-                        estado = SAIR_PROGRAMA;
+                        estado = MENU_PRINCIPAL;
                         break;
                 }
             }
@@ -849,6 +852,7 @@ int _08_clientes_compraram_prod() {
         if (leitura > 0 && estado == QUERIE_8) {
             ci = clock();
             lista_assoc = compras_get_associacao_produto_clientes_tipo_compra(mod_compras, cod_produto);
+            compras_assoc_prod_cli_muda_elems_por_pag(lista_assoc, TAM_PAGINA);
             resultados = compras_assoc_prod_cli_get_num_elems(lista_assoc);
             total_pags = compras_assoc_prod_cli_get_num_pags(lista_assoc);
             cf = clock();
@@ -980,6 +984,7 @@ int _09_produtos_mais_comprados_cliente_mes() {
         ci = clock();
 
         lista_prod = compras_produtos_mais_comprados_cliente_mes(mod_compras, cod_cliente, mes);
+        compras_lista_prod_muda_elems_por_pag(lista_prod, TAM_PAGINA);
         resultados = compras_lista_prod_get_num_elems(lista_prod);
         total_pags = compras_lista_prod_get_num_pags(lista_prod);
 
@@ -1081,6 +1086,7 @@ int _10_clientes_regulares() {
     ci = clock();
     
     lista_cli = compras_lista_clientes_regulares(mod_compras);
+    compras_lista_cli_muda_elems_por_pag(lista_cli, TAM_PAGINA);
     resultados = compras_lista_cli_get_num_elems(lista_cli);
     total_pags = compras_lista_cli_get_num_pags(lista_cli);
 
@@ -1280,6 +1286,7 @@ int _12_prods_mais_vendidos() {
     if (estado == QUERIE_12) {
         ci = clock();
         lista_prod = cont_top_produtos_comprados(contabilidade, n_top);
+        cont_lista_prod_muda_elems_por_pag(lista_prod, TAM_PAGINA);
         resultados = cont_lista_prod_get_num_elems(lista_prod);
         total_pags = cont_lista_prod_get_num_pags(lista_prod);
         n_clientes = (int *) malloc(sizeof(int)*resultados);

@@ -252,6 +252,7 @@ void mostra_numero_codigos() {
     printf("----------------------------\n");
 }
 
+
 int compra_valida(COMPRA compra) {
     return cat_existe_cliente(catalogo_clientes, get_cod_cliente(compra))
             && cat_existe_produto(catalogo_produtos, get_cod_produto(compra))
@@ -260,6 +261,8 @@ int compra_valida(COMPRA compra) {
             && (get_quantidade(compra) > 0)
             && (get_promo(compra) == 'N' || get_promo(compra) == 'P');
 }
+
+
 
 int compra_valida_debug(COMPRA compra) {
     int res = 1;
