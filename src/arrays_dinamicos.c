@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "headers/arrays_dinamicos.h"
 
-#define AD_PAG_DEFAULT 15
+#define AD_ELEMS_POR_PAG_DEFAULT 15
 
 
 struct array_dinamico{
@@ -12,17 +12,18 @@ struct array_dinamico{
     struct array_dinamico* garbage_collector;
 };
 
-
+struct ad_paginador{
+    ARRAY_DINAMICO array_paginado;
+    int num_pag;
+    int posicao_inicial;
+    int num_elems_pag;
+    int elems_por_pag;
+};
 
 ARRAY_DINAMICO ad_inicializa_gc(int);
 void ad_realloc_if_needed(ARRAY_DINAMICO);
 void quicksort(void **, ad_compara_elems *, int, void *);
 
-struct ad_pagina{
-    int posicao_inicial;
-    int num_pag;
-    int elems_por_pag;
-};
 
 /*
  * INICIALIZACAO E LIBERTACAO MEMORIA
@@ -223,27 +224,68 @@ void ad_remocao_rapida_elemento(ARRAY_DINAMICO ad, int pos){
  * PAGINACAO
  */
 
-int ad_get_num_pags(ARRAY_DINAMICO ad, int elems_por_pag){
-    int res;
-    int num_elems = ad->posicao;
-    
-    if((num_elems%elems_por_pag) ==0)
-        res = num_elems / elems_por_pag;
-    else 
-        res = (num_elems / elems_por_pag) +1;
-    
-    return res;
+AD_PAGINADOR ad_inicializa_paginador_default(ARRAY_DINAMICO ad) {
+    AD_PAGINADOR pag_res = (AD_PAGINADOR) malloc(sizeof (struct ad_paginador));
+    pag_res->array_paginado     = ad;
+    pag_res->posicao_inicial    = AD_PAGINA_IMPOSSIVEL;
+    pag_res->num_elems_pag      = AD_PAGINA_IMPOSSIVEL;
+    pag_res->num_pag            = AD_PAGINA_IMPOSSIVEL;
+    pag_res->elems_por_pag      = AD_ELEMS_POR_PAG_DEFAULT;
+    return pag_res;
 }
 
-void *ad_get_elemento_pag(ARRAY_DINAMICO ad, int pag, int elems_por_pag, int n_elem){
+AD_PAGINADOR ad_inicializa_paginador_primeira_pag(ARRAY_DINAMICO ad, int elems_por_pag) {
+    AD_PAGINADOR pag_res = ad_inicializa_paginador_pag(ad, 1, elems_por_pag);
+    return pag_res;
+}
+
+AD_PAGINADOR ad_inicializa_paginador_ultima_pag(ARRAY_DINAMICO ad, int elems_por_pag) {
+    AD_PAGINADOR pag_res = ad_inicializa_paginador_pag(ad, 1, elems_por_pag);
+    ad_goto_pag(pag_res, ad_get_num_pags(pag_res));
+    return pag_res;
+}
+
+AD_PAGINADOR ad_inicializa_paginador_pag(ARRAY_DINAMICO ad, int n_pag, int elems_por_pag) {
+    AD_PAGINADOR pag_res = (AD_PAGINADOR) malloc(sizeof (struct ad_paginador));
+    pag_res->array_paginado     = ad;
+    pag_res->elems_por_pag      = (elems_por_pag > 0) ? elems_por_pag : AD_ELEMS_POR_PAG_DEFAULT;
+    pag_res->num_elems_pag      = ad_goto_pag(pag_res, n_pag);
+    return pag_res;
+}
+
+void ad_goto_pag(AD_PAGINADOR pag, int num_pag){
+    int comeco_pag = pag->elems_por_pag * (num_pag-1);
+    int diferenca = pag->array_paginado->posicao-comeco_pag;
+    
+    if(diferenca > 0 && num_pag > 0) {
+        pag->posicao_inicial = comeco_pag;
+        pag->num_elems_pag   = (diferenca > pag->elems_por_pag) ? pag->elems_por_pag : diferenca;
+        pag->num_pag         =  num_pag;
+    }else{
+        pag->posicao_inicial = AD_PAGINA_IMPOSSIVEL;
+        pag->num_elems_pag   = AD_PAGINA_IMPOSSIVEL;
+        pag->num_pag         = AD_PAGINA_IMPOSSIVEL;
+    }
+}
+
+int ad_get_pos_inicio_pag(AD_PAGINADOR pag){
+    return pag->posicao_inicial;
+}
+
+int ad_get_num_pags(AD_PAGINADOR pag){
+    int num_elems = pag->array_paginado->posicao;
+    int elems_por_pag = pag->elems_por_pag;
+    return ((num_elems%elems_por_pag) == 0) ? num_elems / elems_por_pag : (num_elems / elems_por_pag) +1;
+}
+
+void *ad_get_elemento_pag(AD_PAGINADOR pag, int n_elem){
     int indice;
     void *resultado = NULL;
-    int inicio_pag;
-    int num_elems_pag = ad_goto_pag(ad, &inicio_pag, pag, elems_por_pag);
     
-    if(inicio_pag != AD_PAGINA_IMPOSSIVEL && n_elem <= num_elems_pag){
-        indice = inicio_pag + (n_elem-1);
-        resultado = ad->elementos[indice];
+    if(pag->posicao_inicial != AD_PAGINA_IMPOSSIVEL 
+            && n_elem <= pag->num_elems_pag){
+        indice = pag->posicao_inicial + (n_elem-1);
+        resultado = pag->array_paginado->elementos[indice];
     }else{
         resultado = NULL;
     }
@@ -251,46 +293,26 @@ void *ad_get_elemento_pag(ARRAY_DINAMICO ad, int pag, int elems_por_pag, int n_e
     return resultado;
 }
 
-AD_PAGINA ad_inicializa_pag(int ){
-    AD_PAGINA pag_res = (AD_PAGINA) malloc(sizeof(struct ad_pagina));
-    pag_res->posicao_inicial = 0;
-    pag_res->num_pag = 0;
-    pag_res->elems_por_pag = AD_PAG_DEFAULT;
-    return pag_res;
+void ad_set_num_elems_por_pag(AD_PAGINADOR pag, int new_elems_por_pag){
+    if(new_elems_por_pag > 0){
+        pag->elems_por_pag = new_elems_por_pag;
+        ad_goto_pag(pag, pag->num_pag);
+    }
 }
 
-int ad_get_pos_inicial(AD_PAGINA pag){
-    return pag->posicao_inicial;
-}
-
-int ad_get_elems_por_pag(AD_PAGINA pag){
+int ad_get_elems_por_pag(AD_PAGINADOR pag){
     return pag->elems_por_pag;
 }
 
-int ad_get_num_pag(AD_PAGINA pag){
+int ad_get_num_pag(AD_PAGINADOR pag){
     return pag->num_pag;
 }
 
-void ad_free_pag(AD_PAGINA pag){
+void ad_free_pag(AD_PAGINADOR pag){
     free(pag);
 }
 
-AD_PAGINA ad_goto_pag(ARRAY_DINAMICO ad, int *pos_inicial, int pag, int elems_por_pag){
-    int num_elems_pag;
-    int diferenca=-1;
-    int comeco_pag = elems_por_pag * (pag-1);
-    
-    if(comeco_pag < ad->posicao) {
-        diferenca = ad->posicao-comeco_pag;
-        num_elems_pag = (diferenca > elems_por_pag) ? elems_por_pag : diferenca;
-        *pos_inicial = comeco_pag;
-    }else{
-        *pos_inicial = AD_POSICAO_IMPOSSIVEL;
-        num_elems_pag = AD_PAGINA_IMPOSSIVEL;
-    }
-    
-    return num_elems_pag;
-}
+
 
 /*
  * ORDENACAO

@@ -24,7 +24,11 @@ struct cont_ficha_produto {
 
 struct cont_lista_produtos{
     ARRAY_DINAMICO lista_paginada;
-    int elems_por_pag;
+};
+
+struct cont_paginador_lista_produtos{
+    CONT_LISTA_PRODUTOS lista_pag;
+    AD_PAGINADOR paginador;
 };
 
 struct iterador_cont {
@@ -515,7 +519,6 @@ CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n) {
     }
 
     lista->lista_paginada = ad;
-    lista->elems_por_pag = CONT_ELEMS_PAG;
     free_it_cont_fich_prod(iterador);
     return lista;
 }
@@ -524,24 +527,65 @@ CONT_FICHA_PRODUTO cont_lista_get_fich_prod(CONT_LISTA_PRODUTOS lista,int p){
     return (CONT_FICHA_PRODUTO) ad_get_elemento(lista->lista_paginada, p);
 }
 
-int cont_lista_prod_get_pos_and_num_elems_pag(CONT_LISTA_PRODUTOS lista, int *pos_inicial, int pag){
-    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_default(CONT_LISTA_PRODUTOS lista_prod) {
+    CONT_PAG_LISTA_PRODUTOS pag_res = (CONT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cont_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag->lista_paginada);
+    return pag_res;
 }
 
-int cont_lista_prod_get_num_pags(CONT_LISTA_PRODUTOS lista){
-    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
+CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_primeira_pag(CONT_LISTA_PRODUTOS lista_prod, int elems_por_pag) {
+    CONT_PAG_LISTA_PRODUTOS pag_res = (CONT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cont_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
 }
 
-int cont_lista_prod_get_elems_por_pag(CONT_LISTA_PRODUTOS lista){
-    return lista->elems_por_pag;
+CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_ultima_pag(CONT_LISTA_PRODUTOS lista_prod, int elems_por_pag) {
+    CONT_PAG_LISTA_PRODUTOS pag_res = (CONT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cont_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
 }
 
-void  cont_lista_prod_muda_elems_por_pag(CONT_LISTA_PRODUTOS lista, int n){
-    lista->elems_por_pag=n;
+CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_pag(CONT_LISTA_PRODUTOS lista_prod, int n_pag, int elems_por_pag) {
+    CONT_PAG_LISTA_PRODUTOS pag_res = (CONT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cont_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag->lista_paginada,n_pag, elems_por_pag);
+    return pag_res;
 }
 
-int cont_lista_prod_get_num_elems(CONT_LISTA_PRODUTOS lista){
-    return ad_get_tamanho(lista->lista_paginada);
+void cont_goto_pag(CONT_PAG_LISTA_PRODUTOS pag, int num_pag){
+    ad_goto_pag(pag->paginador, num_pag);
+}
+
+int cont_get_pos_inicio_pag(CONT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_pos_inicio_pag(pag->paginador);
+}
+
+int cont_get_num_pags(CONT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_pags(pag->paginador);
+}
+
+CONT_FICHA_PRODUTO cont_get_elemento_pag(CONT_PAG_LISTA_PRODUTOS pag, int n_elem){
+    return (CONT_FICHA_PRODUTO) ad_get_elemento_pag(pag->paginador, n_elem);
+}
+
+void cont_set_num_elems_por_pag(CONT_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag){
+    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
+}
+
+int cont_get_elems_por_pag(CONT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_elems_por_pag(pag->paginador);
+}
+
+int cont_get_num_pag(CONT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_pag(pag->paginador);
+}
+
+void cont_free_pag(CONT_PAG_LISTA_PRODUTOS pag){
+    ad_free_pag(pag->paginador);
+    free(pag);
 }
 
 void cont_free_lista_produtos(CONT_LISTA_PRODUTOS lista){
@@ -624,7 +668,6 @@ void free_it_cont_fich_prod(IT_CONT it){
     avl_t_free(it->traverser);
     free(it);
 }
-
 
 
 /* 
@@ -728,6 +771,7 @@ void free_ficha_prod_ad(void *item) {
     free(prod->cod_produto);
     free(prod);
 }
+
 void troca_meses(int *mes1 , int *mes2){
     int temp = *mes1;
     *mes1 = *mes2;

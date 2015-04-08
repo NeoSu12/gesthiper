@@ -21,7 +21,11 @@ struct iterador_cat_clientes {
 
 struct cat_lista_clientes{
     ARRAY_DINAMICO lista_paginada;
-    int elems_por_pag;
+};
+
+struct cat_paginador_lista_clientes{
+    CAT_LISTA_CLIENTES lista_pag;
+    AD_PAGINADOR paginador;
 };
 
 /*
@@ -128,7 +132,6 @@ CAT_LISTA_CLIENTES cat_lista_clientes_letra(CatClientes catalogo_clientes, char 
         ad_insere_elemento(ad, cliente);
     }
     
-    pag->elems_por_pag = CAT_CLIENTES_ELEMS_PAG;
     pag->lista_paginada = ad;
     free_it_cat_cliente(it);
     return pag;
@@ -138,32 +141,71 @@ char *cat_lista_cli_get_elemento(CAT_LISTA_CLIENTES lista,int p){
     return (char *) ad_get_elemento(lista->lista_paginada, p);
 }
 
-int cat_lista_cli_get_pos_and_num_elems_pag(CAT_LISTA_CLIENTES lista, int *pos_inicial, int pag){
-    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_default(CAT_LISTA_CLIENTES lista_cli) {
+    CAT_PAG_LISTA_CLIENTES pag_res = (CAT_PAG_LISTA_CLIENTES) malloc(sizeof (struct cat_paginador_lista_clientes));
+    pag_res->lista_pag          = lista_cli;
+    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag->lista_paginada);
+    return pag_res;
 }
 
-int cat_lista_cli_get_num_pags(CAT_LISTA_CLIENTES lista){
-    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
+CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_primeira_pag(CAT_LISTA_CLIENTES lista_cli, int elems_por_pag) {
+    CAT_PAG_LISTA_CLIENTES pag_res = (CAT_PAG_LISTA_CLIENTES) malloc(sizeof (struct cat_paginador_lista_clientes));
+    pag_res->lista_pag          = lista_cli;
+    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
 }
 
-int cat_lista_cli_get_elems_por_pag(CAT_LISTA_CLIENTES lista){
-    return lista->elems_por_pag;
+CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_ultima_pag(CAT_LISTA_CLIENTES lista_cli, int elems_por_pag) {
+    CAT_PAG_LISTA_CLIENTES pag_res = (CAT_PAG_LISTA_CLIENTES) malloc(sizeof (struct cat_paginador_lista_clientes));
+    pag_res->lista_pag          = lista_cli;
+    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
 }
 
-void cat_lista_cli_muda_elems_por_pag(CAT_LISTA_CLIENTES lista, int n){
-    lista->elems_por_pag=n;
+CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_pag(CAT_LISTA_CLIENTES lista_cli, int n_pag, int elems_por_pag) {
+    CAT_PAG_LISTA_CLIENTES pag_res = (CAT_PAG_LISTA_CLIENTES) malloc(sizeof (struct cat_paginador_lista_clientes));
+    pag_res->lista_pag          = lista_cli;
+    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag->lista_paginada,n_pag, elems_por_pag);
+    return pag_res;
 }
 
-int cat_lista_cli_get_num_elems(CAT_LISTA_CLIENTES lista){
-    return ad_get_tamanho(lista->lista_paginada);
+void cat_cli_goto_pag(CAT_PAG_LISTA_CLIENTES pag, int num_pag){
+    ad_goto_pag(pag->paginador, num_pag);
+}
+
+int cat_cli_get_pos_inicio_pag(CAT_PAG_LISTA_CLIENTES pag){
+    return ad_get_pos_inicio_pag(pag->paginador);
+}
+
+int cat_cli_get_num_pags(CAT_PAG_LISTA_CLIENTES pag){
+    return ad_get_num_pags(pag->paginador);
+}
+
+char *cat_cli_get_elemento_pag(CAT_PAG_LISTA_CLIENTES pag, int n_elem){
+    return (char *) ad_get_elemento_pag(pag->paginador, n_elem);;
+}
+
+void cat_cli_set_num_elems_por_pag(CAT_PAG_LISTA_CLIENTES pag, int new_elems_por_pag){
+    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
+}
+
+int cat_cli_get_elems_por_pag(CAT_PAG_LISTA_CLIENTES pag){
+    return ad_get_elems_por_pag(pag->paginador);
+}
+
+int cat_cli_get_num_pag(CAT_PAG_LISTA_CLIENTES pag){
+    return ad_get_num_pag(pag->paginador);
+}
+
+void cat_cli_free_pag(CAT_PAG_LISTA_CLIENTES pag){
+    ad_free_pag(pag->paginador);
+    free(pag);
 }
 
 void cat_free_lista_clientes(CAT_LISTA_CLIENTES lista){
     ad_deep_free(lista->lista_paginada, cat_free_cliente_ad);
     free(lista);
 }
-
-
 
 /*
  * ITERADORES CLIENTES

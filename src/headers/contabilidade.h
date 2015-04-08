@@ -16,6 +16,7 @@ typedef struct cont_ficha_produto *CONT_FICHA_PRODUTO;
 typedef struct mod_contabilidade *Contabilidade;
 typedef struct cont_lista_produtos* CONT_LISTA_PRODUTOS;
 typedef struct iterador_cont* IT_CONT;
+typedef struct cont_paginador_lista_produtos* CONT_PAG_LISTA_PRODUTOS;
 
 
 /* 
@@ -119,12 +120,20 @@ CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont);
 int cont_num_prod_sem_compras(Contabilidade cont);
 CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n);
 CONT_FICHA_PRODUTO cont_lista_get_fich_prod(CONT_LISTA_PRODUTOS lista,int p);
-int cont_lista_prod_get_pos_and_num_elems_pag(CONT_LISTA_PRODUTOS lista, int *pos_inicial, int pag);
-int cont_lista_prod_get_num_pags(CONT_LISTA_PRODUTOS lista);
-int cont_lista_prod_get_elems_por_pag(CONT_LISTA_PRODUTOS lista);
-void cont_lista_prod_muda_elems_por_pag(CONT_LISTA_PRODUTOS lista, int n);
-int cont_lista_prod_get_num_elems(CONT_LISTA_PRODUTOS lista);
+CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_default(CONT_LISTA_PRODUTOS lista_prod);
+CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_primeira_pag(CONT_LISTA_PRODUTOS lista_prod, int elems_por_pag);
+CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_ultima_pag(CONT_LISTA_PRODUTOS lista_prod, int elems_por_pag);
+CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_pag(CONT_LISTA_PRODUTOS lista_prod, int n_pag, int elems_por_pag);
+void cont_goto_pag(CONT_PAG_LISTA_PRODUTOS pag, int num_pag);
+int cont_get_pos_inicio_pag(CONT_PAG_LISTA_PRODUTOS pag);
+int cont_get_num_pags(CONT_PAG_LISTA_PRODUTOS pag);
+CONT_FICHA_PRODUTO cont_get_elemento_pag(CONT_PAG_LISTA_PRODUTOS pag, int n_elem);
+void cont_set_num_elems_por_pag(CONT_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag);
+int cont_get_elems_por_pag(CONT_PAG_LISTA_PRODUTOS pag);
+int cont_get_num_pag(CONT_PAG_LISTA_PRODUTOS pag);
+void cont_free_pag(CONT_PAG_LISTA_PRODUTOS pag);
 void cont_free_lista_produtos(CONT_LISTA_PRODUTOS lista);
+
 /*
  * ITERADORES
  */

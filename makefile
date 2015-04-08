@@ -60,10 +60,10 @@ tarcomplete: recompile
 	tar -cf gesthiper.tar makefile makefile-valgrind src/* datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
 zipexe: recompile
-	zip gesthiper.tar datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
+	zip gesthiper.zip datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
 zipcomplete: recompile
-	zip gesthiper.tar makefile makefile-valgrind src/* datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
+	zip gesthiper.zip makefile makefile-valgrind src/* datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
 main.o : interface.h erros.h compra.h cat_clientes.h cat_produtos.h compras.h contabilidade.h
 erros.o : erros.h

@@ -15,7 +15,7 @@ enum insert_mode{
 
 typedef enum insert_mode insert_mode_t;
 typedef struct array_dinamico* ARRAY_DINAMICO;
-typedef struct ad_pagina* AD_PAGINA;
+typedef struct ad_paginador* AD_PAGINADOR;
 
 
 typedef int ad_compara_elems(void *item_a, void *item_b, void *param);
@@ -75,9 +75,18 @@ void ad_remocao_rapida_elemento(ARRAY_DINAMICO, int);
  * PAGINACAO
  */
 
-int ad_get_num_pags(ARRAY_DINAMICO, int);
-void *ad_get_elemento_pag(ARRAY_DINAMICO, int, int, int);
-int ad_goto_pag(ARRAY_DINAMICO, int *, int, int);
+AD_PAGINADOR ad_inicializa_paginador_default(ARRAY_DINAMICO ad);
+AD_PAGINADOR ad_inicializa_paginador_primeira_pag(ARRAY_DINAMICO ad, int elems_por_pag);
+AD_PAGINADOR ad_inicializa_paginador_ultima_pag(ARRAY_DINAMICO ad, int elems_por_pag);
+AD_PAGINADOR ad_inicializa_paginador_pag(ARRAY_DINAMICO ad, int n_pag, int elems_por_pag);
+void ad_goto_pag(AD_PAGINADOR pag, int num_pag);
+int ad_get_pos_inicio_pag(AD_PAGINADOR pag);
+int ad_get_num_pags(AD_PAGINADOR pag);
+void *ad_get_elemento_pag(AD_PAGINADOR pag, int n_elem);
+void ad_set_num_elems_por_pag(AD_PAGINADOR pag, int new_elems_por_pag);
+int ad_get_elems_por_pag(AD_PAGINADOR pag);
+int ad_get_num_pag(AD_PAGINADOR pag);
+void ad_free_pag(AD_PAGINADOR pag);
 
 /*
  * ORDENACAO

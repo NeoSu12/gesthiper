@@ -22,7 +22,11 @@ struct iterador_cat_produtos {
 
 struct cat_lista_produtos{
     ARRAY_DINAMICO lista_paginada;
-    int elems_por_pag;
+};
+
+struct cat_paginador_lista_produtos{
+    CAT_LISTA_PRODUTOS lista_pag;
+    AD_PAGINADOR paginador;
 };
 
 /*
@@ -119,17 +123,16 @@ void free_catalogo_produtos(CatProdutos cat) {
  * PAGINACAO PRODUTOS
  */
 
-CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatProdutos catalogo_produtos, char letra){
+CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatClientes catalogo_produtos, char letra){
     char *produto;
     CAT_LISTA_PRODUTOS pag = (CAT_LISTA_PRODUTOS) malloc(sizeof(struct cat_lista_produtos));
     ARRAY_DINAMICO ad = ad_inicializa(8000);
-    IT_CAT_PRODUTOS it = inicializa_it_cat_produtos_letra(catalogo_produtos, letra);
+    IT_CAT_CLIENTES it = inicializa_it_cat_produtos_letra(catalogo_produtos, letra);
 
     while ((produto = it_cat_produto_proximo_letra(it)) != NULL) {
         ad_insere_elemento(ad, produto);
     }
     
-    pag->elems_por_pag = CAT_PRODUTOS_ELEMS_PAG;
     pag->lista_paginada = ad;
     free_it_cat_produto(it);
     return pag;
@@ -139,24 +142,65 @@ char *cat_lista_prod_get_elemento(CAT_LISTA_PRODUTOS lista,int p){
     return (char *) ad_get_elemento(lista->lista_paginada, p);
 }
 
-int cat_lista_prod_get_pos_and_num_elems_pag(CAT_LISTA_PRODUTOS lista, int *pos_inicial, int pag){
-    return ad_goto_pag(lista->lista_paginada, pos_inicial, pag, lista->elems_por_pag);
+CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_default(CAT_LISTA_PRODUTOS lista_prod) {
+    CAT_PAG_LISTA_PRODUTOS pag_res = (CAT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cat_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag->lista_paginada);
+    return pag_res;
 }
 
-int cat_lista_prod_get_num_pags(CAT_LISTA_PRODUTOS lista){
-    return ad_get_num_pags(lista->lista_paginada, lista->elems_por_pag);
+CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_primeira_pag(CAT_LISTA_PRODUTOS lista_prod, int elems_por_pag) {
+    CAT_PAG_LISTA_PRODUTOS pag_res = (CAT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cat_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
 }
 
-int cat_lista_prod_get_elems_por_pag(CAT_LISTA_PRODUTOS lista){
-    return lista->elems_por_pag;
+CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_ultima_pag(CAT_LISTA_PRODUTOS lista_prod, int elems_por_pag) {
+    CAT_PAG_LISTA_PRODUTOS pag_res = (CAT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cat_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
 }
 
-void cat_lista_prod_muda_elems_por_pag(CAT_LISTA_PRODUTOS lista, int n){
-    lista->elems_por_pag=n;
+CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_pag(CAT_LISTA_PRODUTOS lista_prod, int n_pag, int elems_por_pag) {
+    CAT_PAG_LISTA_PRODUTOS pag_res = (CAT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cat_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag->lista_paginada,n_pag, elems_por_pag);
+    return pag_res;
 }
 
-int cat_lista_prod_get_num_elems(CAT_LISTA_PRODUTOS lista){
-    return ad_get_tamanho(lista->lista_paginada);
+void cat_prod_goto_pag(CAT_PAG_LISTA_PRODUTOS pag, int num_pag){
+    ad_goto_pag(pag->paginador, num_pag);
+}
+
+int cat_prod_get_pos_inicio_pag(CAT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_pos_inicio_pag(pag->paginador);
+}
+
+int cat_prod_get_num_pags(CAT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_pags(pag->paginador);
+}
+
+char *cat_prod_get_elemento_pag(CAT_PAG_LISTA_PRODUTOS pag, int n_elem){
+    return (char *) ad_get_elemento_pag(pag->paginador, n_elem);;
+}
+
+void cat_prod_set_num_elems_por_pag(CAT_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag){
+    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
+}
+
+int cat_prod_get_elems_por_pag(CAT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_elems_por_pag(pag->paginador);
+}
+
+int cat_prod_get_num_pag(CAT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_pag(pag->paginador);
+}
+
+void cat_prod_free_pag(CAT_PAG_LISTA_PRODUTOS pag){
+    ad_free_pag(pag->paginador);
+    free(pag);
 }
 
 void cat_free_lista_produtos(CAT_LISTA_PRODUTOS lista){
