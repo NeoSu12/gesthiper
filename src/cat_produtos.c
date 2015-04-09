@@ -123,11 +123,11 @@ void free_catalogo_produtos(CatProdutos cat) {
  * PAGINACAO PRODUTOS
  */
 
-CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatClientes catalogo_produtos, char letra){
+CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatProdutos catalogo_produtos, char letra){
     char *produto;
     CAT_LISTA_PRODUTOS pag = (CAT_LISTA_PRODUTOS) malloc(sizeof(struct cat_lista_produtos));
     ARRAY_DINAMICO ad = ad_inicializa(8000);
-    IT_CAT_CLIENTES it = inicializa_it_cat_produtos_letra(catalogo_produtos, letra);
+    IT_CAT_PRODUTOS it = inicializa_it_cat_produtos_letra(catalogo_produtos, letra);
 
     while ((produto = it_cat_produto_proximo_letra(it)) != NULL) {
         ad_insere_elemento(ad, produto);
@@ -140,6 +140,10 @@ CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatClientes catalogo_produtos, char 
 
 char *cat_lista_prod_get_elemento(CAT_LISTA_PRODUTOS lista,int p){
     return (char *) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int cat_lista_prod_get_num_elems(CAT_LISTA_PRODUTOS lista){
+    return ad_get_tamanho(lista->lista_paginada);
 }
 
 CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_default(CAT_LISTA_PRODUTOS lista_prod) {
@@ -170,8 +174,20 @@ CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_pag(CAT_LISTA_PRODUTOS list
     return pag_res;
 }
 
-void cat_prod_goto_pag(CAT_PAG_LISTA_PRODUTOS pag, int num_pag){
-    ad_goto_pag(pag->paginador, num_pag);
+void cat_prod_set_num_elems_por_pag(CAT_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag){
+    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
+}
+
+int cat_prod_goto_pag(CAT_PAG_LISTA_PRODUTOS pag, int num_pag){
+    return ad_goto_pag(pag->paginador, num_pag);
+}
+
+int cat_prod_pag_get_num_elems(CAT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_tamanho(pag->lista_pag->lista_paginada);
+}
+
+int cat_prod_pag_get_num_elems_pag(CAT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_elems_pag(pag->paginador);
 }
 
 int cat_prod_get_pos_inicio_pag(CAT_PAG_LISTA_PRODUTOS pag){
@@ -183,11 +199,7 @@ int cat_prod_get_num_pags(CAT_PAG_LISTA_PRODUTOS pag){
 }
 
 char *cat_prod_get_elemento_pag(CAT_PAG_LISTA_PRODUTOS pag, int n_elem){
-    return (char *) ad_get_elemento_pag(pag->paginador, n_elem);;
-}
-
-void cat_prod_set_num_elems_por_pag(CAT_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag){
-    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
+    return (char *) ad_get_elemento_pag(pag->paginador, n_elem);
 }
 
 int cat_prod_get_elems_por_pag(CAT_PAG_LISTA_PRODUTOS pag){

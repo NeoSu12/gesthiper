@@ -156,13 +156,19 @@ int compras_num_clientes_compraram_prod(Compras compras, char *cod_produto);
 
 COMPRAS_ASSOC_PROD_CLIENTES compras_get_associacao_produto_clientes_tipo_compra(Compras compras, char *cod_produto);
 COMPRAS_CLIENTE_TIPO_COMPRA compras_get_cli_compra_from_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES lista,int p);
+int compras_lista_assoc_prod_clis_get_num_elems(COMPRAS_ASSOC_PROD_CLIENTES lista);
 void compras_free_assoc_prod_clientes(COMPRAS_ASSOC_PROD_CLIENTES assoc);
+char *compras_assoc_cli_compra_get_cod_cli(COMPRAS_CLIENTE_TIPO_COMPRA cliente_compra);
+char compras_assoc_cli_compra_get_tipo_compra(COMPRAS_CLIENTE_TIPO_COMPRA cliente_compra);
 
 COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_default(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc);
 COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_primeira_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int elems_por_pag);
 COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_ultima_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int elems_por_pag);
 COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int n_pag, int elems_por_pag);
-void compras_assoc_goto_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int num_pag);
+int compras_lista_assoc_prod_clis_get_num_elems(COMPRAS_ASSOC_PROD_CLIENTES lista);
+int compras_lista_assoc_pag_get_num_elems(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag);
+int compras_assoc_goto_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int num_pag);
+int compras_assoc_prod_cli_pag_get_num_elems_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag);
 int compras_assoc_get_pos_inicio_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag);
 int compras_assoc_get_num_pags(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag);
 COMPRAS_CLIENTE_TIPO_COMPRA compras_assoc_get_elemento_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int n_elem);
@@ -178,20 +184,23 @@ void compras_assoc_free_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag);
 
 char *compras_get_cod_cli_ficha(COMPRAS_FICHA_CLIENTE cliente);
 COMPRAS_FICHA_CLIENTE compras_lista_get_fich_cli(COMPRAS_LISTA_CLIENTES lista,int p);
+int compras_lista_cli_get_num_elems(COMPRAS_LISTA_CLIENTES lista);
 void compras_free_lista_clientes(COMPRAS_LISTA_CLIENTES lista);
 
-COMPRAS_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_default(COMPRAS_LISTA_CLIENTES lista_cli);
-COMPRAS_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_primeira_pag(COMPRAS_LISTA_CLIENTES lista_cli, int elems_por_pag);
-COMPRAS_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_ultima_pag(COMPRAS_LISTA_CLIENTES lista_cli, int elems_por_pag);
-COMPRAS_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_pag(COMPRAS_LISTA_CLIENTES lista_cli, int n_pag, int elems_por_pag);
-void cat_cli_goto_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int num_pag);
-int cat_cli_get_pos_inicio_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
-int cat_cli_get_num_pags(COMPRAS_PAG_LISTA_CLIENTES pag);
-COMPRAS_FICHA_CLIENTE cat_cli_get_elemento_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int n_elem);
-void cat_cli_set_num_elems_por_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int new_elems_por_pag);
-int cat_cli_get_elems_por_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
-int cat_cli_get_num_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
-void cat_cli_free_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
+COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_default(COMPRAS_LISTA_CLIENTES lista_cli);
+COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_primeira_pag(COMPRAS_LISTA_CLIENTES lista_cli, int elems_por_pag);
+COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_ultima_pag(COMPRAS_LISTA_CLIENTES lista_cli, int elems_por_pag);
+COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_pag(COMPRAS_LISTA_CLIENTES lista_cli, int n_pag, int elems_por_pag);
+int compras_cli_goto_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int num_pag);
+int compras_cli_pag_get_num_elems(COMPRAS_PAG_LISTA_CLIENTES pag);
+int compras_cli_pag_get_num_elems_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
+int compras_cli_get_pos_inicio_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
+int compras_cli_get_num_pags(COMPRAS_PAG_LISTA_CLIENTES pag);
+COMPRAS_FICHA_CLIENTE compras_cli_get_elemento_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int n_elem);
+void compras_cli_set_num_elems_por_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int new_elems_por_pag);
+int compras_cli_get_elems_por_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
+int compras_cli_get_num_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
+void compras_cli_free_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
 
 
 
@@ -201,20 +210,23 @@ void cat_cli_free_pag(COMPRAS_PAG_LISTA_CLIENTES pag);
 
 char *compras_get_cod_prod_ficha(COMPRAS_FICHA_PRODUTO produto);
 COMPRAS_FICHA_PRODUTO compras_lista_get_fich_prod(COMPRAS_LISTA_PRODUTOS lista,int p);
+int compras_lista_prod_get_num_elems(COMPRAS_LISTA_PRODUTOS lista);
 void compras_free_lista_produtos(COMPRAS_LISTA_PRODUTOS lista);
 
-COMPRAS_PAG_LISTA_PRODUTOS cont_inicializa_paginador_default(COMPRAS_LISTA_PRODUTOS lista_prod);
-COMPRAS_PAG_LISTA_PRODUTOS cont_inicializa_paginador_primeira_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int elems_por_pag);
-COMPRAS_PAG_LISTA_PRODUTOS cont_inicializa_paginador_ultima_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int elems_por_pag);
-COMPRAS_PAG_LISTA_PRODUTOS cont_inicializa_paginador_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int n_pag, int elems_por_pag);
-void cont_goto_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int num_pag);
-int cont_get_pos_inicio_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
-int cont_get_num_pags(COMPRAS_PAG_LISTA_PRODUTOS pag);
-COMPRAS_FICHA_PRODUTO cont_get_elemento_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int n_elem);
-void cont_set_num_elems_por_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag);
-int cont_get_elems_por_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
-int cont_get_num_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
-void cont_free_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
+COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_default(COMPRAS_LISTA_PRODUTOS lista_prod);
+COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_primeira_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int elems_por_pag);
+COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_ultima_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int elems_por_pag);
+COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int n_pag, int elems_por_pag);
+int compras_prod_goto_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int num_pag);
+int compras_prod_pag_get_num_elems(COMPRAS_PAG_LISTA_PRODUTOS pag);
+int compras_prod_pag_get_num_elems_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
+int compras_prod_get_pos_inicio_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
+int compras_prod_get_num_pags(COMPRAS_PAG_LISTA_PRODUTOS pag);
+COMPRAS_FICHA_PRODUTO compras_prod_get_elemento_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int n_elem);
+void compras_prod_set_num_elems_por_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag);
+int compras_prod_get_elems_por_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
+int compras_prod_get_num_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
+void compras_prod_free_pag(COMPRAS_PAG_LISTA_PRODUTOS pag);
 
 
 

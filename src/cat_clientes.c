@@ -141,6 +141,10 @@ char *cat_lista_cli_get_elemento(CAT_LISTA_CLIENTES lista,int p){
     return (char *) ad_get_elemento(lista->lista_paginada, p);
 }
 
+int cat_lista_cli_get_num_elems(CAT_LISTA_CLIENTES lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
 CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_default(CAT_LISTA_CLIENTES lista_cli) {
     CAT_PAG_LISTA_CLIENTES pag_res = (CAT_PAG_LISTA_CLIENTES) malloc(sizeof (struct cat_paginador_lista_clientes));
     pag_res->lista_pag          = lista_cli;
@@ -169,8 +173,12 @@ CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_pag(CAT_LISTA_CLIENTES lista
     return pag_res;
 }
 
-void cat_cli_goto_pag(CAT_PAG_LISTA_CLIENTES pag, int num_pag){
-    ad_goto_pag(pag->paginador, num_pag);
+int cat_cli_goto_pag(CAT_PAG_LISTA_CLIENTES pag, int num_pag){
+    return ad_goto_pag(pag->paginador, num_pag);
+}
+
+int cat_cli_pag_get_num_elems(CAT_PAG_LISTA_CLIENTES pag){
+    return ad_get_tamanho(pag->lista_pag->lista_paginada);
 }
 
 int cat_cli_get_pos_inicio_pag(CAT_PAG_LISTA_CLIENTES pag){
@@ -182,7 +190,11 @@ int cat_cli_get_num_pags(CAT_PAG_LISTA_CLIENTES pag){
 }
 
 char *cat_cli_get_elemento_pag(CAT_PAG_LISTA_CLIENTES pag, int n_elem){
-    return (char *) ad_get_elemento_pag(pag->paginador, n_elem);;
+    return (char *) ad_get_elemento_pag(pag->paginador, n_elem);
+}
+
+int cat_cli_pag_get_num_elems_pag(CAT_PAG_LISTA_CLIENTES pag){
+    return ad_get_num_elems_pag(pag->paginador);
 }
 
 void cat_cli_set_num_elems_por_pag(CAT_PAG_LISTA_CLIENTES pag, int new_elems_por_pag){

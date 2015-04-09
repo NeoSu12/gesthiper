@@ -8,7 +8,7 @@
 typedef struct catalogo_produtos *CatProdutos;
 typedef struct iterador_cat_produtos *IT_CAT_PRODUTOS;
 typedef struct cat_lista_produtos *CAT_LISTA_PRODUTOS;
-typedef cat_paginador_lista_produtos *CAT_PAG_LISTA_PRODUTOS;
+typedef struct cat_paginador_lista_produtos *CAT_PAG_LISTA_PRODUTOS;
 
 
 /* CatProdutos */
@@ -43,13 +43,16 @@ char *it_cat_produto_anterior_letra(IT_CAT_PRODUTOS);
  * LISTA PRODUTOS
  */
 
-CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatClientes catalogo_produtos, char letra);
+CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatProdutos catalogo_produtos, char letra);
 char *cat_lista_prod_get_elemento(CAT_LISTA_PRODUTOS lista,int p);
+int cat_lista_prod_get_num_elems(CAT_LISTA_PRODUTOS lista);
 CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_default(CAT_LISTA_PRODUTOS lista_prod);
 CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_primeira_pag(CAT_LISTA_PRODUTOS lista_prod, int elems_por_pag);
 CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_ultima_pag(CAT_LISTA_PRODUTOS lista_prod, int elems_por_pag);
 CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_pag(CAT_LISTA_PRODUTOS lista_prod, int n_pag, int elems_por_pag);
-void cat_prod_goto_pag(CAT_PAG_LISTA_PRODUTOS pag, int num_pag);
+int cat_prod_goto_pag(CAT_PAG_LISTA_PRODUTOS pag, int num_pag);
+int cat_prod_pag_get_num_elems(CAT_PAG_LISTA_PRODUTOS pag);
+int cat_prod_pag_get_num_elems_pag(CAT_PAG_LISTA_PRODUTOS pag);
 int cat_prod_get_pos_inicio_pag(CAT_PAG_LISTA_PRODUTOS pag);
 int cat_prod_get_num_pags(CAT_PAG_LISTA_PRODUTOS pag);
 char *cat_prod_get_elemento_pag(CAT_PAG_LISTA_PRODUTOS pag, int n_elem);

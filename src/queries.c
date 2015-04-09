@@ -37,13 +37,14 @@ extern Compras mod_compras;
 int _02_codigo_produtos_letra() {
     int i = 0, leitura = 0;
     int estado = QUERIE_2;
-    clock_t ci, cf;
     int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
     int resultados = 0, total_pags = 0, escolha_pag = 0;
+    clock_t ci, cf;
     CAT_LISTA_PRODUTOS lista_prod = NULL;
+    CAT_PAG_LISTA_PRODUTOS paginador = NULL;
     char letra;
     char input[50];
-    
+
     while (estado == QUERIE_2) {
         printf("\033[2J\033[1;1H");
         printf(" ====================================================  \n");
@@ -75,27 +76,28 @@ int _02_codigo_produtos_letra() {
         if (isalpha(letra) && leitura > 0 && estado == QUERIE_2) {
             ci = clock();
             lista_prod = cat_lista_produtos_letra(catalogo_produtos, letra);
-            cat_lista_prod_muda_elems_por_pag(lista_prod, TAM_PAGINA);
-            resultados = cat_lista_prod_get_num_elems(lista_prod);
-            total_pags = cat_lista_prod_get_num_pags(lista_prod);
+            paginador = cat_prod_inicializa_paginador_pag(lista_prod, 1, TAM_PAGINA);
+            resultados = cat_prod_pag_get_num_elems(paginador);
+            total_pags = cat_prod_get_num_pags(paginador);
             cf = clock();
             while (estado == QUERIE_2) {
-                elems_pag = cat_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
+                inicio_pag = cat_prod_goto_pag(paginador, n_pagina);
+                elems_pag = cat_prod_pag_get_num_elems_pag(paginador);
                 fim_pag = inicio_pag + elems_pag;
 
                 printf("\033[2J\033[1;1H");
                 printf("GESTHIPER >> CATALOGOS >> QUERIE 2                 \n");
                 printf("A mostrar produtos começados pela letra %c\n", letra);
                 printf("================================================= \n");
-                if(resultados > 0){
-                printf("Pagina %2d/%d \n", n_pagina, total_pags);
-                printf("\n");
-                for (i = 0; i < elems_pag; i++)
-                    printf("%s\n", cat_lista_prod_get_elemento(lista_prod, inicio_pag + i));
-                printf("\n");
-                printf("A mostrar %d-%d de %d resultados (em %.2f segundos)\n", 
-                        inicio_pag + 1, fim_pag, resultados, (float)(cf-ci)/CLOCKS_PER_SEC);
-                }else{
+                if (resultados > 0) {
+                    printf("Pagina %2d/%d \n", n_pagina, total_pags);
+                    printf("\n");
+                    for (i = 0; i < elems_pag; i++)
+                        printf("%s\n", cat_lista_prod_get_elemento(lista_prod, inicio_pag + i));
+                    printf("\n");
+                    printf("A mostrar %d-%d de %d resultados (em %.2f segundos)\n",
+                            inicio_pag + 1, fim_pag, resultados, (float) (cf - ci) / CLOCKS_PER_SEC);
+                } else {
                     printf("Nao existem produtos comecados pela letra %c\n", letra);
                 }
                 printf("==================================================== \n");
@@ -142,9 +144,10 @@ int _02_codigo_produtos_letra() {
                 }
             }
             cat_free_lista_produtos(lista_prod);
-
+            
         }
     }
+    cat_prod_free_pag(paginador);
     return estado;
 }
 
@@ -381,18 +384,20 @@ int _04_prods_nao_comprados() {
     int resultados = 0, total_pags = 0, escolha_pag = 0;
     CONT_LISTA_PRODUTOS lista_prod = NULL;
     CONT_FICHA_PRODUTO ficha_prod = NULL;
+    CONT_PAG_LISTA_PRODUTOS paginador = NULL;
     char input[50];
     
     ci = clock();
     
     lista_prod = cont_lista_prod_sem_compras(contabilidade);
-    cont_lista_prod_muda_elems_por_pag(lista_prod, TAM_PAGINA);
-    resultados = cont_lista_prod_get_num_elems(lista_prod);
-    total_pags = cont_lista_prod_get_num_pags(lista_prod);
+    paginador = cont_inicializa_paginador_pag(lista_prod, 1, TAM_PAGINA);
+    resultados = cont_pag_get_num_elems(paginador);
+    total_pags = cont_get_num_pags(paginador);
 
     cf= clock();
     while (estado == QUERIE_4) {
-        elems_pag = cont_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
+        inicio_pag = cont_goto_pag(paginador, n_pagina);
+        elems_pag = cont_pag_get_num_elems_pag(paginador);
         fim_pag = inicio_pag + elems_pag;
         printf("\033[2J\033[1;1H");
         printf("GESTHIPER >> CONTABILIDADE >> QUERIE 4                 \n");
@@ -458,6 +463,7 @@ int _04_prods_nao_comprados() {
         }
 
     }
+    cont_free_pag(paginador);
     cont_free_lista_produtos(lista_prod);
     return estado;
 }
@@ -588,6 +594,7 @@ int _06_codigos_clientes_letra() {
     int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;
     int resultados = 0, total_pags = 0, escolha_pag = 0;
     CAT_LISTA_CLIENTES lista_cli = NULL;
+    CAT_PAG_LISTA_CLIENTES paginador = NULL;
     char letra;
     char input[50];
 
@@ -622,12 +629,13 @@ int _06_codigos_clientes_letra() {
         if (isalpha(letra) && leitura > 0 && estado == QUERIE_6) {
             ci=clock();
             lista_cli = cat_lista_clientes_letra(catalogo_clientes, letra);
-            cat_lista_cli_muda_elems_por_pag(lista_cli, TAM_PAGINA);
+            paginador = cat_cli_inicializa_paginador_pag(lista_cli,1, TAM_PAGINA);
             resultados = cat_lista_cli_get_num_elems(lista_cli);
-            total_pags = cat_lista_cli_get_num_pags(lista_cli);
+            total_pags = cat_cli_get_num_pags(paginador);
             cf=clock();
             while (estado == QUERIE_6) {
-                elems_pag = cat_lista_cli_get_pos_and_num_elems_pag(lista_cli, &inicio_pag, n_pagina);
+                inicio_pag = cat_cli_goto_pag(paginador, n_pagina);
+                elems_pag = cat_cli_pag_get_num_elems_pag(paginador);
                 fim_pag = inicio_pag + elems_pag;
 
                 printf("\033[2J\033[1;1H");
@@ -689,10 +697,12 @@ int _06_codigos_clientes_letra() {
                         break;
                 }
             }
-            cat_free_lista_clientes(lista_cli);
-
+        cat_free_lista_clientes(lista_cli);
+        
         }
     }
+    
+    cat_cli_free_pag(paginador);
     return estado;
 }
 
@@ -815,6 +825,7 @@ int _08_clientes_compraram_prod() {
     int resultados = 0, total_pags = 0, escolha_pag = 0;
     COMPRAS_ASSOC_PROD_CLIENTES lista_assoc = NULL;
     COMPRAS_CLIENTE_TIPO_COMPRA cliente_t_compra = NULL;
+    COMPRAS_PAG_ASSOC_PROD_CLIENTES paginador = NULL;
     char *cod_produto= NULL;
     char input[50];
     
@@ -852,12 +863,13 @@ int _08_clientes_compraram_prod() {
         if (leitura > 0 && estado == QUERIE_8) {
             ci = clock();
             lista_assoc = compras_get_associacao_produto_clientes_tipo_compra(mod_compras, cod_produto);
-            compras_assoc_prod_cli_muda_elems_por_pag(lista_assoc, TAM_PAGINA);
-            resultados = compras_assoc_prod_cli_get_num_elems(lista_assoc);
-            total_pags = compras_assoc_prod_cli_get_num_pags(lista_assoc);
+            paginador = compras_assoc_inicializa_paginador_pag(lista_assoc, 1, TAM_PAGINA);
+            resultados = compras_lista_assoc_prod_clis_get_num_elems(lista_assoc);
+            total_pags = compras_assoc_get_num_pags(paginador);
             cf = clock();
             while (estado == QUERIE_8) {
-                elems_pag = compras_assoc_prod_cli_get_pos_and_num_elems_pag(lista_assoc, &inicio_pag, n_pagina);
+                inicio_pag = compras_assoc_goto_pag(paginador, n_pagina);
+                elems_pag = compras_assoc_prod_cli_pag_get_num_elems_pag(paginador);
                 fim_pag = inicio_pag + elems_pag;
 
                 printf("\033[2J\033[1;1H");
@@ -926,9 +938,9 @@ int _08_clientes_compraram_prod() {
                 }
             }
             compras_free_assoc_prod_clientes(lista_assoc);
-
         }
     }
+    compras_assoc_free_pag(paginador);
     free(cod_produto);
     return estado;
 }
@@ -942,6 +954,7 @@ int _09_produtos_mais_comprados_cliente_mes() {
     int resultados = 0, total_pags = 0, escolha_pag = 0;
     COMPRAS_LISTA_PRODUTOS lista_prod = NULL;
     COMPRAS_FICHA_PRODUTO ficha_prod = NULL;
+    COMPRAS_PAG_LISTA_PRODUTOS paginador = NULL;
     char input[50];
 
 
@@ -984,15 +997,15 @@ int _09_produtos_mais_comprados_cliente_mes() {
         ci = clock();
 
         lista_prod = compras_produtos_mais_comprados_cliente_mes(mod_compras, cod_cliente, mes);
-        compras_lista_prod_muda_elems_por_pag(lista_prod, TAM_PAGINA);
+        paginador = compras_prod_inicializa_paginador_pag(lista_prod,1, TAM_PAGINA);
         resultados = compras_lista_prod_get_num_elems(lista_prod);
-        total_pags = compras_lista_prod_get_num_pags(lista_prod);
+        total_pags = compras_prod_get_num_pags(paginador);
 
         cf = clock();
 
         while (estado == QUERIE_9) {
-
-            elems_pag = compras_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
+            inicio_pag = compras_prod_goto_pag(paginador, n_pagina);
+            elems_pag = compras_prod_pag_get_num_elems_pag(paginador);
             fim_pag = inicio_pag + elems_pag;
             printf("\033[2J\033[1;1H");
             printf("GESTHIPER >> COMPRAS >> QUERIE 9                 \n");
@@ -1069,6 +1082,7 @@ int _09_produtos_mais_comprados_cliente_mes() {
         printf("Cliente nao existe\n");
     }
 
+    compras_prod_free_pag(paginador);
     free(cod_cliente);
     return estado;
 }
@@ -1081,18 +1095,20 @@ int _10_clientes_regulares() {
     int resultados = 0, total_pags = 0, escolha_pag = 0;
     COMPRAS_LISTA_CLIENTES lista_cli = NULL;
     COMPRAS_FICHA_CLIENTE ficha_cli = NULL;
+    COMPRAS_PAG_LISTA_CLIENTES paginador = NULL;
     char input[50];
     
     ci = clock();
     
     lista_cli = compras_lista_clientes_regulares(mod_compras);
-    compras_lista_cli_muda_elems_por_pag(lista_cli, TAM_PAGINA);
+    paginador = compras_cli_inicializa_paginador_pag(lista_cli, 1 , TAM_PAGINA);
     resultados = compras_lista_cli_get_num_elems(lista_cli);
-    total_pags = compras_lista_cli_get_num_pags(lista_cli);
+    total_pags = compras_cli_get_num_pags(paginador);
 
     cf= clock();
     while (estado == QUERIE_10) {
-        elems_pag = compras_lista_cli_get_pos_and_num_elems_pag(lista_cli, &inicio_pag, n_pagina);
+        inicio_pag = compras_cli_goto_pag(paginador, n_pagina);
+        elems_pag = compras_cli_pag_get_num_elems_pag(paginador);
         fim_pag = inicio_pag + elems_pag;
         printf("\033[2J\033[1;1H");
         printf("GESTHIPER >> COMPRAS >> QUERIE 10                 \n");
@@ -1158,6 +1174,8 @@ int _10_clientes_regulares() {
         }
 
     }
+    
+    compras_cli_free_pag(paginador);
     compras_free_lista_clientes(lista_cli);
     return estado;
 }
@@ -1244,6 +1262,7 @@ int _12_prods_mais_vendidos() {
     int *n_clientes = NULL;
     CONT_LISTA_PRODUTOS lista_prod = NULL;
     CONT_FICHA_PRODUTO ficha_prod = NULL;
+    CONT_PAG_LISTA_PRODUTOS paginador = NULL;
     char input[50];
 
 
@@ -1286,19 +1305,22 @@ int _12_prods_mais_vendidos() {
     if (estado == QUERIE_12) {
         ci = clock();
         lista_prod = cont_top_produtos_comprados(contabilidade, n_top);
-        cont_lista_prod_muda_elems_por_pag(lista_prod, TAM_PAGINA);
-        resultados = cont_lista_prod_get_num_elems(lista_prod);
-        total_pags = cont_lista_prod_get_num_pags(lista_prod);
+        paginador = cont_inicializa_paginador_pag(lista_prod, 1, TAM_PAGINA);
+        resultados = cont_lista_get_num_elems(lista_prod);
+        total_pags = cont_get_num_pags(paginador);
         n_clientes = (int *) malloc(sizeof(int)*resultados);
+        
         for(i=0;i<resultados;i++){
             ficha_prod = cont_lista_get_fich_prod(lista_prod, i);
             n_clientes[i] = compras_num_clientes_compraram_prod(mod_compras,cont_get_cod_prod_ficha(ficha_prod));
         }
+        
         cf = clock();
 
 
         while (estado == QUERIE_12) {
-            elems_pag = cont_lista_prod_get_pos_and_num_elems_pag(lista_prod, &inicio_pag, n_pagina);
+            inicio_pag = cont_goto_pag(paginador, n_pagina);
+            elems_pag = cont_pag_get_num_elems_pag(paginador);
             fim_pag = inicio_pag + elems_pag;
             printf("\033[2J\033[1;1H");
             printf("GESTHIPER >> COMPRAS >> QUERIE 12                 \n");
@@ -1370,7 +1392,8 @@ int _12_prods_mais_vendidos() {
         cont_free_lista_produtos(lista_prod);
         free(n_clientes);
     }
-
+    
+    cont_free_pag(paginador);
     return estado;
 }
 

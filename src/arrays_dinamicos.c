@@ -253,7 +253,7 @@ AD_PAGINADOR ad_inicializa_paginador_pag(ARRAY_DINAMICO ad, int n_pag, int elems
     return pag_res;
 }
 
-void ad_goto_pag(AD_PAGINADOR pag, int num_pag){
+int ad_goto_pag(AD_PAGINADOR pag, int num_pag){
     int comeco_pag = pag->elems_por_pag * (num_pag-1);
     int diferenca = pag->array_paginado->posicao-comeco_pag;
     
@@ -266,6 +266,12 @@ void ad_goto_pag(AD_PAGINADOR pag, int num_pag){
         pag->num_elems_pag   = AD_PAGINA_IMPOSSIVEL;
         pag->num_pag         = AD_PAGINA_IMPOSSIVEL;
     }
+    
+    return pag->posicao_inicial;
+}
+
+int ad_get_num_elems_pag(AD_PAGINADOR pag){
+    return pag->num_elems_pag;
 }
 
 int ad_get_pos_inicio_pag(AD_PAGINADOR pag){

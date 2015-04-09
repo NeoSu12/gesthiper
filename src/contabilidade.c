@@ -472,7 +472,6 @@ CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
         }
     }
     lista->lista_paginada=ad;
-    lista->elems_por_pag=CONT_ELEMS_PAG;
     free_it_cont_fich_prod(iterador);
     return lista;
 }
@@ -527,6 +526,10 @@ CONT_FICHA_PRODUTO cont_lista_get_fich_prod(CONT_LISTA_PRODUTOS lista,int p){
     return (CONT_FICHA_PRODUTO) ad_get_elemento(lista->lista_paginada, p);
 }
 
+int cont_lista_get_num_elems(CONT_LISTA_PRODUTOS lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
 CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_default(CONT_LISTA_PRODUTOS lista_prod) {
     CONT_PAG_LISTA_PRODUTOS pag_res = (CONT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cont_paginador_lista_produtos));
     pag_res->lista_pag          = lista_prod;
@@ -555,9 +558,18 @@ CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_pag(CONT_LISTA_PRODUTOS lista_
     return pag_res;
 }
 
-void cont_goto_pag(CONT_PAG_LISTA_PRODUTOS pag, int num_pag){
-    ad_goto_pag(pag->paginador, num_pag);
+int cont_goto_pag(CONT_PAG_LISTA_PRODUTOS pag, int num_pag){
+    return ad_goto_pag(pag->paginador, num_pag);
 }
+
+int cont_pag_get_num_elems(CONT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_tamanho(pag->lista_pag->lista_paginada);
+}
+
+int cont_pag_get_num_elems_pag(CONT_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_elems_pag(pag->paginador);
+}
+
 
 int cont_get_pos_inicio_pag(CONT_PAG_LISTA_PRODUTOS pag){
     return ad_get_pos_inicio_pag(pag->paginador);

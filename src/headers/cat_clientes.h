@@ -8,7 +8,7 @@
 typedef struct catalogo_clientes* CatClientes;
 typedef struct iterador_cat_clientes* IT_CAT_CLIENTES;
 typedef struct cat_lista_clientes* CAT_LISTA_CLIENTES;
-typedef cat_paginador_lista_clientes* CAT_PAG_LISTA_CLIENTES;
+typedef struct cat_paginador_lista_clientes* CAT_PAG_LISTA_CLIENTES;
 
 /* CatClientes */
 
@@ -44,11 +44,14 @@ char *it_cat_cliente_anterior_letra(IT_CAT_CLIENTES);
 
 CAT_LISTA_CLIENTES cat_lista_clientes_letra(CatClientes catalogo_clientes, char letra);
 char *cat_lista_cli_get_elemento(CAT_LISTA_CLIENTES lista,int p);
+int cat_lista_cli_get_num_elems(CAT_LISTA_CLIENTES lista);
 CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_default(CAT_LISTA_CLIENTES lista_cli);
 CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_primeira_pag(CAT_LISTA_CLIENTES lista_cli, int elems_por_pag);
 CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_ultima_pag(CAT_LISTA_CLIENTES lista_cli, int elems_por_pag);
 CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_pag(CAT_LISTA_CLIENTES lista_cli, int n_pag, int elems_por_pag);
-void cat_cli_goto_pag(CAT_PAG_LISTA_CLIENTES pag, int num_pag);
+int cat_cli_goto_pag(CAT_PAG_LISTA_CLIENTES pag, int num_pag);
+int cat_cli_pag_get_num_elems(CAT_PAG_LISTA_CLIENTES pag);
+int cat_cli_pag_get_num_elems_pag(CAT_PAG_LISTA_CLIENTES pag);
 int cat_cli_get_pos_inicio_pag(CAT_PAG_LISTA_CLIENTES pag);
 int cat_cli_get_num_pags(CAT_PAG_LISTA_CLIENTES pag);
 char *cat_cli_get_elemento_pag(CAT_PAG_LISTA_CLIENTES pag, int n_elem);
