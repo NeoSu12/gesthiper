@@ -1461,6 +1461,7 @@ int _13_tres_prods_mais_comprados() {
                 printf("----------------------- \n");
                 printf("\n");
                 printf("Tempo: %5.3f ============================================== \n",(float)(cf-ci)/CLOCKS_PER_SEC);
+                compras_free_lista_produtos(lista);
             } else {
                 printf("O cliente nao existe\n");
                 printf("=========================================================== \n");
@@ -1493,7 +1494,6 @@ int _13_tres_prods_mais_comprados() {
         }
 
     }/* END WHILE*/
-    compras_free_lista_produtos(lista);
     free(cod_cliente);
     return estado;
 }
