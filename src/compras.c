@@ -68,7 +68,6 @@ struct compras_paginador_associacao_produto_clientes{
     ARRAY_DINAMICO lista_pag;
 };
 
-
 struct compras_cliente_tipo_compra{
     char *cod_cliente;
     char tipo_compra;
@@ -92,7 +91,6 @@ void compras_free_cliente_avl(void *avl_item, void *avl_param);
 void compras_free_produto(COMPRAS_FICHA_PRODUTO produto);
 void compras_free_cliente(COMPRAS_FICHA_CLIENTE cliente);
 void compras_troca_meses(int *mes1 , int *mes2);
-int compras_cliente_comprou_em_todos_os_meses(COMPRAS_FICHA_CLIENTE cliente);
 void compras_free_produto_ad(void *produto);
 void compras_free_cliente_ad(void *cliente);
 COMPRAS_NUM_CLIENTES_MENSAIS compras_inicializa_num_compras_mensais();
@@ -104,7 +102,7 @@ void compras_free_asoc_cliente_tipo_compra_ad(void *item);
 
 
 /*
- * INCICIALIZACAO E GESTAO MEMORIA
+ * COMPRAS
  */
 
 Compras inicializa_compras(){
@@ -171,14 +169,71 @@ void compras_remove_produto(Compras compras, char *cod_prod){
     compras_free_produto(produto);
 }
 
+int compras_num_cliente_sem_compras(Compras compras){
+    int res=0;
+    COMPRAS_FICHA_CLIENTE cliente;
+    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
+    
+    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
+        if(compras_total_produtos_comprados_ficha_cliente(cliente))
+            res++;
+        
+        compras_free_cliente(cliente);
+    }
+    
+    free_it_compras_fich_cliente(it);
+    return res;
+}
+
+int compras_num_clientes_compraram_prod(Compras compras, char *cod_produto){
+    int res=0;
+    COMPRAS_FICHA_CLIENTE cliente;
+    COMPRAS_FICHA_PRODUTO produto = compras_codigo_produto_to_ficha(cod_produto);
+    
+    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
+    
+    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
+        if(avl_find(cliente->avl_produtos, produto)!=NULL)
+            res++;
+        
+        compras_free_cliente(cliente);
+    }
+    
+    free_it_compras_fich_cliente(it);
+    
+    
+    compras_free_produto(produto);
+    return res;
+}
 
 void free_compras(Compras compras){
-    avl_destroy(compras->avl_clientes, compras_free_cliente_avl);
+    if(compras!=NULL)
+        avl_destroy(compras->avl_clientes, compras_free_cliente_avl);
+    
     free(compras);
 }
 
 /*
- * TOTAL PRODUTOS COMPRADOS CLIENTE
+ * FICHA CLIENTES
+ */
+
+char *compras_get_cod_cli_ficha(COMPRAS_FICHA_CLIENTE cliente){
+    return cliente->cod_cliente;
+}
+
+int compras_cliente_comprou_em_todos_os_meses(COMPRAS_FICHA_CLIENTE cliente){
+    int i=0, comprou=1;
+    
+    for(i=0;i<12 && comprou;i++){
+        if(compras_produtos_comprados_ficha_cliente_mes(cliente, i+1)==0){
+            comprou=0;
+        }
+    }
+    return comprou;
+}
+
+/*
+ * COMPRAS CLIENTE
  */
 
 int compras_total_produtos_comprados_ficha_cliente(COMPRAS_FICHA_CLIENTE cliente){
@@ -214,7 +269,15 @@ int compras_produtos_comprados_cod_cliente_mes(Compras compras, char *cod_client
 }
 
 /*
- * PRODUTO COMPRADO POR CLIENTE
+ * FICHA PRODUTOS
+ */
+
+char *compras_get_cod_prod_ficha(COMPRAS_FICHA_PRODUTO produto){
+    return produto->cod_produto;
+}
+
+/*
+ * COMPRAS PRODUTO
  */
 
 int compras_total_produtos_comprados_ficha(COMPRAS_FICHA_PRODUTO produto){
@@ -327,6 +390,448 @@ int compras_produtos_comprados_promo_cod_produto_mes(Compras compras,
     return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes, mes, COMPRAS_PROMO);
 }
 
+
+
+
+/*
+ * LISTA CLIENTES
+ */
+
+COMPRAS_LISTA_CLIENTES compras_lista_clientes_regulares(Compras compras){
+    COMPRAS_FICHA_CLIENTE cliente;
+    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
+    COMPRAS_LISTA_CLIENTES l_clientes = (COMPRAS_LISTA_CLIENTES) malloc(sizeof(struct compras_lista_clientes));
+    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
+    
+    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
+        if(compras_cliente_comprou_em_todos_os_meses(cliente)){
+            ad_insere_elemento(ad,cliente);
+        }else{
+            compras_free_cliente(cliente);
+        }
+    }
+    
+    l_clientes->lista_paginada=ad;
+    free_it_compras_fich_cliente(it);
+    return l_clientes;
+}
+
+COMPRAS_FICHA_CLIENTE compras_lista_get_fich_cli(COMPRAS_LISTA_CLIENTES lista,int p){
+    return (COMPRAS_FICHA_CLIENTE) ad_get_elemento(lista->lista_paginada, p);
+}
+
+int compras_lista_cli_get_num_elems(COMPRAS_LISTA_CLIENTES lista){
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
+void compras_free_lista_clientes(COMPRAS_LISTA_CLIENTES lista){
+    if(lista != NULL)
+        ad_deep_free(lista->lista_paginada, compras_free_cliente_ad);
+    
+    free(lista);
+}
+
+
+/*
+ * LISTA PRODUTOS
+ */
+
+COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compras, char *cod_cliente, int mes){
+    COMPRAS_FICHA_CLIENTE cliente = NULL;
+    COMPRAS_FICHA_PRODUTO produto = NULL;
+    IT_COMPRAS_PRODUTOS it = NULL;
+    COMPRAS_LISTA_PRODUTOS l_produtos = (COMPRAS_LISTA_PRODUTOS) malloc(sizeof(struct compras_lista_produtos));
+    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
+    
+    cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
+    it = inicializa_it_compras_fich_produtos(cliente);
+    
+    
+    while((produto = it_compras_fich_produto_proximo(it))!=NULL){
+            ad_insere_elemento(ad,produto);
+    }
+    
+    ad_ordena(ad, compras_compara_fichas_prod_por_vendas_ad, &mes);
+    l_produtos->lista_paginada=ad;
+    free_it_compras_fich_produto(it);
+    return l_produtos;
+}
+
+COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras compras, char *cod_cliente, int n){
+    int i, total_prods_comprados;
+    COMPRAS_FICHA_CLIENTE cliente = NULL;
+    COMPRAS_FICHA_PRODUTO produto = NULL;
+    IT_COMPRAS_PRODUTOS it = NULL;
+    COMPRAS_FICHA_PRODUTO *tops = (COMPRAS_FICHA_PRODUTO *) malloc(sizeof(struct compras_ficha_produto)*n);
+    COMPRAS_LISTA_PRODUTOS l_produtos = (COMPRAS_LISTA_PRODUTOS) malloc(sizeof(struct compras_lista_produtos));
+    ARRAY_DINAMICO ad = ad_inicializa_cap(2048);
+    ARRAY_DINAMICO lista_top = ad_inicializa_cap(64);
+    
+    cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
+    total_prods_comprados = compras_total_produtos_comprados_ficha_cliente(cliente);
+    it = inicializa_it_compras_fich_produtos(cliente);
+    
+    while((produto = it_compras_fich_produto_proximo(it))!=NULL){
+            ad_insere_elemento(ad,produto);
+    }
+    
+    ad_ordena(ad, compras_compara_fichas_prod_por_vendas_ad, NULL);
+    
+    for(i=0;i<n && i< total_prods_comprados;i++){
+        tops[i] = compras_clone_ficha_produto(ad_get_elemento(ad,i));
+        ad_insere_elemento(lista_top, tops[i]);
+    }
+
+    l_produtos->lista_paginada=lista_top;
+    
+    ad_deep_free(ad, compras_free_produto_ad);
+    free_it_compras_fich_produto(it);
+    free(tops);
+    return l_produtos;
+}
+
+COMPRAS_FICHA_PRODUTO compras_lista_get_fich_prod(COMPRAS_LISTA_PRODUTOS lista,int p){
+    return (COMPRAS_FICHA_PRODUTO) ad_get_elemento(lista->lista_paginada, p);
+}
+
+void compras_free_lista_produtos(COMPRAS_LISTA_PRODUTOS lista){
+    if(lista != NULL)
+        ad_deep_free(lista->lista_paginada, compras_free_produto_ad);
+    free(lista);
+}
+
+
+
+/*
+ * NUMERO CLIENTES POR MES
+ */
+
+COMPRAS_NUM_CLIENTES_MENSAIS compras_num_clientes_por_mes(Compras compras){
+    int i, n_compras;
+    COMPRAS_FICHA_CLIENTE cliente = NULL;
+    IT_COMPRAS_CLIENTES it = NULL;
+    COMPRAS_NUM_CLIENTES_MENSAIS res = compras_inicializa_num_compras_mensais();
+    
+    it = inicializa_it_compras_fich_clientes(compras);
+    
+    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
+        for(i=0;i<12;i++){
+            n_compras = compras_produtos_comprados_ficha_cliente_mes(cliente,i+1);
+            
+            if(n_compras > 0) 
+                res->num_clientes[i]++;
+        }
+        compras_free_cliente(cliente);
+    }
+    
+    free_it_compras_fich_cliente(it);
+    return res;
+}
+
+int compras_get_num_clientes_mes(COMPRAS_NUM_CLIENTES_MENSAIS compras_meses, int mes){
+    return (mes >=1 && mes<=12)? compras_meses->num_clientes[mes-1] : 0;
+}
+
+void compras_free_num_clientes_mensais(COMPRAS_NUM_CLIENTES_MENSAIS num_cli_mensais){
+    free(num_cli_mensais);
+}
+
+
+/*
+ * ASSOCIACAO PRODUTO -> CLIENTES e CLIENTE -> TIPO COMPRA 
+ */
+
+COMPRAS_ASSOC_PROD_CLIENTES compras_get_associacao_produto_clientes_tipo_compra(Compras compras, char *cod_produto){
+    int soma_normal=0, soma_promo=0;
+    char tipo_compra = 'X';
+    COMPRAS_FICHA_CLIENTE cliente = NULL;
+    COMPRAS_FICHA_PRODUTO produto = NULL;
+    COMPRAS_CLIENTE_TIPO_COMPRA assoc_cli_compra = NULL;
+    COMPRAS_ASSOC_PROD_CLIENTES assoc_prod_cli = compras_inicializa_assoc_prod_clientes(cod_produto);        
+    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
+    
+    
+    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
+        produto = compras_procura_ficha_produto_com_fichacli_avl(cliente, cod_produto);
+        
+        if(produto != NULL){
+            soma_normal = compras_produtos_comprados_normal_ficha_produto_meses(produto, 1, 12);
+            soma_promo = compras_produtos_comprados_promo_ficha_produto_meses(produto, 1, 12);
+            
+            if(soma_normal>0 && soma_promo>0) tipo_compra = 'A';
+            else if(soma_normal>0) tipo_compra = 'N';
+            else if(soma_promo>0) tipo_compra = 'P';
+            
+            assoc_cli_compra = compras_inicializa_asoc_cliente_tipo_compra(cliente->cod_cliente, tipo_compra);
+            compras_insere_assoc_cli_compra_em_assoc_prod_cli(assoc_prod_cli, assoc_cli_compra);
+            
+        }
+        
+        compras_free_cliente(cliente);
+    }
+    
+    free_it_compras_fich_cliente(it);
+    return assoc_prod_cli;
+}
+
+COMPRAS_CLIENTE_TIPO_COMPRA compras_get_cli_compra_from_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES lista,int p){
+    return (COMPRAS_CLIENTE_TIPO_COMPRA) ad_get_elemento(lista->associacoes, p);
+}
+
+int compras_lista_assoc_prod_clis_get_num_elems(COMPRAS_ASSOC_PROD_CLIENTES lista) {
+    return ad_get_tamanho(lista->associacoes);
+}
+
+char *compras_assoc_cli_compra_get_cod_cli(COMPRAS_CLIENTE_TIPO_COMPRA cliente_compra){
+    return cliente_compra->cod_cliente;
+}
+
+char compras_assoc_cli_compra_get_tipo_compra(COMPRAS_CLIENTE_TIPO_COMPRA cliente_compra){
+    return cliente_compra->tipo_compra;
+}
+
+void compras_free_assoc_prod_clientes(COMPRAS_ASSOC_PROD_CLIENTES assoc) {
+    if (assoc != NULL) {
+        ad_deep_free(assoc->associacoes, compras_free_asoc_cliente_tipo_compra_ad);
+        free(assoc->cod_produto);
+    }
+    free(assoc);
+}
+
+
+/*
+ * PAGINACAO 
+ * ASSOCIACAO PRODUTO -> CLIENTES e CLIENTE -> TIPO COMPRA
+ */
+
+COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_default(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc) {
+    COMPRAS_PAG_ASSOC_PROD_CLIENTES pag_res = (COMPRAS_PAG_ASSOC_PROD_CLIENTES) malloc(sizeof (struct compras_paginador_associacao_produto_clientes));
+    pag_res->lista_pag          = lista_assoc->associacoes;
+    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag);
+    return pag_res;
+}
+
+COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_primeira_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int elems_por_pag) {
+    COMPRAS_PAG_ASSOC_PROD_CLIENTES pag_res = (COMPRAS_PAG_ASSOC_PROD_CLIENTES) malloc(sizeof (struct compras_paginador_associacao_produto_clientes));
+    pag_res->lista_pag          = lista_assoc->associacoes;;
+    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag, elems_por_pag);
+    return pag_res;
+}
+
+COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_ultima_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int elems_por_pag) {
+    COMPRAS_PAG_ASSOC_PROD_CLIENTES pag_res = (COMPRAS_PAG_ASSOC_PROD_CLIENTES) malloc(sizeof (struct compras_paginador_associacao_produto_clientes));
+    pag_res->lista_pag          = lista_assoc->associacoes;;
+    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag, elems_por_pag);
+    return pag_res;
+}
+
+COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int n_pag, int elems_por_pag) {
+    COMPRAS_PAG_ASSOC_PROD_CLIENTES pag_res = (COMPRAS_PAG_ASSOC_PROD_CLIENTES) malloc(sizeof (struct compras_paginador_associacao_produto_clientes));
+    pag_res->lista_pag          = lista_assoc->associacoes;;
+    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag ,n_pag, elems_por_pag);
+    return pag_res;
+}
+
+int compras_lista_assoc_pag_get_num_elems(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag) {
+    return ad_get_tamanho(pag->lista_pag);
+}
+
+int compras_assoc_prod_cli_pag_get_num_elems_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
+    return ad_get_num_elems_pag(pag->paginador);
+}
+
+int compras_assoc_goto_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int num_pag){
+    return ad_goto_pag(pag->paginador, num_pag);
+}
+
+int compras_assoc_get_pos_inicio_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
+    return ad_get_pos_inicio_pag(pag->paginador);
+}
+
+int compras_assoc_get_num_pags(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
+    return ad_get_num_pags(pag->paginador);
+}
+
+COMPRAS_CLIENTE_TIPO_COMPRA compras_assoc_get_elemento_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int n_elem){
+    return (COMPRAS_CLIENTE_TIPO_COMPRA) ad_get_elemento_pag(pag->paginador, n_elem);
+}
+
+void compras_assoc_set_num_elems_por_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int new_elems_por_pag){
+    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
+}
+
+int compras_assoc_get_elems_por_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
+    return ad_get_elems_por_pag(pag->paginador);
+}
+
+int compras_assoc_get_num_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
+    return ad_get_num_pag(pag->paginador);
+}
+
+void compras_assoc_free_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
+    if(pag != NULL)
+        ad_free_pag(pag->paginador);
+    
+    free(pag);
+}
+
+
+
+/*
+ * PAGINACAO LISTAS CLIENTE
+ */
+
+COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_default(COMPRAS_LISTA_CLIENTES lista_cli) {
+    COMPRAS_PAG_LISTA_CLIENTES pag_res = (COMPRAS_PAG_LISTA_CLIENTES) malloc(sizeof (struct compras_paginador_lista_clientes));
+    pag_res->lista_pag          = lista_cli;
+    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag->lista_paginada);
+    return pag_res;
+}
+
+COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_primeira_pag(COMPRAS_LISTA_CLIENTES lista_cli, int elems_por_pag) {
+    COMPRAS_PAG_LISTA_CLIENTES pag_res = (COMPRAS_PAG_LISTA_CLIENTES) malloc(sizeof (struct compras_paginador_lista_clientes));
+    pag_res->lista_pag          = lista_cli;
+    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
+}
+
+COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_ultima_pag(COMPRAS_LISTA_CLIENTES lista_cli, int elems_por_pag) {
+    COMPRAS_PAG_LISTA_CLIENTES pag_res = (COMPRAS_PAG_LISTA_CLIENTES) malloc(sizeof (struct compras_paginador_lista_clientes));
+    pag_res->lista_pag          = lista_cli;
+    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
+}
+
+COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_pag(COMPRAS_LISTA_CLIENTES lista_cli, int n_pag, int elems_por_pag) {
+    COMPRAS_PAG_LISTA_CLIENTES pag_res = (COMPRAS_PAG_LISTA_CLIENTES) malloc(sizeof (struct compras_paginador_lista_clientes));
+    pag_res->lista_pag          = lista_cli;
+    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag->lista_paginada,n_pag, elems_por_pag);
+    return pag_res;
+}
+
+int compras_cli_goto_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int num_pag){
+    return ad_goto_pag(pag->paginador, num_pag);
+}
+
+int compras_cli_pag_get_num_elems(COMPRAS_PAG_LISTA_CLIENTES pag){
+    return ad_get_tamanho(pag->lista_pag->lista_paginada);
+}
+
+int compras_cli_get_pos_inicio_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
+    return ad_get_pos_inicio_pag(pag->paginador);
+}
+
+int compras_cli_get_num_pags(COMPRAS_PAG_LISTA_CLIENTES pag){
+    return ad_get_num_pags(pag->paginador);
+}
+
+COMPRAS_FICHA_CLIENTE compras_cli_get_elemento_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int n_elem){
+    return (COMPRAS_FICHA_CLIENTE) ad_get_elemento_pag(pag->paginador, n_elem);
+}
+
+int compras_cli_pag_get_num_elems_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
+    return ad_get_num_elems_pag(pag->paginador);
+}
+
+void compras_cli_set_num_elems_por_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int new_elems_por_pag){
+    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
+}
+
+int compras_cli_get_elems_por_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
+    return ad_get_elems_por_pag(pag->paginador);
+}
+
+int compras_cli_get_num_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
+    return ad_get_num_pag(pag->paginador);
+}
+
+void compras_cli_free_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
+    if(pag != NULL)
+        ad_free_pag(pag->paginador);
+    
+    free(pag);
+}
+
+
+/*
+ * PAGINACAO LISTAS PRODUTO
+ */
+
+COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_default(COMPRAS_LISTA_PRODUTOS lista_prod) {
+    COMPRAS_PAG_LISTA_PRODUTOS pag_res = (COMPRAS_PAG_LISTA_PRODUTOS) malloc(sizeof (struct compras_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag->lista_paginada);
+    return pag_res;
+}
+
+COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_primeira_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int elems_por_pag) {
+    COMPRAS_PAG_LISTA_PRODUTOS pag_res = (COMPRAS_PAG_LISTA_PRODUTOS) malloc(sizeof (struct compras_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
+}
+
+COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_ultima_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int elems_por_pag) {
+    COMPRAS_PAG_LISTA_PRODUTOS pag_res = (COMPRAS_PAG_LISTA_PRODUTOS) malloc(sizeof (struct compras_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
+    return pag_res;
+}
+
+COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int n_pag, int elems_por_pag) {
+    COMPRAS_PAG_LISTA_PRODUTOS pag_res = (COMPRAS_PAG_LISTA_PRODUTOS) malloc(sizeof (struct compras_paginador_lista_produtos));
+    pag_res->lista_pag          = lista_prod;
+    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag->lista_paginada,n_pag, elems_por_pag);
+    return pag_res;
+}
+
+int compras_prod_goto_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int num_pag){
+    return ad_goto_pag(pag->paginador, num_pag);
+}
+
+int compras_lista_prod_get_num_elems(COMPRAS_LISTA_PRODUTOS lista) {
+    return ad_get_tamanho(lista->lista_paginada);
+}
+
+int compras_prod_pag_get_num_elems(COMPRAS_PAG_LISTA_PRODUTOS pag) {
+    return ad_get_tamanho(pag->lista_pag->lista_paginada);
+}
+
+int compras_prod_pag_get_num_elems_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_elems_pag(pag->paginador);
+}
+
+int compras_prod_get_pos_inicio_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
+    return ad_get_pos_inicio_pag(pag->paginador);
+}
+
+int compras_prod_get_num_pags(COMPRAS_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_pags(pag->paginador);
+}
+
+COMPRAS_FICHA_PRODUTO compras_prod_get_elemento_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int n_elem){
+    return (COMPRAS_FICHA_PRODUTO) ad_get_elemento_pag(pag->paginador, n_elem);
+}
+
+void compras_prod_set_num_elems_por_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag){
+    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
+}
+
+int compras_prod_get_elems_por_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
+    return ad_get_elems_por_pag(pag->paginador);
+}
+
+int compras_prod_get_num_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
+    return ad_get_num_pag(pag->paginador);
+}
+
+void compras_prod_free_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
+    if(pag != NULL)
+        ad_free_pag(pag->paginador);
+    
+    free(pag);
+}
+
 /*
  * ITERADORES CLIENTES
  */
@@ -399,7 +904,8 @@ COMPRAS_FICHA_CLIENTE it_compras_fich_cliente_anterior(IT_COMPRAS_CLIENTES it) {
 }
 
 void free_it_compras_fich_cliente(IT_COMPRAS_CLIENTES it){
-    avl_t_free(it->traverser);
+    if(it != NULL)
+        avl_t_free(it->traverser);
     free(it);
 }
 
@@ -475,7 +981,8 @@ COMPRAS_FICHA_PRODUTO it_compras_fich_produto_anterior(IT_COMPRAS_PRODUTOS it) {
 }
 
 void free_it_compras_fich_produto(IT_COMPRAS_PRODUTOS it){
-    avl_t_free(it->traverser);
+    if(it!= NULL)
+        avl_t_free(it->traverser);
     free(it);
 }
 
@@ -504,471 +1011,13 @@ IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_elem(Compras compras, cha
 }
 
 
-/*
- * Pedidos aos modulos
- */
-
-COMPRAS_LISTA_CLIENTES compras_lista_clientes_regulares(Compras compras){
-    COMPRAS_FICHA_CLIENTE cliente;
-    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
-    COMPRAS_LISTA_CLIENTES l_clientes = (COMPRAS_LISTA_CLIENTES) malloc(sizeof(struct compras_lista_clientes));
-    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
-    
-    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
-        if(compras_cliente_comprou_em_todos_os_meses(cliente)){
-            ad_insere_elemento(ad,cliente);
-        }else{
-            compras_free_cliente(cliente);
-        }
-    }
-    
-    l_clientes->lista_paginada=ad;
-    free_it_compras_fich_cliente(it);
-    return l_clientes;
-}
-
-COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compras, char *cod_cliente, int mes){
-    COMPRAS_FICHA_CLIENTE cliente = NULL;
-    COMPRAS_FICHA_PRODUTO produto = NULL;
-    IT_COMPRAS_PRODUTOS it = NULL;
-    COMPRAS_LISTA_PRODUTOS l_produtos = (COMPRAS_LISTA_PRODUTOS) malloc(sizeof(struct compras_lista_produtos));
-    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
-    
-    cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
-    it = inicializa_it_compras_fich_produtos(cliente);
-    
-    
-    while((produto = it_compras_fich_produto_proximo(it))!=NULL){
-            ad_insere_elemento(ad,produto);
-    }
-    
-    ad_ordena(ad, compras_compara_fichas_prod_por_vendas_ad, &mes);
-    l_produtos->lista_paginada=ad;
-    free_it_compras_fich_produto(it);
-    return l_produtos;
-}
-
-COMPRAS_LISTA_PRODUTOS compras_top_n_produtos_mais_comprados_cliente(Compras compras, char *cod_cliente, int n){
-    int i, total_prods_comprados;
-    COMPRAS_FICHA_CLIENTE cliente = NULL;
-    COMPRAS_FICHA_PRODUTO produto = NULL;
-    IT_COMPRAS_PRODUTOS it = NULL;
-    COMPRAS_FICHA_PRODUTO *tops = (COMPRAS_FICHA_PRODUTO *) malloc(sizeof(struct compras_ficha_produto)*n);
-    COMPRAS_LISTA_PRODUTOS l_produtos = (COMPRAS_LISTA_PRODUTOS) malloc(sizeof(struct compras_lista_produtos));
-    ARRAY_DINAMICO ad = ad_inicializa_cap(2048);
-    ARRAY_DINAMICO lista_top = ad_inicializa_cap(64);
-    
-    cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
-    total_prods_comprados = compras_total_produtos_comprados_ficha_cliente(cliente);
-    it = inicializa_it_compras_fich_produtos(cliente);
-    
-    while((produto = it_compras_fich_produto_proximo(it))!=NULL){
-            ad_insere_elemento(ad,produto);
-    }
-    
-    ad_ordena(ad, compras_compara_fichas_prod_por_vendas_ad, NULL);
-    
-    for(i=0;i<n && i< total_prods_comprados;i++){
-        tops[i] = compras_clone_ficha_produto(ad_get_elemento(ad,i));
-        ad_insere_elemento(lista_top, tops[i]);
-    }
-
-    l_produtos->lista_paginada=lista_top;
-    
-    ad_deep_free(ad, compras_free_produto_ad);
-    free_it_compras_fich_produto(it);
-    free(tops);
-    return l_produtos;
-}
-
-COMPRAS_NUM_CLIENTES_MENSAIS compras_num_clientes_por_mes(Compras compras){
-    int i, n_compras;
-    COMPRAS_FICHA_CLIENTE cliente = NULL;
-    IT_COMPRAS_CLIENTES it = NULL;
-    COMPRAS_NUM_CLIENTES_MENSAIS res = compras_inicializa_num_compras_mensais();
-    
-    it = inicializa_it_compras_fich_clientes(compras);
-    
-    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
-        for(i=0;i<12;i++){
-            n_compras = compras_produtos_comprados_ficha_cliente_mes(cliente,i+1);
-            
-            if(n_compras > 0) 
-                res->num_clientes[i]++;
-        }
-        compras_free_cliente(cliente);
-    }
-    
-    free_it_compras_fich_cliente(it);
-    return res;
-}
-
-void compras_free_num_clientes_mensais(COMPRAS_NUM_CLIENTES_MENSAIS num_cli_mensais){
-    free(num_cli_mensais);
-}
-
-int compras_get_num_clientes_mes(COMPRAS_NUM_CLIENTES_MENSAIS compras_meses, int mes){
-    return (mes >=1 && mes<=12)? compras_meses->num_clientes[mes-1] : 0;
-}
-
-int compras_num_cliente_sem_compras(Compras compras){
-    int res=0;
-    COMPRAS_FICHA_CLIENTE cliente;
-    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
-    
-    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
-        if(compras_total_produtos_comprados_ficha_cliente(cliente))
-            res++;
-        
-        compras_free_cliente(cliente);
-    }
-    
-    free_it_compras_fich_cliente(it);
-    return res;
-}
-
-int compras_num_clientes_compraram_prod(Compras compras, char *cod_produto){
-    int res=0;
-    COMPRAS_FICHA_CLIENTE cliente;
-    COMPRAS_FICHA_PRODUTO produto = compras_codigo_produto_to_ficha(cod_produto);
-    
-    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
-    
-    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
-        if(avl_find(cliente->avl_produtos, produto)!=NULL)
-            res++;
-        
-        compras_free_cliente(cliente);
-    }
-    
-    free_it_compras_fich_cliente(it);
-    
-    
-    compras_free_produto(produto);
-    return res;
-}
-
-
-/*
- * ASSOCIACOES
- */
-
-COMPRAS_ASSOC_PROD_CLIENTES compras_get_associacao_produto_clientes_tipo_compra(Compras compras, char *cod_produto){
-    int soma_normal=0, soma_promo=0;
-    char tipo_compra = 'X';
-    COMPRAS_FICHA_CLIENTE cliente = NULL;
-    COMPRAS_FICHA_PRODUTO produto = NULL;
-    COMPRAS_CLIENTE_TIPO_COMPRA assoc_cli_compra = NULL;
-    COMPRAS_ASSOC_PROD_CLIENTES assoc_prod_cli = compras_inicializa_assoc_prod_clientes(cod_produto);        
-    IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
-    
-    
-    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
-        produto = compras_procura_ficha_produto_com_fichacli_avl(cliente, cod_produto);
-        
-        if(produto != NULL){
-            soma_normal = compras_produtos_comprados_normal_ficha_produto_meses(produto, 1, 12);
-            soma_promo = compras_produtos_comprados_promo_ficha_produto_meses(produto, 1, 12);
-            
-            if(soma_normal>0 && soma_promo>0) tipo_compra = 'A';
-            else if(soma_normal>0) tipo_compra = 'N';
-            else if(soma_promo>0) tipo_compra = 'P';
-            
-            assoc_cli_compra = compras_inicializa_asoc_cliente_tipo_compra(cliente->cod_cliente, tipo_compra);
-            compras_insere_assoc_cli_compra_em_assoc_prod_cli(assoc_prod_cli, assoc_cli_compra);
-            
-        }
-        
-        compras_free_cliente(cliente);
-    }
-    
-    free_it_compras_fich_cliente(it);
-    return assoc_prod_cli;
-}
-
-COMPRAS_CLIENTE_TIPO_COMPRA compras_get_cli_compra_from_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES lista,int p){
-    return (COMPRAS_CLIENTE_TIPO_COMPRA) ad_get_elemento(lista->associacoes, p);
-}
-
-int compras_lista_assoc_prod_clis_get_num_elems(COMPRAS_ASSOC_PROD_CLIENTES lista) {
-    return ad_get_tamanho(lista->associacoes);
-}
-
-void compras_free_assoc_prod_clientes(COMPRAS_ASSOC_PROD_CLIENTES assoc){
-    ad_deep_free(assoc->associacoes, compras_free_asoc_cliente_tipo_compra_ad);
-    free(assoc->cod_produto);
-    free(assoc);
-}
-
-char *compras_assoc_cli_compra_get_cod_cli(COMPRAS_CLIENTE_TIPO_COMPRA cliente_compra){
-    return cliente_compra->cod_cliente;
-}
-
-char compras_assoc_cli_compra_get_tipo_compra(COMPRAS_CLIENTE_TIPO_COMPRA cliente_compra){
-    return cliente_compra->tipo_compra;
-}
-
-
-COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_default(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc) {
-    COMPRAS_PAG_ASSOC_PROD_CLIENTES pag_res = (COMPRAS_PAG_ASSOC_PROD_CLIENTES) malloc(sizeof (struct compras_paginador_associacao_produto_clientes));
-    pag_res->lista_pag          = lista_assoc->associacoes;
-    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag);
-    return pag_res;
-}
-
-COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_primeira_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int elems_por_pag) {
-    COMPRAS_PAG_ASSOC_PROD_CLIENTES pag_res = (COMPRAS_PAG_ASSOC_PROD_CLIENTES) malloc(sizeof (struct compras_paginador_associacao_produto_clientes));
-    pag_res->lista_pag          = lista_assoc->associacoes;;
-    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag, elems_por_pag);
-    return pag_res;
-}
-
-COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_ultima_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int elems_por_pag) {
-    COMPRAS_PAG_ASSOC_PROD_CLIENTES pag_res = (COMPRAS_PAG_ASSOC_PROD_CLIENTES) malloc(sizeof (struct compras_paginador_associacao_produto_clientes));
-    pag_res->lista_pag          = lista_assoc->associacoes;;
-    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag, elems_por_pag);
-    return pag_res;
-}
-
-COMPRAS_PAG_ASSOC_PROD_CLIENTES compras_assoc_inicializa_paginador_pag(COMPRAS_ASSOC_PROD_CLIENTES lista_assoc, int n_pag, int elems_por_pag) {
-    COMPRAS_PAG_ASSOC_PROD_CLIENTES pag_res = (COMPRAS_PAG_ASSOC_PROD_CLIENTES) malloc(sizeof (struct compras_paginador_associacao_produto_clientes));
-    pag_res->lista_pag          = lista_assoc->associacoes;;
-    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag ,n_pag, elems_por_pag);
-    return pag_res;
-}
-
-
-int compras_lista_assoc_pag_get_num_elems(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag) {
-    return ad_get_tamanho(pag->lista_pag);
-}
-
-int compras_assoc_prod_cli_pag_get_num_elems_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
-    return ad_get_num_elems_pag(pag->paginador);
-}
-
-int compras_assoc_goto_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int num_pag){
-    return ad_goto_pag(pag->paginador, num_pag);
-}
-
-int compras_assoc_get_pos_inicio_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
-    return ad_get_pos_inicio_pag(pag->paginador);
-}
-
-int compras_assoc_get_num_pags(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
-    return ad_get_num_pags(pag->paginador);
-}
-
-COMPRAS_CLIENTE_TIPO_COMPRA compras_assoc_get_elemento_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int n_elem){
-    return (COMPRAS_CLIENTE_TIPO_COMPRA) ad_get_elemento_pag(pag->paginador, n_elem);
-}
-
-void compras_assoc_set_num_elems_por_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag, int new_elems_por_pag){
-    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
-}
-
-int compras_assoc_get_elems_por_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
-    return ad_get_elems_por_pag(pag->paginador);
-}
-
-int compras_assoc_get_num_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
-    return ad_get_num_pag(pag->paginador);
-}
-
-void compras_assoc_free_pag(COMPRAS_PAG_ASSOC_PROD_CLIENTES pag){
-    ad_free_pag(pag->paginador);
-    free(pag);
-}
-
-
-
-/*
- * LISTAS CLIENTE
- */
-
-char *compras_get_cod_cli_ficha(COMPRAS_FICHA_CLIENTE cliente){
-    return cliente->cod_cliente;
-}
-
-COMPRAS_FICHA_CLIENTE compras_lista_get_fich_cli(COMPRAS_LISTA_CLIENTES lista,int p){
-    return (COMPRAS_FICHA_CLIENTE) ad_get_elemento(lista->lista_paginada, p);
-}
-
-int compras_lista_cli_get_num_elems(COMPRAS_LISTA_CLIENTES lista){
-    return ad_get_tamanho(lista->lista_paginada);
-}
-
-void compras_free_lista_clientes(COMPRAS_LISTA_CLIENTES lista){
-    ad_deep_free(lista->lista_paginada, compras_free_cliente_ad);
-    free(lista);
-}
-
-COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_default(COMPRAS_LISTA_CLIENTES lista_cli) {
-    COMPRAS_PAG_LISTA_CLIENTES pag_res = (COMPRAS_PAG_LISTA_CLIENTES) malloc(sizeof (struct compras_paginador_lista_clientes));
-    pag_res->lista_pag          = lista_cli;
-    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag->lista_paginada);
-    return pag_res;
-}
-
-COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_primeira_pag(COMPRAS_LISTA_CLIENTES lista_cli, int elems_por_pag) {
-    COMPRAS_PAG_LISTA_CLIENTES pag_res = (COMPRAS_PAG_LISTA_CLIENTES) malloc(sizeof (struct compras_paginador_lista_clientes));
-    pag_res->lista_pag          = lista_cli;
-    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
-    return pag_res;
-}
-
-COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_ultima_pag(COMPRAS_LISTA_CLIENTES lista_cli, int elems_por_pag) {
-    COMPRAS_PAG_LISTA_CLIENTES pag_res = (COMPRAS_PAG_LISTA_CLIENTES) malloc(sizeof (struct compras_paginador_lista_clientes));
-    pag_res->lista_pag          = lista_cli;
-    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
-    return pag_res;
-}
-
-COMPRAS_PAG_LISTA_CLIENTES compras_cli_inicializa_paginador_pag(COMPRAS_LISTA_CLIENTES lista_cli, int n_pag, int elems_por_pag) {
-    COMPRAS_PAG_LISTA_CLIENTES pag_res = (COMPRAS_PAG_LISTA_CLIENTES) malloc(sizeof (struct compras_paginador_lista_clientes));
-    pag_res->lista_pag          = lista_cli;
-    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag->lista_paginada,n_pag, elems_por_pag);
-    return pag_res;
-}
-
-int compras_cli_goto_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int num_pag){
-    return ad_goto_pag(pag->paginador, num_pag);
-}
-
-int compras_cli_pag_get_num_elems(COMPRAS_PAG_LISTA_CLIENTES pag){
-    return ad_get_tamanho(pag->lista_pag->lista_paginada);
-}
-
-int compras_cli_get_pos_inicio_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
-    return ad_get_pos_inicio_pag(pag->paginador);
-}
-
-int compras_cli_get_num_pags(COMPRAS_PAG_LISTA_CLIENTES pag){
-    return ad_get_num_pags(pag->paginador);
-}
-
-COMPRAS_FICHA_CLIENTE compras_cli_get_elemento_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int n_elem){
-    return (COMPRAS_FICHA_CLIENTE) ad_get_elemento_pag(pag->paginador, n_elem);
-}
-
-int compras_cli_pag_get_num_elems_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
-    return ad_get_num_elems_pag(pag->paginador);
-}
-
-void compras_cli_set_num_elems_por_pag(COMPRAS_PAG_LISTA_CLIENTES pag, int new_elems_por_pag){
-    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
-}
-
-int compras_cli_get_elems_por_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
-    return ad_get_elems_por_pag(pag->paginador);
-}
-
-int compras_cli_get_num_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
-    return ad_get_num_pag(pag->paginador);
-}
-
-void compras_cli_free_pag(COMPRAS_PAG_LISTA_CLIENTES pag){
-    ad_free_pag(pag->paginador);
-    free(pag);
-}
-
-
-
-
-/*
- * LISTAS PRODUTO
- */
-
-
-char *compras_get_cod_prod_ficha(COMPRAS_FICHA_PRODUTO produto){
-    return produto->cod_produto;
-}
-
-COMPRAS_FICHA_PRODUTO compras_lista_get_fich_prod(COMPRAS_LISTA_PRODUTOS lista,int p){
-    return (COMPRAS_FICHA_PRODUTO) ad_get_elemento(lista->lista_paginada, p);
-}
-
-void compras_free_lista_produtos(COMPRAS_LISTA_PRODUTOS lista){
-    ad_deep_free(lista->lista_paginada, compras_free_produto_ad);
-    free(lista);
-}
-
-COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_default(COMPRAS_LISTA_PRODUTOS lista_prod) {
-    COMPRAS_PAG_LISTA_PRODUTOS pag_res = (COMPRAS_PAG_LISTA_PRODUTOS) malloc(sizeof (struct compras_paginador_lista_produtos));
-    pag_res->lista_pag          = lista_prod;
-    pag_res->paginador          = ad_inicializa_paginador_default(pag_res->lista_pag->lista_paginada);
-    return pag_res;
-}
-
-COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_primeira_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int elems_por_pag) {
-    COMPRAS_PAG_LISTA_PRODUTOS pag_res = (COMPRAS_PAG_LISTA_PRODUTOS) malloc(sizeof (struct compras_paginador_lista_produtos));
-    pag_res->lista_pag          = lista_prod;
-    pag_res->paginador          = ad_inicializa_paginador_primeira_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
-    return pag_res;
-}
-
-COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_ultima_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int elems_por_pag) {
-    COMPRAS_PAG_LISTA_PRODUTOS pag_res = (COMPRAS_PAG_LISTA_PRODUTOS) malloc(sizeof (struct compras_paginador_lista_produtos));
-    pag_res->lista_pag          = lista_prod;
-    pag_res->paginador          = ad_inicializa_paginador_ultima_pag(pag_res->lista_pag->lista_paginada, elems_por_pag);
-    return pag_res;
-}
-
-COMPRAS_PAG_LISTA_PRODUTOS compras_prod_inicializa_paginador_pag(COMPRAS_LISTA_PRODUTOS lista_prod, int n_pag, int elems_por_pag) {
-    COMPRAS_PAG_LISTA_PRODUTOS pag_res = (COMPRAS_PAG_LISTA_PRODUTOS) malloc(sizeof (struct compras_paginador_lista_produtos));
-    pag_res->lista_pag          = lista_prod;
-    pag_res->paginador          = ad_inicializa_paginador_pag(pag_res->lista_pag->lista_paginada,n_pag, elems_por_pag);
-    return pag_res;
-}
-
-int compras_prod_goto_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int num_pag){
-    return ad_goto_pag(pag->paginador, num_pag);
-}
-
-int compras_lista_prod_get_num_elems(COMPRAS_LISTA_PRODUTOS lista) {
-    return ad_get_tamanho(lista->lista_paginada);
-}
-
-int compras_prod_pag_get_num_elems(COMPRAS_PAG_LISTA_PRODUTOS pag) {
-    return ad_get_tamanho(pag->lista_pag->lista_paginada);
-}
-
-int compras_prod_pag_get_num_elems_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
-    return ad_get_num_elems_pag(pag->paginador);
-}
-
-int compras_prod_get_pos_inicio_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
-    return ad_get_pos_inicio_pag(pag->paginador);
-}
-
-int compras_prod_get_num_pags(COMPRAS_PAG_LISTA_PRODUTOS pag){
-    return ad_get_num_pags(pag->paginador);
-}
-
-COMPRAS_FICHA_PRODUTO compras_prod_get_elemento_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int n_elem){
-    return (COMPRAS_FICHA_PRODUTO) ad_get_elemento_pag(pag->paginador, n_elem);
-}
-
-void compras_prod_set_num_elems_por_pag(COMPRAS_PAG_LISTA_PRODUTOS pag, int new_elems_por_pag){
-    ad_set_num_elems_por_pag(pag->paginador, new_elems_por_pag);
-}
-
-int compras_prod_get_elems_por_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
-    return ad_get_elems_por_pag(pag->paginador);
-}
-
-int compras_prod_get_num_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
-    return ad_get_num_pag(pag->paginador);
-}
-
-void compras_prod_free_pag(COMPRAS_PAG_LISTA_PRODUTOS pag){
-    ad_free_pag(pag->paginador);
-    free(pag);
-}
-
-
 
 /*
  * FUNCOES AUXILIARES PRIVADAS AO MODULO
+ */
+
+/*
+ * INICIALIZACOES
  */
 
 COMPRAS_FICHA_PRODUTO compras_inicializa_ficha_produto(char* cod_prod) {
@@ -1003,6 +1052,23 @@ COMPRAS_FICHA_CLIENTE compras_inicializa_ficha_cliente(char* cod_cli) {
     
     
     return cli;
+}
+
+COMPRAS_NUM_CLIENTES_MENSAIS compras_inicializa_num_compras_mensais(){
+    int i;
+    COMPRAS_NUM_CLIENTES_MENSAIS res = (COMPRAS_NUM_CLIENTES_MENSAIS) malloc(sizeof(struct compras_num_clientes_mensais));
+    for(i=0;i<12;i++) res->num_clientes[i]=0;
+    return res;
+}
+
+COMPRAS_ASSOC_PROD_CLIENTES compras_inicializa_assoc_prod_clientes(char *cod_produto){
+    char *copia;
+    COMPRAS_ASSOC_PROD_CLIENTES res = (COMPRAS_ASSOC_PROD_CLIENTES) malloc(sizeof(struct compras_associacao_produto_clientes));
+    copia = (char *) malloc(sizeof(char)*(strlen(cod_produto)+1));
+    strcpy(copia, cod_produto);
+    res->cod_produto = copia;
+    res->associacoes = ad_inicializa_cap(1024);
+    return res;
 }
 
 COMPRAS_FICHA_PRODUTO compras_clone_ficha_produto(COMPRAS_FICHA_PRODUTO src){
@@ -1056,6 +1122,12 @@ COMPRAS_FICHA_CLIENTE compras_codigo_cliente_to_ficha(char* cod_cli) {
     return cli;
 }
 
+
+
+/*
+ * PROCURAS
+ */
+
 COMPRAS_FICHA_CLIENTE compras_procura_ficha_cliente_com_cod_avl(Compras compras, char *cod_cli){
     COMPRAS_FICHA_CLIENTE nodo_aux = compras_codigo_cliente_to_ficha(cod_cli);
     COMPRAS_FICHA_CLIENTE res = (COMPRAS_FICHA_CLIENTE) avl_find(compras->avl_clientes, nodo_aux);
@@ -1081,6 +1153,20 @@ COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_fichacli_avl(COMPRAS_FIC
     free(nodo_aux);
     return res;
 }
+
+COMPRAS_CLIENTE_TIPO_COMPRA compras_inicializa_asoc_cliente_tipo_compra(char *cod_cliente, char tipo_compra) {
+    char *copia;
+    COMPRAS_CLIENTE_TIPO_COMPRA res = (COMPRAS_CLIENTE_TIPO_COMPRA) malloc(sizeof (struct compras_cliente_tipo_compra));
+    copia = (char *) malloc(sizeof (char)*(strlen(cod_cliente) + 1));
+    strcpy(copia, cod_cliente);
+    res->cod_cliente = copia;
+    res->tipo_compra = tipo_compra;
+    return res;
+}
+
+/*
+ * FUNCOES COMPARACAO
+ */
 
 int compras_compara_fichas_cli_por_cod_cli_avl(const void *avl_a, const void *avl_b, void *param){
     COMPRAS_FICHA_CLIENTE a = (COMPRAS_FICHA_CLIENTE) avl_a;
@@ -1119,6 +1205,10 @@ int compras_compara_fichas_prod_por_vendas_mes_ad(void *ad_a, void *ad_b, void *
     return res;
 }
 
+/*
+ * LIBERTACAO MEMORIA
+ */
+
 void compras_free_produto_avl(void *avl_item, void *avl_param){
     COMPRAS_FICHA_PRODUTO produto = (COMPRAS_FICHA_PRODUTO) avl_item;
     free(produto->cod_produto);
@@ -1154,59 +1244,25 @@ void compras_free_cliente_ad(void *cliente){
     free(c);
 }
 
+void compras_free_asoc_cliente_tipo_compra_ad(void *item) {
+    COMPRAS_CLIENTE_TIPO_COMPRA p_apagar = (COMPRAS_CLIENTE_TIPO_COMPRA) item;
+    free(p_apagar->cod_cliente);
+    free(p_apagar);
+}
+
+/*
+ * OUTRAS
+ */
+
 void compras_troca_meses(int *mes1 , int *mes2){
     int temp = *mes1;
     *mes1 = *mes2;
     *mes2 = temp;
 }
 
-int compras_cliente_comprou_em_todos_os_meses(COMPRAS_FICHA_CLIENTE cliente){
-    int i=0, comprou=1;
-    
-    for(i=0;i<12 && comprou;i++){
-        if(compras_produtos_comprados_ficha_cliente_mes(cliente, i+1)==0){
-            comprou=0;
-        }
-    }
-    return comprou;
-}
-
-COMPRAS_NUM_CLIENTES_MENSAIS compras_inicializa_num_compras_mensais(){
-    int i;
-    COMPRAS_NUM_CLIENTES_MENSAIS res = (COMPRAS_NUM_CLIENTES_MENSAIS) malloc(sizeof(struct compras_num_clientes_mensais));
-    for(i=0;i<12;i++) res->num_clientes[i]=0;
-    return res;
-}
-
-
-COMPRAS_ASSOC_PROD_CLIENTES compras_inicializa_assoc_prod_clientes(char *cod_produto){
-    char *copia;
-    COMPRAS_ASSOC_PROD_CLIENTES res = (COMPRAS_ASSOC_PROD_CLIENTES) malloc(sizeof(struct compras_associacao_produto_clientes));
-    copia = (char *) malloc(sizeof(char)*(strlen(cod_produto)+1));
-    strcpy(copia, cod_produto);
-    res->cod_produto = copia;
-    res->associacoes = ad_inicializa_cap(1024);
-    return res;
-}
-
 void compras_insere_assoc_cli_compra_em_assoc_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES p_cli, COMPRAS_CLIENTE_TIPO_COMPRA cli_compra){
     ad_insere_elemento(p_cli->associacoes, cli_compra);
 }
 
-COMPRAS_CLIENTE_TIPO_COMPRA compras_inicializa_asoc_cliente_tipo_compra(char *cod_cliente, char tipo_compra) {
-    char *copia;
-    COMPRAS_CLIENTE_TIPO_COMPRA res = (COMPRAS_CLIENTE_TIPO_COMPRA) malloc(sizeof (struct compras_cliente_tipo_compra));
-    copia = (char *) malloc(sizeof (char)*(strlen(cod_cliente) + 1));
-    strcpy(copia, cod_cliente);
-    res->cod_cliente = copia;
-    res->tipo_compra = tipo_compra;
-    return res;
-}
-
-void compras_free_asoc_cliente_tipo_compra_ad(void *item) {
-    COMPRAS_CLIENTE_TIPO_COMPRA p_apagar = (COMPRAS_CLIENTE_TIPO_COMPRA) item;
-    free(p_apagar->cod_cliente);
-    free(p_apagar);
-}
 
 

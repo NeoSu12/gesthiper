@@ -41,6 +41,7 @@ void free_compras(Compras compras);
  * TOTAL PRODUTOS COMPRADOS CLIENTE
  */
 
+int compras_cliente_comprou_em_todos_os_meses(COMPRAS_FICHA_CLIENTE cliente);
 int compras_total_produtos_comprados_ficha_cliente(COMPRAS_FICHA_CLIENTE cliente);
 int compras_total_unidades_compradas_ficha_cliente(COMPRAS_FICHA_CLIENTE cliente);
 int compras_produtos_comprados_ficha_cliente_meses(COMPRAS_FICHA_CLIENTE cliente, int mes_inf, int mes_sup);

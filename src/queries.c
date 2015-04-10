@@ -1100,10 +1100,10 @@ int _10_clientes_regulares() {
     
     ci = clock();
     
-    lista_cli = compras_lista_clientes_regulares(mod_compras);
-    paginador = compras_cli_inicializa_paginador_pag(lista_cli, 1 , TAM_PAGINA);
-    resultados = compras_lista_cli_get_num_elems(lista_cli);
-    total_pags = compras_cli_get_num_pags(paginador);
+    lista_cli   = compras_lista_clientes_regulares(mod_compras);
+    paginador   = compras_cli_inicializa_paginador_pag(lista_cli, 1 , TAM_PAGINA);
+    resultados  = compras_lista_cli_get_num_elems(lista_cli);
+    total_pags  = compras_cli_get_num_pags(paginador);
 
     cf= clock();
     while (estado == QUERIE_10) {

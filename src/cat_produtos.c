@@ -33,13 +33,13 @@ struct cat_paginador_lista_produtos{
  * FUNÇÕES PRIVADAS AO MÓDULO
  */
 
-int cat_compara_produtos_av(const void *, const void *, void *);
+int cat_compara_produtos_avl(const void *, const void *, void *);
 void cat_free_produto_avl(void *item, void *);
 int cat_calcula_indice_produto(char l);
 void cat_free_produto_ad(void *);
 
 /*
- * ÁRVORE
+ * CATALOGO PRODUTOS
  */
 
 CatProdutos inicializa_catalogo_produtos() {
@@ -47,7 +47,7 @@ CatProdutos inicializa_catalogo_produtos() {
     CatProdutos res = (CatProdutos) malloc(sizeof (struct catalogo_produtos));
 
     for (i = 0; i <= 26; i++) {
-        res->indices[i] = avl_create(cat_compara_produtos_av, NULL, NULL);
+        res->indices[i] = avl_create(cat_compara_produtos_avl, NULL, NULL);
     }
 
     return res;
@@ -111,16 +111,17 @@ int cat_total_produtos_letra(CatProdutos cat, char letra) {
 
 void free_catalogo_produtos(CatProdutos cat) {
     int i = 0;
-
+    
+    if(cat != NULL){
     for (i = 0; i <= 26; i++) {
         avl_destroy(cat->indices[i], cat_free_produto_avl);
     }
-
+}
     free(cat);
 }
 
 /*
- * PAGINACAO PRODUTOS
+ * LISTA PRODUTOS
  */
 
 CAT_LISTA_PRODUTOS cat_lista_produtos_letra(CatProdutos catalogo_produtos, char letra){
@@ -145,6 +146,19 @@ char *cat_lista_prod_get_elemento(CAT_LISTA_PRODUTOS lista,int p){
 int cat_lista_prod_get_num_elems(CAT_LISTA_PRODUTOS lista){
     return ad_get_tamanho(lista->lista_paginada);
 }
+
+void cat_free_lista_produtos(CAT_LISTA_PRODUTOS lista){
+    if(lista != NULL)
+        ad_deep_free(lista->lista_paginada, cat_free_produto_ad);
+    
+    free(lista);
+}
+
+
+/*
+ * PAGINADOR LISTA DE PRODUTOS
+ */
+
 
 CAT_PAG_LISTA_PRODUTOS cat_prod_inicializa_paginador_default(CAT_LISTA_PRODUTOS lista_prod) {
     CAT_PAG_LISTA_PRODUTOS pag_res = (CAT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cat_paginador_lista_produtos));
@@ -211,15 +225,11 @@ int cat_prod_get_num_pag(CAT_PAG_LISTA_PRODUTOS pag){
 }
 
 void cat_prod_free_pag(CAT_PAG_LISTA_PRODUTOS pag){
-    ad_free_pag(pag->paginador);
+    if(pag != NULL)
+        ad_free_pag(pag->paginador);
+    
     free(pag);
 }
-
-void cat_free_lista_produtos(CAT_LISTA_PRODUTOS lista){
-    ad_deep_free(lista->lista_paginada, cat_free_produto_ad);
-    free(lista);
-}
-
 
 
 /*
@@ -398,7 +408,9 @@ char *it_cat_produto_anterior_letra(IT_CAT_PRODUTOS it) {
 }
 
 void free_it_cat_produto(IT_CAT_PRODUTOS it){
-    avl_t_free(it->traverser);
+    if(it != NULL)
+        avl_t_free(it->traverser);
+    
     free(it);
 }
 
@@ -407,7 +419,7 @@ void free_it_cat_produto(IT_CAT_PRODUTOS it){
  * Funções (privadas) auxiliares ao módulo.
  */
 
-int cat_compara_produtos_av(const void *avl_a, const void *avl_b, void *avl_param) {
+int cat_compara_produtos_avl(const void *avl_a, const void *avl_b, void *avl_param) {
     return strcmp((char *) avl_a, (char *) avl_b);
 }
 

@@ -81,6 +81,7 @@ double cont_total_fact_fich_promo_produto_int_meses(CONT_FICHA_PRODUTO fich_prod
 
 /*========================================*/
 
+double cont_total_fact_produto(Contabilidade cont, char *cod_prod);
 double cont_total_fact_produto_geral(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup, campo_t campo);
 double cont_total_fact_produto_mes(Contabilidade cont,char* cod_prod, int mes);
 double cont_total_fact_produto_int_meses(Contabilidade cont,char* cod_prod, int mes_inf, int mes_sup);
@@ -105,6 +106,7 @@ int cont_total_vendas_fich_promo_produto_int_meses(CONT_FICHA_PRODUTO fich_prod,
 
 /*===================================*/
 
+int cont_total_vendas_produto(Contabilidade cont, char *cod_prod);
 int cont_total_vendas_produto_geral(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup, campo_t campo);
 int cont_total_vendas_produto_mes(Contabilidade cont, char* cod_prod, int mes);
 int cont_total_vendas_produto_int_meses(Contabilidade cont, char* cod_prod, int mes_inf, int mes_sup);

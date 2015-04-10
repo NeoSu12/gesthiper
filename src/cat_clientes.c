@@ -38,7 +38,7 @@ int cat_calcula_indice_cliente(char l);
 void cat_free_cliente_ad(void *);
 
 /*
- * ÁRVORE
+ * CATALOGO CLIENTES
  */
 
 CatClientes inicializa_catalogo_clientes() {
@@ -110,16 +110,18 @@ int cat_total_clientes_letra(CatClientes cat, char letra) {
 
 void free_catalogo_clientes(CatClientes cat) {
     int i = 0;
-
+    
+    if(cat != NULL){
     for (i = 0; i <= 26; i++) {
         avl_destroy(cat->indices[i], cat_free_cliente_avl);
     }
-
+    }
     free(cat);
 }
 
+
 /*
- * INFO AOS MODULOS
+ * LISTA CLIENTES
  */
 
 CAT_LISTA_CLIENTES cat_lista_clientes_letra(CatClientes catalogo_clientes, char letra){
@@ -144,6 +146,17 @@ char *cat_lista_cli_get_elemento(CAT_LISTA_CLIENTES lista,int p){
 int cat_lista_cli_get_num_elems(CAT_LISTA_CLIENTES lista){
     return ad_get_tamanho(lista->lista_paginada);
 }
+
+void cat_free_lista_clientes(CAT_LISTA_CLIENTES lista){
+    if(lista != NULL)
+        ad_deep_free(lista->lista_paginada, cat_free_cliente_ad);
+    free(lista);
+}
+
+
+/*
+ * PAGINADOR LISTA DE CLIENTES
+ */
 
 CAT_PAG_LISTA_CLIENTES cat_cli_inicializa_paginador_default(CAT_LISTA_CLIENTES lista_cli) {
     CAT_PAG_LISTA_CLIENTES pag_res = (CAT_PAG_LISTA_CLIENTES) malloc(sizeof (struct cat_paginador_lista_clientes));
@@ -210,14 +223,12 @@ int cat_cli_get_num_pag(CAT_PAG_LISTA_CLIENTES pag){
 }
 
 void cat_cli_free_pag(CAT_PAG_LISTA_CLIENTES pag){
-    ad_free_pag(pag->paginador);
+    if(pag != NULL)
+        ad_free_pag(pag->paginador);
+    
     free(pag);
 }
 
-void cat_free_lista_clientes(CAT_LISTA_CLIENTES lista){
-    ad_deep_free(lista->lista_paginada, cat_free_cliente_ad);
-    free(lista);
-}
 
 /*
  * ITERADORES CLIENTES
@@ -395,7 +406,9 @@ char *it_cat_cliente_anterior_letra(IT_CAT_CLIENTES it) {
 }
 
 void free_it_cat_cliente(IT_CAT_CLIENTES it){
-    avl_t_free(it->traverser);
+    if(it != NULL)
+        avl_t_free(it->traverser);
+    
     free(it);
 }
 

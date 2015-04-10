@@ -52,7 +52,7 @@ void free_ficha_prod_ad(void *item);
 
 
 /* 
- * INICIALIZACAO E GESTAO MEMORIA
+ * CONTABILIDADE
  */
 
 Contabilidade inicializa_contabilidade() {
@@ -104,22 +104,35 @@ void cont_remove_produto(Contabilidade cont, char *cod_cliente){
     avl_delete(cont->avl_produtos, produto);
 }
 
-void free_contabilidade(Contabilidade cont) {
-    avl_destroy(cont->avl_produtos, free_ficha_prod_avl);
-    free(cont);
-}
-
-/* 
- * CONSULTAS
- */
-
 int cont_existe_codigo_prod(Contabilidade cont, char* cod_prod) {
     CONT_FICHA_PRODUTO res = cont_procura_ficha_com_cod_avl(cont, cod_prod);
     return (res != NULL) ? 1 : 0;
 }
 
+int cont_num_prod_sem_compras(Contabilidade cont) {
+    int res = 0;
+    CONT_FICHA_PRODUTO produto;
+    IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
+
+    while ((produto = it_cont_fich_produto_proximo(iterador)) != NULL) {
+        if (cont_total_vendas_fich_produto(produto) == 0)
+            res++;
+
+        free_ficha_prod(produto);
+    }
+
+    free_it_cont_fich_prod(iterador);
+    return res;
+}
+
 int cont_total_prods_comprados(Contabilidade cont){
     return avl_count(cont->avl_produtos);
+}
+
+void free_contabilidade(Contabilidade cont) {
+    if(cont != NULL)
+        avl_destroy(cont->avl_produtos, free_ficha_prod_avl);
+    free(cont);
 }
 
 
@@ -240,8 +253,9 @@ int cont_total_compras_promo_int_meses(Contabilidade cont, int mes_inf, int mes_
     return cont_total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_NORMAL);
 }
 
+
 /*
- * FUNCOES FICHA PRODUTO PUBLICAS
+ * FUNCOES FICHA PRODUTO
  */
 
 char *cont_get_cod_prod_ficha(CONT_FICHA_PRODUTO ficha_prod) {
@@ -318,6 +332,11 @@ double cont_total_fact_fich_promo_produto_int_meses(CONT_FICHA_PRODUTO fich_prod
 }
 
 /*========================================*/
+
+double cont_total_fact_produto(Contabilidade cont, char *cod_prod){
+     CONT_FICHA_PRODUTO produto = cont_procura_ficha_com_cod_avl(cont, cod_prod);
+     return cont_total_fact_fich_produto(produto);
+}
 
 double cont_total_fact_produto_geral(Contabilidade cont, char* cod_prod,
                             int mes_inf, int mes_sup, campo_t campo) {
@@ -418,6 +437,10 @@ int cont_total_vendas_fich_promo_produto_int_meses(CONT_FICHA_PRODUTO fich_prod,
 
 /*===================================*/
 
+int cont_total_vendas_produto(Contabilidade cont, char *cod_prod){
+    CONT_FICHA_PRODUTO produto = cont_procura_ficha_com_cod_avl(cont, cod_prod);
+    return cont_total_vendas_fich_produto(produto);
+}
 
 int cont_total_vendas_produto_geral(Contabilidade cont, char* cod_prod,
                             int mes_inf, int mes_sup, campo_t campo) {
@@ -450,14 +473,9 @@ int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod
 }
 
 /*
- * LISTAGENS / PAGINAÇÃO
+ * LISTAS PRODUTOS
  */
 
-
-/*
- * TODO: Versao ineficiente, mas que garante correcta libertação de memoria.
- *          Procurar melhorar esta implementação.
- */
 CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
     CONT_FICHA_PRODUTO produto;
     CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof(struct cont_lista_produtos));
@@ -475,28 +493,6 @@ CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
     free_it_cont_fich_prod(iterador);
     return lista;
 }
-
-int cont_num_prod_sem_compras(Contabilidade cont) {
-    int res = 0;
-    CONT_FICHA_PRODUTO produto;
-    IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
-
-    while ((produto = it_cont_fich_produto_proximo(iterador)) != NULL) {
-        if (cont_total_vendas_fich_produto(produto) == 0)
-            res++;
-
-        free_ficha_prod(produto);
-    }
-
-    free_it_cont_fich_prod(iterador);
-    return res;
-}
-
-
-/*
- * TODO: Versao ineficiente, mas que garante correcta libertação de memoria.
- *          Procurar melhorar esta implementação.
- */
 
 CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n) {
     int i;
@@ -529,6 +525,18 @@ CONT_FICHA_PRODUTO cont_lista_get_fich_prod(CONT_LISTA_PRODUTOS lista,int p){
 int cont_lista_get_num_elems(CONT_LISTA_PRODUTOS lista){
     return ad_get_tamanho(lista->lista_paginada);
 }
+
+void cont_free_lista_produtos(CONT_LISTA_PRODUTOS lista){
+    if(lista != NULL)
+        ad_deep_free(lista->lista_paginada, free_ficha_prod_ad);
+    
+    free(lista);
+}
+
+
+/*
+ * PAGINCAO LISTA PRODUTOS
+ */
 
 CONT_PAG_LISTA_PRODUTOS cont_inicializa_paginador_default(CONT_LISTA_PRODUTOS lista_prod) {
     CONT_PAG_LISTA_PRODUTOS pag_res = (CONT_PAG_LISTA_PRODUTOS) malloc(sizeof (struct cont_paginador_lista_produtos));
@@ -570,7 +578,6 @@ int cont_pag_get_num_elems_pag(CONT_PAG_LISTA_PRODUTOS pag){
     return ad_get_num_elems_pag(pag->paginador);
 }
 
-
 int cont_get_pos_inicio_pag(CONT_PAG_LISTA_PRODUTOS pag){
     return ad_get_pos_inicio_pag(pag->paginador);
 }
@@ -596,17 +603,15 @@ int cont_get_num_pag(CONT_PAG_LISTA_PRODUTOS pag){
 }
 
 void cont_free_pag(CONT_PAG_LISTA_PRODUTOS pag){
-    ad_free_pag(pag->paginador);
+    if(pag != NULL)
+        ad_free_pag(pag->paginador);
+    
     free(pag);
 }
 
-void cont_free_lista_produtos(CONT_LISTA_PRODUTOS lista){
-    ad_deep_free(lista->lista_paginada, free_ficha_prod_ad);
-    free(lista);
-}
 
 /*
- * ITERADORES
+ * ITERADORES FICHA PRODUTOS
  */
 
 IT_CONT inicializa_it_cont_fich_produtos(Contabilidade cont) {
@@ -677,7 +682,9 @@ CONT_FICHA_PRODUTO it_cont_fich_produto_anterior(IT_CONT it) {
 }
 
 void free_it_cont_fich_prod(IT_CONT it){
-    avl_t_free(it->traverser);
+    if(it != NULL)
+        avl_t_free(it->traverser);
+    
     free(it);
 }
 
@@ -723,7 +730,9 @@ CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src){
 }
  
 void free_ficha_prod(CONT_FICHA_PRODUTO prod) {
-    free(prod->cod_produto);
+    if(prod != NULL)
+        free(prod->cod_produto);
+    
     free(prod);
 }
 
