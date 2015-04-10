@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdbool.h>
 #include "headers/cat_produtos.h"
 #include "headers/avl.h"
 #include "headers/arrays_dinamicos.h"
@@ -53,13 +54,14 @@ CatProdutos inicializa_catalogo_produtos() {
     return res;
 }
 
-int cat_existe_produto(CatProdutos cat, char *elem) {
-    int ind, res = 0;
+bool cat_existe_produto(CatProdutos cat, char *elem) {
+    bool res = false;
+    int ind;
 
     if (elem != NULL) {
         ind = cat_calcula_indice_produto(*elem);
-        if (avl_find(cat->indices[ind], elem) != NULL) res = 1;
-        else res = 0;
+        if (avl_find(cat->indices[ind], elem) != NULL) res = true;
+        else res = false;
     }
 
     return res;

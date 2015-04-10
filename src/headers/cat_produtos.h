@@ -1,6 +1,8 @@
 #ifndef CatProdutos_H
 #define	CatProdutos_H
 
+#include <stdbool.h>
+
 #define PAGINA_POSSIVEL 0
 #define PAGINA_IMPOSSIVEL -1
 #define CAT_PRODUTOS_ELEMS_PAG 10
@@ -14,7 +16,7 @@ typedef struct cat_paginador_lista_produtos *CAT_PAG_LISTA_PRODUTOS;
 /* CatProdutos */
 
 CatProdutos inicializa_catalogo_produtos();
-int cat_existe_produto(CatProdutos, char *);
+bool cat_existe_produto(CatProdutos, char *);
 char *cat_procura_produto(CatProdutos, char *);
 void cat_insere_produto(CatProdutos, char *);
 void cat_remove_produto(CatProdutos, char *);

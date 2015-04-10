@@ -32,7 +32,7 @@ void free_contabilidade(Contabilidade cont);
  * CONSULTAS
  */
 
-int cont_existe_codigo_prod(Contabilidade cont, char* cod_prod);
+bool cont_existe_codigo_prod(Contabilidade cont, char* cod_prod);
 int cont_total_prods_comprados(Contabilidade cont);
 
 /* 

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "headers/compra.h"
 #include "headers/avl.h"
 #include "headers/arrays_dinamicos.h"
@@ -104,9 +105,9 @@ void cont_remove_produto(Contabilidade cont, char *cod_cliente){
     avl_delete(cont->avl_produtos, produto);
 }
 
-int cont_existe_codigo_prod(Contabilidade cont, char* cod_prod) {
+bool cont_existe_codigo_prod(Contabilidade cont, char* cod_prod) {
     CONT_FICHA_PRODUTO res = cont_procura_ficha_com_cod_avl(cont, cod_prod);
-    return (res != NULL) ? 1 : 0;
+    return (res != NULL) ? true : false;
 }
 
 int cont_num_prod_sem_compras(Contabilidade cont) {

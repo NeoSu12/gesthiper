@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdbool.h>
 #include "headers/cat_clientes.h"
 #include "headers/avl.h"
 #include "headers/arrays_dinamicos.h"
@@ -52,13 +53,14 @@ CatClientes inicializa_catalogo_clientes() {
     return res;
 }
 
-int cat_existe_cliente(CatClientes cat, char *elem) {
-    int ind, res = 0;
+bool cat_existe_cliente(CatClientes cat, char *elem) {
+    bool res = false;
+    int ind;
 
     if (elem != NULL) {
         ind = cat_calcula_indice_cliente(*elem);
-        if (avl_find(cat->indices[ind], elem) != NULL) res = 1;
-        else res = 0;
+        if (avl_find(cat->indices[ind], elem) != NULL) res = true;
+        else res = false;
     }
 
     return res;

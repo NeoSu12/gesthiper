@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "headers/compras.h"
 #include "headers/compra.h"
 #include "headers/avl.h"
@@ -221,12 +222,13 @@ char *compras_get_cod_cli_ficha(COMPRAS_FICHA_CLIENTE cliente){
     return cliente->cod_cliente;
 }
 
-int compras_cliente_comprou_em_todos_os_meses(COMPRAS_FICHA_CLIENTE cliente){
-    int i=0, comprou=1;
+bool compras_cliente_comprou_em_todos_os_meses(COMPRAS_FICHA_CLIENTE cliente){
+    int i=0;
+    bool comprou = true;
     
     for(i=0;i<12 && comprou;i++){
         if(compras_produtos_comprados_ficha_cliente_mes(cliente, i+1)==0){
-            comprou=0;
+            comprou=false;
         }
     }
     return comprou;

@@ -1,5 +1,6 @@
 #ifndef CatClientes_H
 #define	CatClientes_H
+#include <stdbool.h>
 
 #define PAGINA_POSSIVEL 0
 #define PAGINA_IMPOSSIVEL -1
@@ -13,7 +14,7 @@ typedef struct cat_paginador_lista_clientes* CAT_PAG_LISTA_CLIENTES;
 /* CatClientes */
 
 CatClientes inicializa_catalogo_clientes();
-int cat_existe_cliente(CatClientes, char *);
+bool cat_existe_cliente(CatClientes, char *);
 char *cat_procura_cliente(CatClientes, char *);
 void cat_insere_cliente(CatClientes, char *);
 void cat_remove_cliente(CatClientes, char *);
