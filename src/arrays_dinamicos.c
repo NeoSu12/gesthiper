@@ -54,25 +54,29 @@ void ad_clean_gc(ARRAY_DINAMICO ad, ad_elimina_elems *f_eliminacao) {
         f_eliminacao(ad->garbage_collector->elementos[i]);
 
     ad_free(ad->garbage_collector);
-    ad->garbage_collector = (ARRAY_DINAMICO) ad_inicializa_gc(20);
+    ad->garbage_collector = (ARRAY_DINAMICO) ad_inicializa_gc(8);
 }
 
-void ad_deep_free(ARRAY_DINAMICO ad, ad_elimina_elems *f_eliminacao){
+void ad_deep_free(ARRAY_DINAMICO ad, ad_elimina_elems *f_eliminacao) {
     int i;
-    for(i=0;i<ad->posicao;i++)
-        f_eliminacao(ad->elementos[i]);
-    
-    for(i=0;i<ad->garbage_collector->posicao;i++)
-        f_eliminacao(ad->garbage_collector->elementos[i]);
-    
-    ad_free(ad->garbage_collector);
-    free(ad->elementos);
+    if (ad != NULL) {
+        for (i = 0; i < ad->posicao; i++)
+            f_eliminacao(ad->elementos[i]);
+
+        for (i = 0; i < ad->garbage_collector->posicao; i++)
+            f_eliminacao(ad->garbage_collector->elementos[i]);
+
+        ad_free(ad->garbage_collector);
+        free(ad->elementos);
+    }
     free(ad);
 }
 
-void ad_free(ARRAY_DINAMICO ad){
-    free(ad->elementos);
-    free(ad->garbage_collector);
+void ad_free(ARRAY_DINAMICO ad) {
+    if (ad != NULL) {
+        free(ad->elementos);
+        ad_free(ad->garbage_collector);
+    }
     free(ad);
 }
 

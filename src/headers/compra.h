@@ -11,7 +11,8 @@ typedef char * cod_produto_t;
 typedef int mes_t;
 
 COMPRA inicializa_compra(void);
-COMPRA inicializa_compra_completo(cod_cliente_t, preco_unit_t, quantidade_t, promo_t, cod_produto_t, mes_t);
+COMPRA inicializa_compra_completo(cod_cliente_t, cod_produto_t, preco_unit_t, quantidade_t, promo_t, mes_t);
+void actualiza_compra(COMPRA, cod_cliente_t, cod_produto_t, preco_unit_t, quantidade_t, promo_t, mes_t);
 void free_compra(COMPRA);
 
 

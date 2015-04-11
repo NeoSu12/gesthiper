@@ -13,11 +13,32 @@ struct compra{
     mes_t mes;
 };
 
+
 COMPRA inicializa_compra(){
     COMPRA compra = (COMPRA) malloc(sizeof(struct compra));
     return compra;
 }
 
+COMPRA inicializa_compra_completo(cod_cliente_t cod_cli, cod_produto_t cod_produto,
+                            preco_unit_t preco_unit, quantidade_t qtd, promo_t promo, mes_t mes){
+    COMPRA compra = (COMPRA) malloc(sizeof(struct compra));
+    compra->cod_cliente = cod_cli;
+    compra->cod_produto = cod_produto;
+    compra->preco_unit = preco_unit;
+    compra->mes = mes;
+    compra->quantidade = qtd;
+    compra->promo = promo;
+    return compra;
+}
+
+void actualiza_compra(COMPRA compra, cod_cliente_t cod_cli, cod_produto_t cod_produto, preco_unit_t preco_unit, quantidade_t qtd, promo_t promo, mes_t mes){
+    compra->cod_cliente = cod_cli;
+    compra->cod_produto = cod_produto;
+    compra->preco_unit = preco_unit;
+    compra->mes = mes;
+    compra->quantidade = qtd;
+    compra->promo = promo;
+}
 
 void free_compra(COMPRA compra){
     free(compra);

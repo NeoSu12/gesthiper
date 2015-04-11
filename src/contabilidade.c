@@ -40,6 +40,7 @@ struct iterador_cont {
 CONT_FICHA_PRODUTO inicializa_ficha_produto(char* cod_prod);
 CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src);
 void free_ficha_prod(CONT_FICHA_PRODUTO prod);
+CONT_FICHA_PRODUTO it_cont_fich_produto_proximo_noclone(IT_CONT it);
 CONT_FICHA_PRODUTO codigo_to_ficha(char* cod_prod);
 CONT_FICHA_PRODUTO codigo_to_ficha_noclone(char* cod_prod) ;
 CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod);
@@ -115,11 +116,10 @@ int cont_num_prod_sem_compras(Contabilidade cont) {
     CONT_FICHA_PRODUTO produto;
     IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
 
-    while ((produto = it_cont_fich_produto_proximo(iterador)) != NULL) {
-        if (cont_total_vendas_fich_produto(produto) == 0)
-            res++;
-
-        free_ficha_prod(produto);
+    while ((produto = it_cont_fich_produto_proximo_noclone(iterador)) != NULL) {
+        
+        if (cont_total_vendas_fich_produto(produto) == 0) res++;
+        
     }
 
     free_it_cont_fich_prod(iterador);
@@ -478,17 +478,18 @@ int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod
  */
 
 CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
-    CONT_FICHA_PRODUTO produto;
+    CONT_FICHA_PRODUTO produto_it, produto;
     CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof(struct cont_lista_produtos));
     ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
     IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
     
-    while((produto = it_cont_fich_produto_proximo(iterador))!=NULL){
-        if(cont_total_vendas_fich_produto(produto)==0){
+    while((produto_it = it_cont_fich_produto_proximo_noclone(iterador))!=NULL){
+        
+        if(cont_total_vendas_fich_produto(produto_it)==0){
+            produto = cont_ficha_prod_clone(produto_it);
             ad_insere_elemento(ad,produto);
-        }else{
-            free_ficha_prod(produto);
         }
+        
     }
     lista->lista_paginada=ad;
     free_it_cont_fich_prod(iterador);
@@ -506,6 +507,7 @@ CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n) {
     for (i = 0; (produto = it_cont_fich_produto_proximo(iterador)) != NULL; i++) {
         ad_insere_elemento(ad, produto);
     }
+    
     ad_ordena(ad, cont_compara_ficha_por_vendas_ad, NULL);
 
     if (n < ad_get_tamanho(ad)) {
@@ -710,6 +712,10 @@ CONT_FICHA_PRODUTO inicializa_ficha_produto(char* cod_prod) {
     prod->total_facturacao_prod=0;
     prod->total_unidades_vendidas_prod=0;
     return prod;
+}
+
+CONT_FICHA_PRODUTO it_cont_fich_produto_proximo_noclone(IT_CONT it) {
+    return avl_t_next(it->traverser);
 }
 
 CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src){

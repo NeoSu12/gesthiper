@@ -62,7 +62,7 @@ int le_ficheiros(int argc, char **argv) {
     switch (argc) {
         case 1: nfclientes = "datasets/FichClientes.txt";
             nfprodutos = "datasets/FichProdutos.txt";
-            nfcompras = "datasets/Compras1.txt";
+            nfcompras = "datasets/Compras.txt";
             break;
 
         case 2: if (strcmp(argv[1], "--mini") == 0) {
@@ -178,6 +178,13 @@ void le_compras(FILE *f_comp, char *nf) {
     char *linha_compra, *token;
     char *delim = " \n\r";
     
+    cod_cliente_t cod_cliente;
+    preco_unit_t preco_unit;
+    quantidade_t quantidade;
+    promo_t promo;
+    cod_produto_t cod_produto;
+    mes_t mes;
+    
     ci = clock();
 
     linha_compra = (char *) malloc(sizeof (char)*LINHA_COMPRA_MAX);
@@ -187,23 +194,25 @@ void le_compras(FILE *f_comp, char *nf) {
         
         /*Produto*/
         token = strtok(linha_compra, delim);
-        set_cod_produto(compra, token);
+        cod_produto = token;
         /*Preco*/
         token = strtok(NULL, delim);
-        set_preco_unit(compra, atof(token));
+        preco_unit= atof(token);
         /*Quantidade*/
         token = strtok(NULL, delim);
-        set_quantidade(compra, atoi(token));
+        quantidade = atoi(token);
         /*Promo*/
         token = strtok(NULL, delim);
-        set_promo(compra, token[0]);
+        promo = token[0];
         /*Cliente*/
         token = strtok(NULL, delim);
-        set_cod_cliente(compra, token);
+        cod_cliente = token;
         /*Mes*/
         token = strtok(NULL, delim);
-        set_mes(compra, atoi(token));
-                
+        mes = atoi(token);
+        
+        actualiza_compra(compra, cod_cliente, cod_produto, preco_unit, quantidade, promo, mes);
+        
         if (compra_valida(compra)) {
             cont_insere_compra(contabilidade, compra);
             compras_insere_compra(mod_compras, compra);

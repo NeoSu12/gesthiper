@@ -1286,17 +1286,20 @@ int _12_prods_mais_vendidos() {
 
     if (estado == QUERIE_12) {
         ci = clock();
+        printf("A obter lista ordenada produtos...");
         lista_prod = cont_top_produtos_comprados(contabilidade, n_top);
+        printf("concluido.\n");
         paginador = cont_inicializa_paginador_pag(lista_prod, 1, TAM_PAGINA);
         resultados = cont_lista_get_num_elems(lista_prod);
         total_pags = cont_get_num_pags(paginador);
         n_clientes = (int *) malloc(sizeof(int)*resultados);
-        
+        printf("\033[s");
         for(i=0;i<resultados;i++){
+            printf("\033[u");
+            printf("A processar nº clientes de cada produto %d/%d (%.2f %%)\n", i+1,resultados, (double) ((double)(i+1)/(double)resultados)*100);
             ficha_prod = cont_lista_get_fich_prod(lista_prod, i);
             n_clientes[i] = compras_num_clientes_compraram_prod(mod_compras,cont_get_cod_prod_ficha(ficha_prod));
         }
-        
         cf = clock();
 
 
