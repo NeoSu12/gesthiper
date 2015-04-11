@@ -129,7 +129,7 @@ void free_catalogo_clientes(CatClientes cat) {
 CAT_LISTA_CLIENTES cat_lista_clientes_letra(CatClientes catalogo_clientes, char letra){
     char *cliente;
     CAT_LISTA_CLIENTES pag = (CAT_LISTA_CLIENTES) malloc(sizeof(struct cat_lista_clientes));
-    ARRAY_DINAMICO ad = ad_inicializa(8000);
+    ARRAY_DINAMICO ad = ad_inicializa(3000);
     IT_CAT_CLIENTES it = inicializa_it_cat_clientes_letra(catalogo_clientes, letra);
 
     while ((cliente = it_cat_cliente_proximo_letra(it)) != NULL) {

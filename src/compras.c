@@ -263,12 +263,12 @@ int compras_produtos_comprados_ficha_cliente_mes(COMPRAS_FICHA_CLIENTE cliente, 
 }
 
 int compras_produtos_comprados_cod_cliente_meses(Compras compras, char *cod_cliente, int mes_inf, int mes_sup){
-    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl_noclone(compras, cod_cliente);
     return compras_produtos_comprados_ficha_cliente_meses(cliente, mes_inf, mes_sup);
 }
 
 int compras_produtos_comprados_cod_cliente_mes(Compras compras, char *cod_cliente, int mes){
-    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cliente);
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl_noclone(compras, cod_cliente);
     return compras_produtos_comprados_ficha_cliente_meses(cliente, mes, mes);
 }
 

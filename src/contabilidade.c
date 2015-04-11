@@ -480,7 +480,7 @@ int cont_total_vendas_promo_produto_int_meses(Contabilidade cont, char* cod_prod
 CONT_LISTA_PRODUTOS cont_lista_prod_sem_compras(Contabilidade cont){
     CONT_FICHA_PRODUTO produto_it, produto;
     CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof(struct cont_lista_produtos));
-    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
+    ARRAY_DINAMICO ad = ad_inicializa_cap(1500);
     IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
     
     while((produto_it = it_cont_fich_produto_proximo_noclone(iterador))!=NULL){
