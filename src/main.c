@@ -23,9 +23,6 @@ int compra_valida(COMPRA);
 int compra_valida_debug(COMPRA);
 void mostra_compra(COMPRA);
 void mostra_numero_codigos();
-void testes();
-void testes2();
-void para_o_bruno();
 
 CatClientes catalogo_clientes;
 CatProdutos catalogo_produtos;
@@ -155,6 +152,7 @@ void le_produtos(FILE *f_prod, char *nf) {
         if (produto != NULL) {
             cat_insere_produto(catalogo_produtos, produto);
             cont_regista_produto(contabilidade, produto);
+            compras_regista_produto(mod_compras, produto);
             produtos_validos++;
         }
 
@@ -243,6 +241,15 @@ void le_compras(FILE *f_comp, char *nf) {
     free(linha_compra);
 }
 
+int compra_valida(COMPRA compra) {
+    return cat_existe_cliente(catalogo_clientes, get_cod_cliente(compra))
+            && cat_existe_produto(catalogo_produtos, get_cod_produto(compra))
+            && get_mes(compra) >= 1 && get_mes(compra) <= 12
+            && get_preco_unit(compra) >= 0
+            && (get_quantidade(compra) > 0)
+            && (get_promo(compra) == 'N' || get_promo(compra) == 'P');
+}
+
 void mostra_numero_codigos() {
     char letra = 'A';
     int tot_prod = 0, tot_cli = 0;
@@ -260,18 +267,6 @@ void mostra_numero_codigos() {
     printf("Tot: %d\tTot:%d\n", tot_cli, tot_prod);
     printf("----------------------------\n");
 }
-
-
-int compra_valida(COMPRA compra) {
-    return cat_existe_cliente(catalogo_clientes, get_cod_cliente(compra))
-            && cat_existe_produto(catalogo_produtos, get_cod_produto(compra))
-            && get_mes(compra) >= 1 && get_mes(compra) <= 12
-            && get_preco_unit(compra) >= 0
-            && (get_quantidade(compra) > 0)
-            && (get_promo(compra) == 'N' || get_promo(compra) == 'P');
-}
-
-
 
 int compra_valida_debug(COMPRA compra) {
     int res = 1;
@@ -301,53 +296,3 @@ void mostra_compra(COMPRA compra) {
 
 }
 
-void para_o_bruno() {
-    int i;
-    FILE *fich = fopen("compras_clientes.txt", "w");
-    CONT_FICHA_PRODUTO produto;
-    IT_CONT it = inicializa_it_cont_fich_produtos(contabilidade);
-    int vendas_n, vendas_p, total_vendas_n, total_vendas_p;
-    double fact_n, fact_p, total_fact_n, total_fact_p;
-    
-    while ((produto = it_cont_fich_produto_proximo(it)) != NULL) {
-        total_vendas_n = 0;
-        total_vendas_p = 0;
-        total_fact_n=0;
-        total_fact_p=0;
-        
-        fprintf(fich,"Codigo de produto: %s\n", cont_get_cod_prod_ficha(produto));
-        fprintf(fich,"========================================================= \n");
-        fprintf(fich,"     |  Vendas   |       ||    Facturacao     |           |\n");
-        fprintf(fich," Mes |  P  |  N  | Total ||    P    |    N    |   Total   |\n");
-        fprintf(fich,"--------------------------------------------------------- \n");
-        for (i = 1; i <= 12; i++) {
-            vendas_n=cont_total_vendas_fich_normais_produto_mes(produto,i);
-            vendas_p=cont_total_vendas_fich_promo_produto_mes(produto,i);
-            fact_n = cont_total_fact_fich_normal_produto_mes(produto,i);
-            fact_p = cont_total_fact_fich_promo_produto_mes(produto,i);
-            fprintf(fich,"%4d | %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
-                    i,
-                    vendas_n,
-                    vendas_p,
-                    vendas_n+vendas_p,
-                    fact_n,
-                    fact_p,
-                    fact_n + fact_p);
-
-
-            total_vendas_n += vendas_n;
-            total_vendas_p += vendas_p;
-
-            total_fact_n += fact_n;
-            total_fact_p += fact_p;
-
-        }
-        fprintf(fich,"---------------------------------------------------------- \n");
-        fprintf(fich,"TOTAL| %3d | %3d | %5d || %7.2f | %7.2f | %9.2f |\n",
-                total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
-                total_fact_n, total_fact_p, total_fact_n + total_fact_p);
-        fprintf(fich,"========================================================== \n");
-    }
-
-    fclose(fich);
-}

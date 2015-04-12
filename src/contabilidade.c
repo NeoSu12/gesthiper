@@ -500,7 +500,7 @@ CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n) {
     int i;
     CONT_FICHA_PRODUTO produto;
     CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof (struct cont_lista_produtos));
-    ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
+    ARRAY_DINAMICO ad = ad_inicializa_cap(200000);
     IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
 
 

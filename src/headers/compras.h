@@ -13,23 +13,31 @@ typedef struct compras_ficha_produto *COMPRAS_FICHA_PRODUTO;
 typedef struct compras_ficha_cliente *COMPRAS_FICHA_CLIENTE;
 typedef struct compras_iterador_clientes *IT_COMPRAS_CLIENTES;
 typedef struct compras_iterador_produtos *IT_COMPRAS_PRODUTOS;
+typedef struct compras_iterador_produtos_nclientes *IT_COMPRAS_PRODUTOS_NCLIENTES;
 typedef struct compras_lista_clientes *COMPRAS_LISTA_CLIENTES;
 typedef struct compras_lista_produtos *COMPRAS_LISTA_PRODUTOS;
 typedef struct compras_num_clientes_mensais *COMPRAS_NUM_CLIENTES_MENSAIS;
 typedef struct compras_associacao_produto_clientes *COMPRAS_ASSOC_PROD_CLIENTES;
 typedef struct compras_cliente_tipo_compra *COMPRAS_CLIENTE_TIPO_COMPRA;
-
+typedef struct compras_produto_nclientes *COMPRAS_PRODUTO_NCLIENTES;
 typedef struct compras_paginador_lista_produtos *COMPRAS_PAG_LISTA_PRODUTOS;
 typedef struct compras_paginador_lista_clientes *COMPRAS_PAG_LISTA_CLIENTES;
 typedef struct compras_paginador_associacao_produto_clientes *COMPRAS_PAG_ASSOC_PROD_CLIENTES;
 
 
+/*
+ * PRODUTO -> N CLIENTES
+ */
+
+char *compras_get_cod_produto_from_produto_nclientes(COMPRAS_PRODUTO_NCLIENTES p_ncli);
+int compras_get_nclientes_from_produto_nclientes(COMPRAS_PRODUTO_NCLIENTES p_ncli);
 
 /*
  * INCICIALIZACAO E GESTAO MEMORIA
  */
 
 Compras inicializa_compras();
+void compras_regista_produto(Compras compras, char *cod_prod);
 void compras_regista_cliente(Compras compras, char *cod_cli);
 void compras_insere_compra(Compras compras, COMPRA comp);
 void compras_remove_cliente(Compras compras, char *cod_cli);
@@ -135,6 +143,19 @@ IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos(Compras compras, char *co
 IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_primeiro(Compras compras, char *cod_cliente);
 IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_ultimo(Compras compras, char *cod_cliente);
 IT_COMPRAS_PRODUTOS inicializa_it_compras_cod_produtos_elem(Compras compras, char *cod_cliente, char *cod_produto);
+
+/*
+ * ITERADORRES PRODUTO -> NUMERO CLIENTES
+ */
+
+IT_COMPRAS_PRODUTOS_NCLIENTES inicializa_it_compras_produtos_nclientes(Compras compras);
+IT_COMPRAS_PRODUTOS_NCLIENTES inicializa_it_compras_produtos_nclientes_primeiro(Compras compras);
+IT_COMPRAS_PRODUTOS_NCLIENTES inicializa_it_compras_produtos_nclientes_ultimo(Compras compras);
+IT_COMPRAS_PRODUTOS_NCLIENTES inicializa_it_compras_produtos_nclientes_elem(Compras compras, char *st);
+COMPRAS_PRODUTO_NCLIENTES it_compras_produtos_nclientes_actual(IT_COMPRAS_PRODUTOS_NCLIENTES it);
+COMPRAS_PRODUTO_NCLIENTES it_compras_produtos_nclientes_proximo(IT_COMPRAS_PRODUTOS_NCLIENTES it);
+COMPRAS_PRODUTO_NCLIENTES it_compras_produtos_nclientes_anterior(IT_COMPRAS_PRODUTOS_NCLIENTES it);
+void free_it_compras_produtos_nclientes(IT_COMPRAS_PRODUTOS_NCLIENTES it);
 
 
 /*
