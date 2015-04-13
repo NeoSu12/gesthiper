@@ -500,24 +500,27 @@ CONT_LISTA_PRODUTOS cont_top_produtos_comprados(Contabilidade cont, int n) {
     int i;
     CONT_FICHA_PRODUTO produto;
     CONT_LISTA_PRODUTOS lista = (CONT_LISTA_PRODUTOS) malloc(sizeof (struct cont_lista_produtos));
-    ARRAY_DINAMICO ad = ad_inicializa_cap(200000);
+    ARRAY_DINAMICO ad_aux = ad_inicializa_cap(200000);
+    ARRAY_DINAMICO ad_res = ad_inicializa_cap(n);
     IT_CONT iterador = inicializa_it_cont_fich_produtos(cont);
 
 
-    for (i = 0; (produto = it_cont_fich_produto_proximo(iterador)) != NULL; i++) {
-        ad_insere_elemento(ad, produto);
+    for (i = 0; (produto = it_cont_fich_produto_proximo_noclone(iterador)) != NULL; i++) {
+        ad_insere_elemento(ad_aux, produto);
     }
     
-    ad_ordena(ad, cont_compara_ficha_por_vendas_ad, NULL);
-
-    if (n < ad_get_tamanho(ad)) {
-        for (i = ad_get_tamanho(ad) - 1; i >= n; i--) {
-            ad_remove_elemento_pos(ad, i);
-        }
+    ad_ordena(ad_aux, cont_compara_ficha_por_vendas_ad, NULL);
+    
+    
+    for(i=0;i<n && i<ad_get_tamanho(ad_aux);i++){
+        produto = cont_ficha_prod_clone(ad_get_elemento(ad_aux,i));
+        ad_insere_elemento(ad_res, produto);
     }
+    
 
-    lista->lista_paginada = ad;
+    lista->lista_paginada = ad_res;
     free_it_cont_fich_prod(iterador);
+    ad_free(ad_aux);
     return lista;
 }
 

@@ -1274,7 +1274,7 @@ int _12_prods_mais_vendidos() {
                 if (n_top <= 0 || n_top > INT_MAX) {
                     n_top = 100;
                     printf("Numero invalido.\n"
-                            "Será mostrado o top 100 de produtos mais comprados\n"
+                            "Serão mostrados os 100 de produtos mais comprados\n"
                             "Carregue em qualquer tecla para continuar > ");
                     leitura = scanf("%s", input);
                 }
@@ -1295,8 +1295,11 @@ int _12_prods_mais_vendidos() {
         n_clientes = (int *) malloc(sizeof(int)*resultados);
         printf("\033[s");
         for(i=0;i<resultados;i++){
-            printf("\033[u");
-            printf("A processar nº clientes de cada produto %d/%d (%.2f %%)\n", i+1,resultados, (double) ((double)(i+1)/(double)resultados)*100);
+            if(i==10 || i==resultados-1){
+                printf("\033[u");
+                printf("A processar nº clientes de cada produto %d/%d (%.2f %%)\n", 
+                            i+1,resultados, (double) ((double)(i+1)/(double)resultados)*100);
+            }
             ficha_prod = cont_lista_get_fich_prod(lista_prod, i);
             n_clientes[i] = compras_num_clientes_compraram_prod(mod_compras,cont_get_cod_prod_ficha(ficha_prod));
         }
