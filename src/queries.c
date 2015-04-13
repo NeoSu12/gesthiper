@@ -105,7 +105,7 @@ int _02_codigo_produtos_letra() {
                 printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
                 printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
                 printf("==================================================== \n");
-                printf("Insira nº da opcao >");
+                printf("Insira nº da opcao > ");
                 leitura = scanf("%s", input);
 
                 switch (toupper(input[0])) {
@@ -134,7 +134,7 @@ int _02_codigo_produtos_letra() {
                         n_pagina = total_pags;
                         break;
                     case '9':
-                        printf("Indique a pag para que quer ir >");
+                        printf("Indique a pag para que quer ir > ");
                         leitura = scanf("%d", &escolha_pag);
                         if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                             n_pagina = escolha_pag;
@@ -232,7 +232,7 @@ int _03_compras_e_fact_mensal_prod() {
             printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair        \n");
             printf("4 - Procurar outro produto \n");
             printf("============================================================= \n");
-            printf("Insira nº da opcao >");
+            printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);
             switch (toupper(input[0])) {
                 case '1':
@@ -420,7 +420,7 @@ int _04_prods_nao_comprados() {
         printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair    \n");
         printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
         printf("==================================================== \n");
-        printf("Insira nº da opcao >");
+        printf("Insira nº da opcao > ");
         leitura = scanf("%s", input);
 
         switch (toupper(input[0])) {
@@ -449,7 +449,7 @@ int _04_prods_nao_comprados() {
                 n_pagina = total_pags;
                 break;
             case '9':
-                printf("Indique a pag para que quer ir >");
+                printf("Indique a pag para que quer ir > ");
                 leitura = scanf("%d", &escolha_pag);
                 if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                     n_pagina = escolha_pag;
@@ -542,7 +542,7 @@ int _05_tabela_cliente() {
             printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair        \n");
             printf("4 - Ver outro cliente | 5 - Guardar em ficheiro \n");
             printf("================================================ \n");
-            printf("Insira nº da opcao >");
+            printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);
             switch (toupper(input[0])) {
                 case '1':
@@ -652,7 +652,7 @@ int _06_codigos_clientes_letra() {
                 printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
                 printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
                 printf("==================================================== \n");
-                printf("Insira nº da opcao >");
+                printf("Insira nº da opcao > ");
                 leitura = scanf("%s", input);
 
                 switch (toupper(input[0])) {
@@ -681,7 +681,7 @@ int _06_codigos_clientes_letra() {
                         n_pagina = total_pags;
                         break;
                     case '9':
-                        printf("Indique a pag para que quer ir >");
+                        printf("Indique a pag para que quer ir > ");
                         leitura = scanf("%d", &escolha_pag);
                         if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                             n_pagina = escolha_pag;
@@ -782,7 +782,7 @@ int _07_compras_intervalo_meses() {
 
             printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair        \n");
             printf("================================================================================= \n");
-            printf("Insira nº da opcao >");
+            printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);
             switch (toupper(input[0])) {
                 case '1':
@@ -886,7 +886,7 @@ int _08_clientes_compraram_prod() {
                 printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair        \n");
                 printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
                 printf("==================================================== \n");
-                printf("Insira nº da opcao >");
+                printf("Insira nº da opcao > ");
                 leitura = scanf("%s", input);
 
                 switch (toupper(input[0])) {
@@ -915,7 +915,7 @@ int _08_clientes_compraram_prod() {
                         n_pagina = total_pags;
                         break;
                     case '9':
-                        printf("Indique a pag para que quer ir >");
+                        printf("Indique a pag para que quer ir > ");
                         leitura = scanf("%d", &escolha_pag);
                         if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                             n_pagina = escolha_pag;
@@ -1022,7 +1022,7 @@ int _09_produtos_mais_comprados_cliente_mes() {
             printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair    \n");
             printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
             printf("==================================================== \n");
-            printf("Insira nº da opcao >");
+            printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);
 
             switch (toupper(input[0])) {
@@ -1051,7 +1051,7 @@ int _09_produtos_mais_comprados_cliente_mes() {
                     n_pagina = total_pags;
                     break;
                 case '9':
-                    printf("Indique a pag para que quer ir >");
+                    printf("Indique a pag para que quer ir > ");
                     leitura = scanf("%d", &escolha_pag);
                     if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                         n_pagina = escolha_pag;
@@ -1120,7 +1120,7 @@ int _10_clientes_regulares() {
         printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair    \n");
         printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
         printf("==================================================== \n");
-        printf("Insira nº da opcao >");
+        printf("Insira nº da opcao > ");
         leitura = scanf("%s", input);
 
         switch (toupper(input[0])) {
@@ -1149,7 +1149,7 @@ int _10_clientes_regulares() {
                 n_pagina = total_pags;
                 break;
             case '9':
-                printf("Indique a pag para que quer ir >");
+                printf("Indique a pag para que quer ir > ");
                 leitura = scanf("%d", &escolha_pag);
                 if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                     n_pagina = escolha_pag;
@@ -1204,7 +1204,7 @@ int _11_compras_CSV() {
         printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair       \n");
         printf("4 - Guardar em ficheiro                           \n");
         printf("========================================================== \n");
-        printf("Insira nº da opcao >");
+        printf("Insira nº da opcao > ");
         leitura = scanf("%s", input);
         
         if(leitura>0){
@@ -1293,16 +1293,20 @@ int _12_prods_mais_vendidos() {
         resultados = cont_lista_get_num_elems(lista_prod);
         total_pags = cont_get_num_pags(paginador);
         n_clientes = (int *) malloc(sizeof(int)*resultados);
+        printf("A calcular nº clientes para cada produto...");
         printf("\033[s");
         for(i=0;i<resultados;i++){
+            /*
             if(i==10 || i==resultados-1){
                 printf("\033[u");
                 printf("A processar nº clientes de cada produto %d/%d (%.2f %%)\n", 
                             i+1,resultados, (double) ((double)(i+1)/(double)resultados)*100);
             }
+             */
             ficha_prod = cont_lista_get_fich_prod(lista_prod, i);
             n_clientes[i] = compras_num_clientes_compraram_prod(mod_compras,cont_get_cod_prod_ficha(ficha_prod));
         }
+        printf("concluido.\n");
         cf = clock();
 
 
@@ -1337,7 +1341,7 @@ int _12_prods_mais_vendidos() {
             printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair          \n");
             printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
             printf("==================================================== \n");
-            printf("Insira nº da opcao >");
+            printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);
 
             switch (toupper(input[0])) {
@@ -1366,7 +1370,7 @@ int _12_prods_mais_vendidos() {
                     n_pagina = total_pags;
                     break;
                 case '9':
-                    printf("Indique a pag para que quer ir >");
+                    printf("Indique a pag para que quer ir > ");
                     leitura = scanf("%d", &escolha_pag);
                     if (escolha_pag > 0 && escolha_pag <= total_pags && leitura != 0)
                         n_pagina = escolha_pag;
@@ -1454,7 +1458,7 @@ int _13_tres_prods_mais_comprados() {
             printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair        \n");
             printf("4 - Ver outro cliente \n");
             printf("========================================================== \n");
-            printf("Insira nº da opcao >");
+            printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);
             switch (toupper(input[0])) {
                 case '1':
@@ -1498,15 +1502,16 @@ int _14_clientes_prods_fantasma() {
         printf("|  GESTHIPER >> COMPRAS >> QUERIE 14                    |\n");
         printf("|  Produtos nao vendidos e clientes sem compras         |\n");
         printf(" ======================================================= \n");
-        printf("Nº produtos sem compras: %8d                     \n", n_produtos);
-        printf("Nº clientes sem compras: %8d                     \n", n_clientes);
-        printf("----------------------------------------------------- \n");
-        printf("Tempo: %6.5f segundos                                \n", (float) (cf - ci) / CLOCKS_PER_SEC);
+        printf(" ------------------------------------------------------- \n");
+        printf(" Nº produtos sem compras: %8d                            \n", n_produtos);
+        printf(" Nº clientes sem compras: %8d                            \n", n_clientes);
+        printf(" ------------------------------------------------------- \n");
+        printf(" Tempo: %6.5f segundos                                   \n", (float) (cf - ci) / CLOCKS_PER_SEC);
         printf(" ======================================================= \n");
         printf("| 1 - COMPRAS | 2 - Menu Principal | 3 - Sair           |\n");
         printf(" ======================================================= \n");
 
-        printf("Insira nº da opcao >");
+        printf("Insira nº da opcao > ");
         leitura = scanf("%s", input);
         if (leitura > 0) {
             switch (toupper(input[0])) {

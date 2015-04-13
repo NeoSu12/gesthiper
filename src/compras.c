@@ -178,27 +178,49 @@ void compras_insere_compra(Compras compras, COMPRA comp){
 
 void compras_remove_cliente(Compras compras, char *cod_cli){
     COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cli);
+    COMPRAS_FICHA_PRODUTO produto_it = NULL;
+    char *codigo_prod=NULL;
+    COMPRAS_PRODUTO_NCLIENTES par = NULL;
+    
+    IT_COMPRAS_PRODUTOS it = inicializa_it_compras_fich_produtos(cliente);
+    
+    while((produto_it = it_compras_fich_produto_proximo_noclone(it)) != NULL){
+        codigo_prod = compras_get_cod_prod_ficha(produto_it);
+        par = compras_procura_produto_ncli_com_cod_prod_avl_noclone(compras, codigo_prod);
+        par->n_clientes--;
+    }
+    free_it_compras_fich_produto(it);
     
     avl_destroy(cliente->avl_produtos, compras_free_produto_avl);
-    avl_delete(compras->avl_clientes, cliente);
+    compras_free_cliente((COMPRAS_FICHA_CLIENTE) avl_delete(compras->avl_clientes, cliente));
 }
 
 void compras_remove_produto_de_cliente(Compras compras, char *cod_cli, char *cod_prod){
+    COMPRAS_PRODUTO_NCLIENTES par = NULL;
     COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl(compras, cod_cli);
     COMPRAS_FICHA_PRODUTO produto = compras_procura_ficha_produto_com_fichacli_avl(cliente, cod_prod);
-    avl_delete(cliente->avl_produtos, produto);
+    
+    if(produto != NULL){
+    par = compras_procura_produto_ncli_com_cod_prod_avl_noclone(compras, cod_prod);
+    par->n_clientes--;
+    }
+    
+    compras_free_produto((COMPRAS_FICHA_PRODUTO)avl_delete(cliente->avl_produtos, produto));
 }
 
 void compras_remove_produto(Compras compras, char *cod_prod){
     COMPRAS_FICHA_PRODUTO produto = compras_codigo_produto_to_ficha(cod_prod);
-    COMPRAS_FICHA_CLIENTE cliente;
+    COMPRAS_FICHA_CLIENTE cliente = NULL;
     IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
+    COMPRAS_PRODUTO_NCLIENTES par = compras_codigo_produto_to_produto_nclientes_noclone(cod_prod);
     
-    while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
-        avl_delete(cliente->avl_produtos, produto);
-        compras_free_cliente(cliente);
+    avl_delete(compras->avl_produtos_nclientes, par);
+    
+    while((cliente = it_compras_fich_cliente_proximo_noclone(it))!=NULL){
+        compras_free_produto((COMPRAS_FICHA_PRODUTO)avl_delete(cliente->avl_produtos, produto));
     }
     
+    free(par);
     free_it_compras_fich_cliente(it);
     compras_free_produto(produto);
 }
@@ -225,8 +247,10 @@ int compras_num_clientes_compraram_prod(Compras compras, char *cod_produto){
 }
 
 void free_compras(Compras compras){
-    if(compras!=NULL)
+    if(compras!=NULL){
         avl_destroy(compras->avl_clientes, compras_free_cliente_avl);
+        avl_destroy(compras->avl_produtos_nclientes, compras_free_produto_nclientes_avl);
+    }
     
     free(compras);
 }

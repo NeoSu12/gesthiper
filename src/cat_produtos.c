@@ -93,7 +93,7 @@ void cat_insere_produto(CatProdutos cat, char *str) {
 
 void cat_remove_produto(CatProdutos cat, char *str) {
     int ind = cat_calcula_indice_produto(str[0]);
-    avl_delete(cat->indices[ind], str);
+    free(avl_delete(cat->indices[ind], str));
 }
 
 int cat_total_produtos(CatProdutos cat) {

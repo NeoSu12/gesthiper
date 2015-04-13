@@ -103,7 +103,7 @@ void cont_insere_compra(Contabilidade cont, COMPRA comp) {
 
 void cont_remove_produto(Contabilidade cont, char *cod_cliente){
     CONT_FICHA_PRODUTO produto = cont_procura_ficha_com_cod_avl(cont, cod_cliente);
-    avl_delete(cont->avl_produtos, produto);
+    free_ficha_prod((CONT_FICHA_PRODUTO)avl_delete(cont->avl_produtos, produto));
 }
 
 bool cont_existe_codigo_prod(Contabilidade cont, char* cod_prod) {

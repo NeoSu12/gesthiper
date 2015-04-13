@@ -92,7 +92,7 @@ void cat_insere_cliente(CatClientes cat, char *str) {
 
 void cat_remove_cliente(CatClientes cat, char *str) {
     int ind = cat_calcula_indice_cliente(str[0]);
-    avl_delete(cat->indices[ind], str);
+    free(avl_delete(cat->indices[ind], str));
 }
 
 int cat_total_clientes(CatClientes cat) {

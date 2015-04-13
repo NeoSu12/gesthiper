@@ -87,7 +87,7 @@ int le_ficheiros(int argc, char **argv) {
         error_msg(ERRO_ABIR_FICH, NULL);
         return EXIT_FAILURE;
     }
-
+    
     le_clientes(f_clientes, nfclientes);
     le_produtos(f_produtos, nfprodutos);
     le_compras(f_compras, nfcompras);
@@ -109,7 +109,8 @@ void le_clientes(FILE *f_cli, char *nf) {
     clock_t ci, cf;
     char *cliente, *linha_cliente;
     char *delim = " \n\r";
-
+    
+    
     ci = clock();
     linha_cliente = (char *) malloc(sizeof (char)*LINHA_CLIENTE_MAX);
 
@@ -126,7 +127,6 @@ void le_clientes(FILE *f_cli, char *nf) {
     }
 
     cf = clock();
-
     printf("-----CLIENTES-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d (%d invalidas)\n", clientes_validos, total_linhas_clientes - clientes_validos);
@@ -141,7 +141,7 @@ void le_produtos(FILE *f_prod, char *nf) {
     clock_t ci, cf;
     char *produto, *linha_produto;
     char *delim = " \n\r";
-
+    
     ci = clock();
 
     linha_produto = (char *) malloc(sizeof (char)*LINHA_PRODUTO_MAX);
@@ -160,7 +160,7 @@ void le_produtos(FILE *f_prod, char *nf) {
     }
 
     cf = clock();
-
+    
     printf("-----PRODUTOS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d (%d invalidas)\n", produtos_validos, total_linhas_produtos - produtos_validos);
@@ -182,6 +182,7 @@ void le_compras(FILE *f_comp, char *nf) {
     promo_t promo;
     cod_produto_t cod_produto;
     mes_t mes;
+    
     
     ci = clock();
 
@@ -220,7 +221,6 @@ void le_compras(FILE *f_comp, char *nf) {
     }
 
     cf = clock();
-
     printf("------COMPRAS-----\n");
     printf("Nome do ficheiro: %s\n", nf);
     printf("Linhas validas: %d (%d invalidas)\n", compras_validas, total_linhas_compras - compras_validas);
