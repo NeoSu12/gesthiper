@@ -846,10 +846,10 @@ int _08_clientes_compraram_prod() {
                     estado = QUERIE_8;
                     cod_produto = (char *) malloc(sizeof(char)*(strlen(input)+1));
                     strcpy(cod_produto, input);
-                    
                     break;
             }
         }
+        
         if (leitura > 0 && estado == QUERIE_8) {
             ci = clock();
             lista_assoc = compras_get_associacao_produto_clientes_tipo_compra(mod_compras, cod_produto);

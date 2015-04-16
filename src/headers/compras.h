@@ -33,7 +33,7 @@ char *compras_get_cod_produto_from_produto_nclientes(COMPRAS_PRODUTO_NCLIENTES p
 int compras_get_nclientes_from_produto_nclientes(COMPRAS_PRODUTO_NCLIENTES p_ncli);
 
 /*
- * INCICIALIZACAO E GESTAO MEMORIA
+ * MODULO COMPRAS
  */
 
 Compras inicializa_compras();
@@ -58,7 +58,7 @@ int compras_produtos_comprados_cod_cliente_meses(Compras compras, char *cod_clie
 int compras_produtos_comprados_cod_cliente_mes(Compras compras, char *cod_cliente, int mes);
 
 /*
- * PRODUTO COMPRADO POR CLIENTE
+ * FICHAS DE PRODUTO (PRODUTO COMPRADO POR CLIENTE)
  */
 
 int compras_total_produtos_comprados_ficha(COMPRAS_FICHA_PRODUTO produto);
@@ -174,7 +174,6 @@ int compras_num_clientes_compraram_prod(Compras compras, char *cod_produto);
 /*
  * ASSOCIACOES
  */
-
 
 COMPRAS_ASSOC_PROD_CLIENTES compras_get_associacao_produto_clientes_tipo_compra(Compras compras, char *cod_produto);
 COMPRAS_CLIENTE_TIPO_COMPRA compras_get_cli_compra_from_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES lista,int p);

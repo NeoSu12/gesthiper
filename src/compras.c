@@ -332,16 +332,14 @@ char *compras_get_cod_prod_ficha(COMPRAS_FICHA_PRODUTO produto){
 }
 
 /*
- * COMPRAS PRODUTO
+ * COMPRAS PRODUTO POR FICHA
  */
 
 int compras_total_produtos_comprados_ficha(COMPRAS_FICHA_PRODUTO produto){
     return produto->total_unidades_compradas;
 }
 
-int compras_produtos_comprados_ficha_produto_meses_geral(COMPRAS_FICHA_PRODUTO produto, 
-                                                            int mes_inf, int mes_sup, 
-                                                            compras_campo_t campo){
+int compras_produtos_comprados_ficha_produto_meses_geral(COMPRAS_FICHA_PRODUTO produto, int mes_inf, int mes_sup, compras_campo_t campo){
     
     int i=0, res=0;
     if (mes_inf > mes_sup) compras_troca_meses(&mes_inf, &mes_sup);
@@ -368,84 +366,63 @@ int compras_produtos_comprados_ficha_produto_meses_geral(COMPRAS_FICHA_PRODUTO p
     return res;
 }
 
-int compras_produtos_comprados_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, 
-                                                            int mes_inf, int mes_sup){
+int compras_produtos_comprados_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, int mes_inf, int mes_sup){
     return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes_inf, mes_sup, COMPRAS_AMBOS);
 }
 
-int compras_produtos_comprados_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, 
-                                                            int mes){
+int compras_produtos_comprados_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, int mes){
     return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes, mes, COMPRAS_AMBOS);
 }
 
-int compras_produtos_comprados_normal_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, 
-                                                            int mes_inf, int mes_sup){
+int compras_produtos_comprados_normal_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, int mes_inf, int mes_sup){
     return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes_inf, mes_sup, COMPRAS_NORMAL);
 }
 
-int compras_produtos_comprados_normal_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, 
-                                                            int mes){
+int compras_produtos_comprados_normal_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, int mes){
     return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes, mes, COMPRAS_NORMAL);
 }
 
-int compras_produtos_comprados_promo_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, 
-                                                            int mes_inf, int mes_sup){
+int compras_produtos_comprados_promo_ficha_produto_meses(COMPRAS_FICHA_PRODUTO produto, int mes_inf, int mes_sup){
     return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes_inf, mes_sup, COMPRAS_PROMO);
 }
 
-int compras_produtos_comprados_promo_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, 
-                                                            int mes){
+int compras_produtos_comprados_promo_ficha_produto_mes(COMPRAS_FICHA_PRODUTO produto, int mes){
     return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes, mes, COMPRAS_PROMO);
 }
 
-/*===================================================*/
+/*
+ * COMPRAS PRODUTO POR CODIGO
+ */
 
-int compras_produtos_comprados_cod_produto_meses_geral(Compras compras, 
-                                                            char *cod_cli, char *cod_prod, 
-                                                            int mes_inf, int mes_sup, 
-                                                            compras_campo_t campo){
+int compras_produtos_comprados_cod_produto_meses_geral(Compras compras, char *cod_cli, char *cod_prod, int mes_inf, int mes_sup, compras_campo_t campo){
     
     COMPRAS_FICHA_PRODUTO produto = compras_procura_ficha_produto_com_cod_avl(compras, cod_cli, cod_prod);
     return compras_produtos_comprados_ficha_produto_meses_geral(produto, mes_inf, mes_sup, campo);
 }
 
-int compras_produtos_comprados_cod_produto_meses(Compras compras, 
-                                                    char *cod_cli, char *cod_prod, 
-                                                    int mes_inf, int mes_sup){
+int compras_produtos_comprados_cod_produto_meses(Compras compras, char *cod_cli, char *cod_prod, int mes_inf, int mes_sup){
     return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes_inf, mes_sup, COMPRAS_AMBOS);
 }
 
-int compras_produtos_comprados_cod_produto_mes(Compras compras, 
-                                                    char *cod_cli, char *cod_prod, 
-                                                    int mes){
+int compras_produtos_comprados_cod_produto_mes(Compras compras, char *cod_cli, char *cod_prod, int mes){
     return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes, mes, COMPRAS_AMBOS);
 }
 
-int compras_produtos_comprados_normal_cod_produto_meses(Compras compras, 
-                                                            char *cod_cli, char *cod_prod, 
-                                                            int mes_inf, int mes_sup){
+int compras_produtos_comprados_normal_cod_produto_meses(Compras compras, char *cod_cli, char *cod_prod, int mes_inf, int mes_sup){
     return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes_inf, mes_sup, COMPRAS_NORMAL);
 }
 
-int compras_produtos_comprados_normal_cod_produto_mes(Compras compras, 
-                                                            char *cod_cli, char *cod_prod, 
-                                                            int mes){
+int compras_produtos_comprados_normal_cod_produto_mes(Compras compras, char *cod_cli, char *cod_prod, int mes){
     return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes, mes, COMPRAS_NORMAL);
 }
 
-int compras_produtos_comprados_promo_cod_produto_meses(Compras compras, 
-                                                            char *cod_cli, char *cod_prod, 
-                                                            int mes_inf, int mes_sup){
+int compras_produtos_comprados_promo_cod_produto_meses(Compras compras, char *cod_cli, char *cod_prod, int mes_inf, int mes_sup){
     return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes_inf, mes_sup, COMPRAS_PROMO);
 }
 
-int compras_produtos_comprados_promo_cod_produto_mes(Compras compras, 
-                                                        char *cod_cli, char *cod_prod, 
-                                                        int mes){
+int compras_produtos_comprados_promo_cod_produto_mes(Compras compras, char *cod_cli, char *cod_prod, int mes){
     return compras_produtos_comprados_cod_produto_meses_geral(compras, cod_cli, cod_prod, mes, mes, COMPRAS_PROMO);
 }
-
-
 
 
 /*
@@ -1147,7 +1124,6 @@ void free_it_compras_produtos_nclientes(IT_COMPRAS_PRODUTOS_NCLIENTES it){
  * INICIALIZACOES
  */
 
-
 COMPRAS_FICHA_PRODUTO compras_inicializa_ficha_produto(char* cod_prod) {
     int i, j;
     COMPRAS_FICHA_PRODUTO prod = (COMPRAS_FICHA_PRODUTO) malloc(sizeof (struct compras_ficha_produto));
@@ -1301,7 +1277,6 @@ COMPRAS_PRODUTO_NCLIENTES compras_codigo_produto_to_produto_nclientes(char* cod_
     res->cod_produto = cod_prod;
     return res;
 }
-
 
 /*
  * PROCURAS
@@ -1469,7 +1444,6 @@ void compras_free_asoc_cliente_tipo_compra_ad(void *item) {
     free(p_apagar->cod_cliente);
     free(p_apagar);
 }
-
 
 
 /*
