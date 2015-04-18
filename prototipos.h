@@ -34,6 +34,9 @@ void ad_ordena(ARRAY_DINAMICO ad, ad_compara_elems *f_comparacao, void *param);
 ARRAY_DINAMICO ad_inicializa_gc(int capacidade);
 void ad_realloc_if_needed(ARRAY_DINAMICO ad);
 void quicksort(void **elems, ad_compara_elems *f_comparacao, int n, void *param);
+
+
+
 /* src/avl.c */
 size_t avl_count(struct avl_table *tab);
 struct avl_table *avl_create(avl_comparison_func *compare, void *param, struct libavl_allocator *allocator);
@@ -60,6 +63,8 @@ void *avl_malloc(struct libavl_allocator *allocator, size_t size);
 void avl_free(struct libavl_allocator *allocator, void *block);
 void (avl_assert_insert)(struct avl_table *table, void *item);
 void *(avl_assert_delete)(struct avl_table *table, void *item);
+
+
 /* src/cat_clientes.c */
 CatClientes inicializa_catalogo_clientes(void);
 void cat_insere_cliente(CatClientes cat, char *str);
@@ -99,10 +104,15 @@ char *it_cat_cliente_anterior(IT_CAT_CLIENTES it);
 char *it_cat_cliente_proximo_letra(IT_CAT_CLIENTES it);
 char *it_cat_cliente_anterior_letra(IT_CAT_CLIENTES it);
 void free_it_cat_cliente(IT_CAT_CLIENTES it);
+
+
 int cat_compara_clientes_avl(const void *avl_a, const void *avl_b, void *avl_param);
 void cat_free_cliente_avl(void *item, void *param);
 void cat_free_cliente_ad(void *item);
 int cat_calcula_indice_cliente(char l);
+
+
+
 /* src/cat_produtos.c */
 CatProdutos inicializa_catalogo_produtos(void);
 void cat_insere_produto(CatProdutos cat, char *str);
@@ -142,6 +152,8 @@ char *it_cat_produto_anterior(IT_CAT_PRODUTOS it);
 char *it_cat_produto_proximo_letra(IT_CAT_PRODUTOS it);
 char *it_cat_produto_anterior_letra(IT_CAT_PRODUTOS it);
 void free_it_cat_produto(IT_CAT_PRODUTOS it);
+
+
 int cat_compara_produtos_avl(const void *avl_a, const void *avl_b, void *avl_param);
 void cat_free_produto_avl(void *item, void *param);
 void cat_free_produto_ad(void *item);
@@ -163,6 +175,8 @@ void set_quantidade(COMPRA comp, quantidade_t qtd);
 void set_promo(COMPRA comp, promo_t promo);
 void set_cod_produto(COMPRA comp, cod_produto_t prod);
 void set_mes(COMPRA comp, mes_t mes);
+
+
 /* src/compras.c */
 Compras inicializa_compras(void);
 void compras_regista_cliente(Compras compras, char *cod_cli);
@@ -291,6 +305,8 @@ COMPRAS_PRODUTO_NCLIENTES it_compras_produtos_nclientes_actual(IT_COMPRAS_PRODUT
 COMPRAS_PRODUTO_NCLIENTES it_compras_produtos_nclientes_proximo(IT_COMPRAS_PRODUTOS_NCLIENTES it);
 COMPRAS_PRODUTO_NCLIENTES it_compras_produtos_nclientes_anterior(IT_COMPRAS_PRODUTOS_NCLIENTES it);
 void free_it_compras_produtos_nclientes(IT_COMPRAS_PRODUTOS_NCLIENTES it);
+
+
 COMPRAS_FICHA_PRODUTO compras_inicializa_ficha_produto(char *cod_prod);
 COMPRAS_FICHA_CLIENTE compras_inicializa_ficha_cliente(char *cod_cli);
 COMPRAS_CLIENTE_TIPO_COMPRA compras_inicializa_asoc_cliente_tipo_compra(char *cod_cliente, char tipo_compra);
@@ -332,6 +348,9 @@ COMPRAS_FICHA_PRODUTO it_compras_fich_produto_proximo_noclone(IT_COMPRAS_PRODUTO
 COMPRAS_PRODUTO_NCLIENTES it_compras_produtos_nclientes_proximo_noclone(IT_COMPRAS_PRODUTOS_NCLIENTES it);
 void compras_troca_meses(int *mes1, int *mes2);
 void compras_insere_assoc_cli_compra_em_assoc_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES p_cli, COMPRAS_CLIENTE_TIPO_COMPRA cli_compra);
+
+
+
 /* src/contabilidade.c */
 Contabilidade inicializa_contabilidade(void);
 void cont_regista_produto(Contabilidade cont, char *cod_prod);
@@ -417,6 +436,9 @@ CONT_FICHA_PRODUTO it_cont_fich_produto_actual(IT_CONT it);
 CONT_FICHA_PRODUTO it_cont_fich_produto_proximo(IT_CONT it);
 CONT_FICHA_PRODUTO it_cont_fich_produto_anterior(IT_CONT it);
 void free_it_cont_fich_prod(IT_CONT it);
+
+
+
 CONT_FICHA_PRODUTO inicializa_ficha_produto(char *cod_prod);
 CONT_FICHA_PRODUTO it_cont_fich_produto_proximo_noclone(IT_CONT it);
 CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src);

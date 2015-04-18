@@ -84,47 +84,47 @@ struct compras_cliente_tipo_compra{
     char tipo_compra;
 };
 
-COMPRAS_FICHA_PRODUTO compras_inicializa_ficha_produto(char* cod_prod);
-COMPRAS_FICHA_CLIENTE compras_inicializa_ficha_cliente(char* cod_cli);
+COMPRAS_FICHA_PRODUTO compras_inicializa_ficha_produto(char *cod_prod);
+COMPRAS_FICHA_CLIENTE compras_inicializa_ficha_cliente(char *cod_cli);
+COMPRAS_CLIENTE_TIPO_COMPRA compras_inicializa_asoc_cliente_tipo_compra(char *cod_cliente, char tipo_compra);
+COMPRAS_PRODUTO_NCLIENTES compras_inicializa_produto_nclientes(char *cod_prod);
+COMPRAS_NUM_CLIENTES_MENSAIS compras_inicializa_num_compras_mensais(void);
+COMPRAS_ASSOC_PROD_CLIENTES compras_inicializa_assoc_prod_clientes(char *cod_produto);
 COMPRAS_FICHA_PRODUTO compras_clone_ficha_produto(COMPRAS_FICHA_PRODUTO src);
 COMPRAS_FICHA_CLIENTE compras_clone_ficha_cliente(COMPRAS_FICHA_CLIENTE src);
-COMPRAS_FICHA_PRODUTO compras_codigo_produto_to_ficha(char* cod_prod);
-COMPRAS_FICHA_CLIENTE compras_codigo_cliente_to_ficha(char* cod_cli);
+COMPRAS_PRODUTO_NCLIENTES compras_clone_produto_nclientes(COMPRAS_PRODUTO_NCLIENTES src);
+COMPRAS_FICHA_PRODUTO compras_codigo_produto_to_ficha(char *cod_prod);
+COMPRAS_FICHA_CLIENTE compras_codigo_cliente_to_ficha(char *cod_cli);
+COMPRAS_FICHA_PRODUTO compras_codigo_produto_to_ficha_noclone(char *cod_prod);
+COMPRAS_FICHA_CLIENTE compras_codigo_cliente_to_ficha_noclone(char *cod_cli);
+COMPRAS_PRODUTO_NCLIENTES compras_codigo_produto_to_produto_nclientes_noclone(char *cod_prod);
+COMPRAS_PRODUTO_NCLIENTES compras_codigo_produto_to_produto_nclientes(char *cod_prod);
 COMPRAS_FICHA_CLIENTE compras_procura_ficha_cliente_com_cod_avl(Compras compras, char *cod_cli);
 COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_cod_avl(Compras compras, char *cod_cli, char *cod_prod);
-COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_fichacli_avl(COMPRAS_FICHA_CLIENTE cliente , char *cod_prod);
+COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_fichacli_avl(COMPRAS_FICHA_CLIENTE cliente, char *cod_prod);
+COMPRAS_FICHA_CLIENTE compras_procura_ficha_cliente_com_cod_avl_noclone(Compras compras, char *cod_cli);
+COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_fichacli_avl_noclone(COMPRAS_FICHA_CLIENTE cliente, char *cod_prod);
+COMPRAS_PRODUTO_NCLIENTES compras_procura_produto_ncli_com_cod_prod_avl_noclone(Compras compras, char *cod_prod);
 int compras_compara_fichas_cli_por_cod_cli_avl(const void *avl_a, const void *avl_b, void *param);
 int compras_compara_fichas_prod_por_cod_prod_avl(const void *avl_a, const void *avl_b, void *param);
 int compras_compara_produtos_nclientes_avl(const void *avl_a, const void *avl_b, void *param);
 int compras_compara_fichas_prod_por_vendas_ad(void *ad_a, void *ad_b, void *param);
 int compras_compara_fichas_prod_por_vendas_mes_ad(void *ad_a, void *ad_b, void *param);
 void compras_free_produto_avl(void *avl_item, void *avl_param);
-COMPRAS_FICHA_CLIENTE it_compras_fich_cliente_proximo_noclone(IT_COMPRAS_CLIENTES it);
-COMPRAS_FICHA_PRODUTO it_compras_fich_produto_proximo_noclone(IT_COMPRAS_PRODUTOS it);
 void compras_free_cliente_avl(void *avl_item, void *avl_param);
+void compras_free_produto_nclientes_avl(void *avl_item, void *avl_param);
 void compras_free_produto(COMPRAS_FICHA_PRODUTO produto);
 void compras_free_cliente(COMPRAS_FICHA_CLIENTE cliente);
 void compras_free_produto_nclientes(COMPRAS_PRODUTO_NCLIENTES p_ncli);
-void compras_troca_meses(int *mes1 , int *mes2);
 void compras_free_produto_ad(void *produto);
 void compras_free_cliente_ad(void *cliente);
-COMPRAS_NUM_CLIENTES_MENSAIS compras_inicializa_num_compras_mensais();
-COMPRAS_ASSOC_PROD_CLIENTES compras_inicializa_assoc_prod_clientes(char *cod_produto);
-void compras_insere_assoc_cli_compra_em_assoc_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES p_cli, COMPRAS_CLIENTE_TIPO_COMPRA cli_compra);
-COMPRAS_CLIENTE_TIPO_COMPRA compras_inicializa_asoc_cliente_tipo_compra(char *cod_cliente, char tipo_compra);
-void compras_free_asoc_cliente_tipo_compra_ad(void *item);
-COMPRAS_FICHA_PRODUTO compras_procura_ficha_produto_com_fichacli_avl_noclone(COMPRAS_FICHA_CLIENTE cliente , char *cod_prod);
-COMPRAS_FICHA_PRODUTO compras_codigo_produto_to_ficha_noclone(char* cod_prod);
-COMPRAS_FICHA_CLIENTE compras_codigo_cliente_to_ficha_noclone(char* cod_cli);
-COMPRAS_FICHA_CLIENTE compras_procura_ficha_cliente_com_cod_avl_noclone(Compras compras, char *cod_cli);
-COMPRAS_PRODUTO_NCLIENTES compras_inicializa_produto_nclientes(char* cod_prod);
-COMPRAS_PRODUTO_NCLIENTES compras_clone_produto_nclientes(COMPRAS_PRODUTO_NCLIENTES src);
-COMPRAS_PRODUTO_NCLIENTES compras_codigo_produto_to_produto_nclientes_noclone(char* cod_prod);
-void compras_free_produto_nclientes_avl(void *avl_item, void *avl_param);
 void compras_free_produto_nclientes_ad(void *ad_item);
-COMPRAS_PRODUTO_NCLIENTES compras_procura_produto_ncli_com_cod_prod_avl_noclone(Compras compras, char *cod_prod);
+void compras_free_asoc_cliente_tipo_compra_ad(void *item);
+COMPRAS_FICHA_CLIENTE it_compras_fich_cliente_proximo_noclone(IT_COMPRAS_CLIENTES it);
+COMPRAS_FICHA_PRODUTO it_compras_fich_produto_proximo_noclone(IT_COMPRAS_PRODUTOS it);
 COMPRAS_PRODUTO_NCLIENTES it_compras_produtos_nclientes_proximo_noclone(IT_COMPRAS_PRODUTOS_NCLIENTES it);
-COMPRAS_PRODUTO_NCLIENTES compras_codigo_produto_to_produto_nclientes(char* cod_prod);
+void compras_troca_meses(int *mes1, int *mes2);
+void compras_insere_assoc_cli_compra_em_assoc_prod_cli(COMPRAS_ASSOC_PROD_CLIENTES p_cli, COMPRAS_CLIENTE_TIPO_COMPRA cli_compra);
 
 /*
  * COMPRAS
@@ -313,6 +313,16 @@ int compras_produtos_comprados_ficha_cliente_mes(COMPRAS_FICHA_CLIENTE cliente, 
     return compras_produtos_comprados_ficha_cliente_meses(cliente, mes, mes);
 }
 
+int compras_total_produtos_comprados_codigo_cliente(Compras compras, char *cod_cliente){
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl_noclone(compras, cod_cliente);
+    return compras_total_produtos_comprados_ficha_cliente(cliente);
+}
+
+int compras_total_unidades_compradas_codigo_cliente(Compras compras, char *cod_cliente){
+    COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl_noclone(compras, cod_cliente);
+    return compras_total_unidades_compradas_ficha_cliente(cliente);
+}
+
 int compras_produtos_comprados_cod_cliente_meses(Compras compras, char *cod_cliente, int mes_inf, int mes_sup){
     COMPRAS_FICHA_CLIENTE cliente = compras_procura_ficha_cliente_com_cod_avl_noclone(compras, cod_cliente);
     return compras_produtos_comprados_ficha_cliente_meses(cliente, mes_inf, mes_sup);
@@ -393,6 +403,11 @@ int compras_produtos_comprados_promo_ficha_produto_mes(COMPRAS_FICHA_PRODUTO pro
 /*
  * COMPRAS PRODUTO POR CODIGO
  */
+
+int compras_total_produtos_comprados_codigo(Compras compras, char *cod_cli, char *cod_prod){
+    COMPRAS_FICHA_PRODUTO produto = compras_procura_ficha_produto_com_cod_avl(compras, cod_cli, cod_prod);
+    return compras_total_produtos_comprados_ficha(produto);
+}
 
 int compras_produtos_comprados_cod_produto_meses_geral(Compras compras, char *cod_cli, char *cod_prod, int mes_inf, int mes_sup, compras_campo_t campo){
     

@@ -54,7 +54,7 @@ runvalgrind3m:
 	make --file=makefile-valgrind runval3m
 
 prototipos:
-	cproto -o prototipos.txt src/*.c
+	cproto -o prototipos.h src/*.c
 
 tarexe: recompile
 	tar -cf gesthiper.tar datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper

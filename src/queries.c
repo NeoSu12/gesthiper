@@ -95,7 +95,7 @@ int _02_codigo_produtos_letra() {
                 }
                 printf("==================================================== \n");
                 printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
-                printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+                printf("[<<] 4   [<] 5  ###  6 [>]   7 [>>]  |   9 - Pag...  \n");
                 printf("==================================================== \n");
                 printf("Insira nº da opcao > ");
                 leitura = scanf("%s", input);
@@ -410,7 +410,7 @@ int _04_prods_nao_comprados() {
 
         printf("==================================================== \n");
         printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair    \n");
-        printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+        printf("[<<] 4   [<] 5  ###  6 [>]   7 [>>]  |   9 - Pag...  \n");
         printf("==================================================== \n");
         printf("Insira nº da opcao > ");
         leitura = scanf("%s", input);
@@ -642,7 +642,7 @@ int _06_codigos_clientes_letra() {
                 }
                 printf("==================================================== \n");
                 printf("1 - CATALOGOS | 2 - Menu Principal | 3 - Sair        \n");
-                printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+                printf("[<<] 4   [<] 5  ###  6 [>]   7 [>>]  |   9 - Pag...  \n");
                 printf("==================================================== \n");
                 printf("Insira nº da opcao > ");
                 leitura = scanf("%s", input);
@@ -731,22 +731,25 @@ int _07_compras_intervalo_meses() {
                 mes_inf = mes_sup;
                 mes_sup = 1;
             }
+            if(mes_inf < 1 || mes_inf > 12 || mes_sup < 1 || mes_sup > 12){
+                mes_inf = 1;
+                mes_sup = 12;
+            }
         }
-
 
         if (estado == QUERIE_7) {
             printf("\033[2J\033[1;1H");
             printf("GESTHIPER >> CONTABILIDADE >> QUERIE 7                 \n");
             printf("Nº compras e facturação mensal global              \n");
-            printf("================================================================================= \n");
+            printf("================================================================================== \n");
 
             ci = clock();
-            printf("--------------------------------------------------------------------------------- \n");
-            printf("|       |      Compras      |         ||        Facturacao         |             |\n");
-            printf("|  Mes  |    N    |    P    |  Total  ||      N      |      P      |    Total    |\n");
-            printf("--------------------------------------------------------------------------------- \n");
+            printf("---------------------------------------------------------------------------------- \n");
+            printf("|       |      Compras      |         ||        Facturacao         |              |\n");
+            printf("|  Mes  |    N    |    P    |  Total  ||      N      |      P      |    Total     |\n");
+            printf("---------------------------------------------------------------------------------- \n");
             for (i = mes_inf; i <= mes_sup; i++) {
-                printf("| %5d | %7d | %7d | %7d || %11.2f | %11.2f | %11.2f |\n",
+                printf("| %5d | %7d | %7d | %7d || %11.2f | %11.2f | %12.2f |\n",
                         i,
                         cont_total_compras_normais_mes(contabilidade, i),
                         cont_total_compras_promo_mes(contabilidade, i),
@@ -764,16 +767,16 @@ int _07_compras_intervalo_meses() {
 
             }
             cf = clock();
-            printf("------------------------------------------------------------------------ \n");
-            printf("| TOTAL | %5d | %7d | %7d || %11.2f | %11.2f | %11.2f |\n",
+            printf("---------------------------------------------------------------------------------- \n");
+            printf("| TOTAL | %7d | %7d | %7d || %11.2f | %11.2f | %12.2f |\n",
                     total_vendas_n, total_vendas_p, total_vendas_n + total_vendas_p,
                     total_fact_n, total_fact_p, total_fact_n + total_fact_p);
-            printf("------------------------------------------------------------------------ \n");
-            printf("Tempo: %5.5f ================================================================== \n", (float) (cf - ci) / CLOCKS_PER_SEC);
+            printf("---------------------------------------------------------------------------------- \n");
+            printf("Tempo: %5.5f =================================================================== \n", (float) (cf - ci) / CLOCKS_PER_SEC);
 
 
             printf("1 - CONTABILIDADE | 2 - Menu Principal | 3 - Sair        \n");
-            printf("================================================================================= \n");
+            printf("================================================================================== \n");
             printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);
             switch (toupper(input[0])) {
@@ -876,7 +879,7 @@ int _08_clientes_compraram_prod() {
                 printf("A mostrar %d-%d de %d resultados (em %.5f segundos)\n", inicio_pag + 1, fim_pag, resultados, (float)(cf-ci)/CLOCKS_PER_SEC);
                 printf("==================================================== \n");
                 printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair        \n");
-                printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+                printf("[<<] 4   [<] 5  ###  6 [>]   7 [>>]  |   9 - Pag...  \n");
                 printf("==================================================== \n");
                 printf("Insira nº da opcao > ");
                 leitura = scanf("%s", input);
@@ -1012,7 +1015,7 @@ int _09_produtos_mais_comprados_cliente_mes() {
 
             printf("==================================================== \n");
             printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair    \n");
-            printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+            printf("[<<] 4   [<] 5  ###  6 [>]   7 [>>]  |   9 - Pag...  \n");
             printf("==================================================== \n");
             printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);
@@ -1110,7 +1113,7 @@ int _10_clientes_regulares() {
 
         printf("==================================================== \n");
         printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair    \n");
-        printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+        printf("[<<] 4   [<] 5  ###  6 [>]   7 [>>]  |   9 - Pag...  \n");
         printf("==================================================== \n");
         printf("Insira nº da opcao > ");
         leitura = scanf("%s", input);
@@ -1331,7 +1334,7 @@ int _12_prods_mais_vendidos() {
 
             printf("==================================================== \n");
             printf("1 - COMPRAS | 2 - Menu Principal | 3 - Sair          \n");
-            printf("<<  4  |  <  5  |  6  >  |  7  >>  |     9 - Pag...  \n");
+            printf("[<<] 4   [<] 5  ###  6 [>]   7 [>>]  |   9 - Pag...  \n");
             printf("==================================================== \n");
             printf("Insira nº da opcao > ");
             leitura = scanf("%s", input);

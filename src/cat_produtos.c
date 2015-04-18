@@ -34,10 +34,10 @@ struct cat_paginador_lista_produtos{
  * FUNÇÕES PRIVADAS AO MÓDULO
  */
 
-int cat_compara_produtos_avl(const void *, const void *, void *);
-void cat_free_produto_avl(void *item, void *);
+int cat_compara_produtos_avl(const void *avl_a, const void *avl_b, void *avl_param);
+void cat_free_produto_avl(void *item, void *param);
+void cat_free_produto_ad(void *item);
 int cat_calcula_indice_produto(char l);
-void cat_free_produto_ad(void *);
 
 /*
  * CATALOGO PRODUTOS
@@ -52,33 +52,6 @@ CatProdutos inicializa_catalogo_produtos() {
     }
 
     return res;
-}
-
-bool cat_existe_produto(CatProdutos cat, char *elem) {
-    bool res = false;
-    int ind;
-
-    if (elem != NULL) {
-        ind = cat_calcula_indice_produto(*elem);
-        if (avl_find(cat->indices[ind], elem) != NULL) res = true;
-        else res = false;
-    }
-
-    return res;
-}
-
-char *cat_procura_produto(CatProdutos cat, char *elem) {
-    int ind;
-    char *res;
-
-    if (elem != NULL) {
-        ind = cat_calcula_indice_produto(*elem);
-        res = (char *) avl_find(cat->indices[ind], elem);
-    } else {
-        res = NULL;
-    }
-
-    return res == NULL ? NULL : elem;
 }
 
 void cat_insere_produto(CatProdutos cat, char *str) {
@@ -96,6 +69,34 @@ void cat_remove_produto(CatProdutos cat, char *str) {
     free(avl_delete(cat->indices[ind], str));
 }
 
+void free_catalogo_produtos(CatProdutos cat) {
+    int i = 0;
+    
+    if(cat != NULL){
+    for (i = 0; i <= 26; i++) {
+        avl_destroy(cat->indices[i], cat_free_produto_avl);
+    }
+}
+    free(cat);
+}
+
+/*
+ * PESQUISA/CONSULTA INFORMAÇÃO GLOBAL
+ */
+
+bool cat_existe_produto(CatProdutos cat, char *elem) {
+    bool res = false;
+    int ind;
+
+    if (elem != NULL) {
+        ind = cat_calcula_indice_produto(*elem);
+        if (avl_find(cat->indices[ind], elem) != NULL) res = true;
+        else res = false;
+    }
+
+    return res;
+}
+
 int cat_total_produtos(CatProdutos cat) {
     size_t soma = 0;
     int i;
@@ -111,16 +112,6 @@ int cat_total_produtos_letra(CatProdutos cat, char letra) {
     return avl_count(cat->indices[ind]);
 }
 
-void free_catalogo_produtos(CatProdutos cat) {
-    int i = 0;
-    
-    if(cat != NULL){
-    for (i = 0; i <= 26; i++) {
-        avl_destroy(cat->indices[i], cat_free_produto_avl);
-    }
-}
-    free(cat);
-}
 
 /*
  * LISTA PRODUTOS
