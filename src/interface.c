@@ -4,14 +4,6 @@
 #include <string.h>
 #include "headers/interface.h"
 #include "headers/queries.h"
-#include "headers/erros.h"
-
-#define NORMAL  "\x1B[0m"
-#define RED  "\x1B[31m"
-#define GREEN  "\x1B[32m"
-#define YELLOW  "\x1B[33m"
-#define BLUE  "\x1B[34m"
-#define WHITE  "\x1B[37m"
 
 int face_catalogos();
 int face_contabilidade();
@@ -43,7 +35,7 @@ void interface() {
 
         printf("Escolha uma opcao > ");
         leitura = scanf("%s", r);
-
+        if(leitura>0){
         switch (toupper(r[0])) {
             case '1': estado = face_catalogos();
                 break;
@@ -54,15 +46,13 @@ void interface() {
             case 'Q': estado = SAIR_PROGRAMA;
                 break;
             default:
-                /*TODO: Tratamento de erro temporario.
-                 * Melhorar este tratamento depois de saber resposta do professor
-                 sobre o uso do scanf.*/
-                if (leitura == 0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
-                else error_msg(ERRO_OPCAO_INVALIDA, NULL);
+                estado = MENU_PRINCIPAL;
                 break;
         }
+    }else{
+            printf("Opção inválida.\n");
     }
-
+    }
 
 }
 
@@ -86,6 +76,7 @@ int face_catalogos() {
 
         printf("Escolha uma opcao > ");
         leitura = scanf("%s", r);
+        if(leitura>0){
         switch (toupper(r[0])) {
             case '\\':
             case '0': 
@@ -101,13 +92,12 @@ int face_catalogos() {
                 estado = SAIR_PROGRAMA;
                 break;
             default:
-                /*TODO: Tratamento de erro temporario.
-                 * Melhorar este tratamento depois de saber resposta do professor
-                 sobre o uso do scanf.*/
-                if (leitura == 0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
-                else error_msg(ERRO_OPCAO_INVALIDA, NULL);
+                estado = FACE_CATALOGOS;
                 break;
         }
+    }else{
+            printf("Opção inválida.\n");
+    }
     }
     return estado;
 }
@@ -133,6 +123,7 @@ int face_contabilidade() {
         printf("Escolha uma opcao > ");
         leitura = scanf("%s", r);
         
+        if(leitura>0){
         switch (toupper(r[0])) {
         	case '\\':
             case '0': estado = MENU_PRINCIPAL;
@@ -144,9 +135,11 @@ int face_contabilidade() {
             case 'Q': estado = SAIR_PROGRAMA;
                       break;
             default: 
-                if(leitura==0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
-                else error_msg(ERRO_OPCAO_INVALIDA, NULL); 
+                estado = FACE_CONTABILIDADE;
                 break;
+        }
+        }else{
+            printf("Opção invalida.\n");
         }
     }
     return estado;
@@ -176,7 +169,8 @@ int face_compras() {
                 " ====================================================================== \n");
         printf("Escolha uma opcao > ");
         leitura = scanf("%s", r);
-
+        
+        if(leitura>0){
         switch (toupper(r[0])) {
         	case '\\':
             case '0': estado = MENU_PRINCIPAL;
@@ -192,12 +186,11 @@ int face_compras() {
             case 'Q': estado = SAIR_PROGRAMA;
                       break;
             default:
-                /*TODO: Tratamento de erro temporario.
-                 * Melhorar este tratamento depois de saber resposta do professor
-                 sobre o uso do scanf.*/
-                if(leitura==0) error_msg(ERRO_NENHUMA_OPCAO, NULL);
-                else error_msg(ERRO_OPCAO_INVALIDA, NULL);
+                estado=FACE_COMPRAS;
                 break;
+        }
+        }else{
+            printf("Opção invalida.\n");
         }
     }
     return estado;

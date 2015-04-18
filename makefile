@@ -1,6 +1,6 @@
 VPATH = src:src/headers
 
-objects = main.o erros.o compra.o avl.o cat_clientes.o \
+objects = main.o leitura_ficheiros.o compra.o avl.o cat_clientes.o \
 	   		cat_produtos.o interface.o queries.o compras.o \
 				arrays_dinamicos.o contabilidade.o
 
@@ -53,6 +53,9 @@ runvalgrind3m:
 	make clean
 	make --file=makefile-valgrind runval3m
 
+prototipos:
+	cproto -o prototipos.txt src/*.c
+
 tarexe: recompile
 	tar -cf gesthiper.tar datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
@@ -65,12 +68,12 @@ zipexe: recompile
 zipcomplete: recompile
 	zip gesthiper.zip makefile makefile-valgrind src/* datasets/Compras.txt datasets/Compras1.txt datasets/Compras3.txt gesthiper
 
-main.o : interface.h erros.h compra.h cat_clientes.h cat_produtos.h compras.h contabilidade.h
-erros.o : erros.h
+main.o : leitura_ficheiros.h interface.h cat_clientes.h cat_produtos.h compras.h contabilidade.h
+leitura_ficheiros.o : compra.h cat_clientes.h cat_produtos.h compras.h contabilidade.h
 compra.o : compra.h
 avl.o : avl.h
-interface.o : erros.h interface.h queries.h
-queries.o : interface.h queries.h cat_produtos.h cat_clientes.h contabilidade.h compras.h arrays_dinamicos.h
+interface.o : interface.h queries.h
+queries.o : interface.h queries.h cat_produtos.h cat_clientes.h contabilidade.h compras.h
 cat_clientes.o : avl.h cat_clientes.h arrays_dinamicos.h
 cat_produtos.o : avl.h cat_produtos.h arrays_dinamicos.h
 compras.o : compras.h avl.h compra.h arrays_dinamicos.h

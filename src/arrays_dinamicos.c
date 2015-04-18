@@ -120,37 +120,6 @@ void ad_insere_elemento_pos_mode(ARRAY_DINAMICO ad,int pos, void *elemento, inse
         ad_remove_elemento_pos(ad, ad->posicao-1);
 }
 
-void ad_insere_elemento_ordenado(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara, void *param){
-    ad_insere_elemento_ordenado_mode(ad, elemento,f_compara, INCREASE_SIZE, param);
-}
-
-void ad_insere_elemento_ordenado_mode(ARRAY_DINAMICO ad, void *elemento, ad_compara_elems *f_compara, insert_mode_t i_mode, void *param){
-    int keep_looking=1;
-    int i;
-    
-    if(ad->posicao==0){
-        ad_insere_elemento_pos_mode(ad, 0, elemento, i_mode);
-        keep_looking=0;
-    }
-    
-    if(keep_looking && f_compara(elemento, ad_get_elemento(ad,0), param)<=0)
-        keep_looking=0;
-    
-    if(keep_looking && f_compara(elemento, ad_get_elemento(ad,ad->posicao-1),param)>0){
-        ad_insere_elemento_pos_mode(ad, ad->posicao-1,elemento,i_mode);
-        keep_looking=0;
-    }
-    
-    for(i=0;i<ad->posicao-1 && keep_looking;i++){
-        if(f_compara(elemento, ad_get_elemento(ad, i),param)>=0
-                &&f_compara(elemento, ad_get_elemento(ad, i+1),param)<0){
-            ad_insere_elemento_pos_mode(ad, i+1, elemento, i_mode);
-            keep_looking = 0;
-        }
-    }
-       
-}
-
 /*
  * PESQUISA
  */

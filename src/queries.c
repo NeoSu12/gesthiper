@@ -10,14 +10,6 @@
 #include "headers/cat_clientes.h"
 #include "headers/contabilidade.h"
 #include "headers/compras.h"
-#include "headers/arrays_dinamicos.h"
-
-#define NORMAL  "\x1B[0m"
-#define RED  "\x1B[31m"
-#define GREEN  "\x1B[32m"
-#define YELLOW  "\x1B[33m"
-#define BLUE  "\x1B[34m"
-#define WHITE  "\x1B[37m"
 
 #define TAM_PAGINA 10
 #define TAM_INPUT 50
@@ -809,7 +801,7 @@ int _07_compras_intervalo_meses() {
 }
 
 int _08_clientes_compraram_prod() {
-     int i = 0, leitura = 0;
+    int i = 0, leitura = 0;
     int estado = QUERIE_8;
     clock_t ci, cf;
     int n_pagina = 1, elems_pag = 0, inicio_pag = 1, fim_pag = 0;

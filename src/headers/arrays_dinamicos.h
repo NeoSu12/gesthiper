@@ -45,8 +45,6 @@ int ad_get_capacidade(ARRAY_DINAMICO);
 void ad_insere_elemento(ARRAY_DINAMICO, void *);
 void ad_insere_elemento_pos(ARRAY_DINAMICO, int, void *);
 void ad_insere_elemento_pos_mode(ARRAY_DINAMICO,int, void *, insert_mode_t);
-void ad_insere_elemento_ordenado(ARRAY_DINAMICO, void *, ad_compara_elems *, void *);
-void ad_insere_elemento_ordenado_mode(ARRAY_DINAMICO, void *, ad_compara_elems *, insert_mode_t, void *);
 
 /*
  * PESQUISA
