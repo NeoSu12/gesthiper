@@ -231,7 +231,7 @@ int compras_num_cliente_sem_compras(Compras compras){
     IT_COMPRAS_CLIENTES it = inicializa_it_compras_fich_clientes(compras);
     
     while((cliente = it_compras_fich_cliente_proximo(it))!=NULL){
-        if(compras_total_produtos_comprados_ficha_cliente(cliente))
+        if(compras_total_produtos_comprados_ficha_cliente(cliente)==0)
             res++;
         
         compras_free_cliente(cliente);
