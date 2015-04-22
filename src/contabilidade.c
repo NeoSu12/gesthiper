@@ -242,7 +242,7 @@ int cont_total_compras_normais_mes(Contabilidade cont, int mes) {
 }
 
 int cont_total_compras_promo_mes(Contabilidade cont, int mes) {
-    return cont_total_compras_geral(cont, mes, mes, TOTAL_COMPRAS_NORMAL);
+    return cont_total_compras_geral(cont, mes, mes, TOTAL_COMPRAS_PROMO);
 }
 
 int cont_total_compras_int_meses(Contabilidade cont, int mes_inf, int mes_sup) {
@@ -254,7 +254,7 @@ int cont_total_compras_normais_int_meses(Contabilidade cont, int mes_inf, int me
 }
 
 int cont_total_compras_promo_int_meses(Contabilidade cont, int mes_inf, int mes_sup) {
-    return cont_total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_NORMAL);
+    return cont_total_compras_geral(cont, mes_inf, mes_sup, TOTAL_COMPRAS_PROMO);
 }
 
 /*
