@@ -485,6 +485,7 @@ void compras_free_lista_clientes(COMPRAS_LISTA_CLIENTES lista){
 COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compras, char *cod_cliente, int mes){
     COMPRAS_FICHA_CLIENTE cliente = NULL;
     COMPRAS_FICHA_PRODUTO produto = NULL;
+    COMPRAS_FICHA_PRODUTO produto_it = NULL;
     IT_COMPRAS_PRODUTOS it = NULL;
     COMPRAS_LISTA_PRODUTOS l_produtos = (COMPRAS_LISTA_PRODUTOS) malloc(sizeof(struct compras_lista_produtos));
     ARRAY_DINAMICO ad = ad_inicializa_cap(1000);
@@ -493,8 +494,12 @@ COMPRAS_LISTA_PRODUTOS compras_produtos_mais_comprados_cliente_mes(Compras compr
     it = inicializa_it_compras_fich_produtos(cliente);
     
     
-    while((produto = it_compras_fich_produto_proximo(it))!=NULL){
+    while((produto_it = it_compras_fich_produto_proximo_noclone(it))!=NULL){
+        if(produto_it->num_unidades_compradas[mes-1][NORMAL] +
+                produto_it->num_unidades_compradas[mes-1][PROMO]){
+            produto = compras_clone_ficha_produto(produto_it);
             ad_insere_elemento(ad,produto);
+    }
     }
     
     ad_ordena(ad, compras_compara_fichas_prod_por_vendas_ad, &mes);

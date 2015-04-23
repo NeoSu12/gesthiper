@@ -1005,7 +1005,7 @@ int _09_produtos_mais_comprados_cliente_mes() {
                     ficha_prod = compras_lista_get_fich_prod(lista_prod, inicio_pag + i);
                     printf("| %5d | %8s | %9d |\n", inicio_pag + i + 1,
                                                     compras_get_cod_prod_ficha(ficha_prod), 
-                                                    compras_total_produtos_comprados_ficha(ficha_prod));
+                                                    compras_produtos_comprados_ficha_produto_mes(ficha_prod, mes));
                 }
                 printf("------------------------------- \n");
                 printf("A mostrar %d-%d de %d resultados (em %.5f segundos)\n", inicio_pag + 1, fim_pag, resultados, (float) (cf - ci) / CLOCKS_PER_SEC);
