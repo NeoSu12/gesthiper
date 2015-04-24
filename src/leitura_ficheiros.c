@@ -68,10 +68,21 @@ int leitura_ficheiros(int argc, char **argv) {
             return EXIT_FAILURE;
     }
 
-    f_clientes = fopen(nfclientes, "r");
-    f_produtos = fopen(nfprodutos, "r");
-    f_compras = fopen(nfcompras, "r");
-
+    if((f_clientes = fopen(nfclientes, "r"))==NULL){
+        nfclientes = "FichClientes.txt";
+        f_clientes = fopen(nfclientes, "r");
+    }
+    
+    if((f_produtos = fopen(nfprodutos, "r"))==NULL){
+        nfprodutos = "FichProdutos.txt";
+        f_produtos = fopen(nfprodutos, "r");
+    }
+    
+    if((f_compras = fopen(nfcompras, "r"))==NULL){
+        nfcompras = "Compras.txt";
+        f_compras = fopen(nfcompras, "r");
+    }
+    
     if (f_clientes == NULL || f_produtos == NULL || f_compras == NULL) {
         fprintf(stderr, "Erro ao abrir um dos ficheiros.\n");
         return EXIT_FAILURE;
