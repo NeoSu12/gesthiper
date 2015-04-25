@@ -30,12 +30,13 @@ int compra_valida(COMPRA);
 int compra_valida_debug(COMPRA);
 void mostra_compra(COMPRA);
 void mostra_numero_codigos();
+void mostra_ajuda();
 
 int leitura_ficheiros(int argc, char **argv) {
     FILE *f_clientes = NULL;
     FILE *f_produtos = NULL;
     FILE *f_compras = NULL;
-    char *nfclientes, *nfprodutos, *nfcompras;
+    char *nfclientes=NULL, *nfprodutos=NULL, *nfcompras=NULL;
     clock_t ci, cf;
     ci = clock();
     switch (argc) {
@@ -48,10 +49,13 @@ int leitura_ficheiros(int argc, char **argv) {
                 nfclientes = "datasets/miniClientes.txt";
                 nfprodutos = "datasets/miniProdutos.txt";
                 nfcompras = "datasets/miniCompras.txt";
-            } else {
-                fprintf(stderr, "O 1º parametro nao corresponde a nenhuma tag conhecida.\n");
-                fprintf(stderr, "FLAGS Válidas:\n");
-                fprintf(stderr, "\t--mini : Abre ficheiros mais pequenos de dados.\n");
+            }else {
+                if(strcmp(argv[1], "--help") == 0){
+                mostra_ajuda();
+                return EXIT_FAILURE;
+            }else{
+                fprintf(stderr, "Apenas indicou um argumento, que não corresponde a nenhuma flag conhecida.\n");
+                mostra_ajuda();
                 return EXIT_FAILURE;
             }
             break;
@@ -61,12 +65,10 @@ int leitura_ficheiros(int argc, char **argv) {
             break;
         default:
             fprintf(stderr, "Nao foram especificados ficheiros de input.\n");
-            fprintf(stderr, "\tModo de executar:\n");
-            fprintf(stderr, "\t./gesthiper\n");
-            fprintf(stderr, "\tOU\n");
-            fprintf(stderr, "\t./gesthiper <ficheiro_clientes> <ficheiro_produtos> <ficheiro_compras>\n");
+            mostra_ajuda();
             return EXIT_FAILURE;
     }
+}
 
     if((f_clientes = fopen(nfclientes, "r"))==NULL){
         nfclientes = "FichClientes.txt";
@@ -85,6 +87,7 @@ int leitura_ficheiros(int argc, char **argv) {
     
     if (f_clientes == NULL || f_produtos == NULL || f_compras == NULL) {
         fprintf(stderr, "Erro ao abrir um dos ficheiros.\n");
+        mostra_ajuda();
         return EXIT_FAILURE;
     }
     
@@ -294,4 +297,11 @@ void mostra_numero_codigos() {
     }
     printf("Tot: %d\tTot:%d\n", tot_cli, tot_prod);
     printf("----------------------------\n");
+}
+
+void mostra_ajuda(){
+        fprintf(stderr, "\tModo de executar:\n");
+        fprintf(stderr, "\t./gesthiper - (Caso os ficheiros de clientes, produtos e compras estejam na directoria)\n");
+        fprintf(stderr, "\tOU\n");
+        fprintf(stderr, "\t./gesthiper <ficheiro_clientes> <ficheiro_produtos> <ficheiro_compras>\n");
 }

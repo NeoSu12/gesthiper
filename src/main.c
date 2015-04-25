@@ -18,8 +18,8 @@ void main_free_modulos();
 
 int main(int argc, char** argv) {
     main_inicializa_modulos();
-    leitura_ficheiros(argc, argv);
-    interface();
+    if(leitura_ficheiros(argc, argv)!=EXIT_FAILURE)
+        interface();
     main_free_modulos();
     return (EXIT_SUCCESS);
 }
