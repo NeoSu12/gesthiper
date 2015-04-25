@@ -12,11 +12,11 @@ Autores:
  * André Silva (a70377)  
  * César Magalhães (a67683)  
 
-###Contacto Email:
+####Contacto Email:
 {a61778,a70377,a67683}[at]alunos.uminho.pt
 
 
-Como usar o programa
+Como usar o programa:
 ----------------------
 
 1) Compilar o código fonte:  
