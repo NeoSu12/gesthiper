@@ -29,6 +29,15 @@ run1m: gesthiper
 run3m: gesthiper
 	./gesthiper datasets/FichClientes.txt datasets/FichProdutos.txt datasets/Compras3.txt
 
+500k: gesthiper
+	./gesthiper FichClientes.txt FichProdutos.txt Compras.txt
+
+1m: gesthiper
+	./gesthiper FichClientes.txt FichProdutos.txt Compras1.txt
+
+3m: gesthiper
+	./gesthiper FichClientes.txt FichProdutos.txt Compras3.txt
+
 valgrind:
 	make clean
 	make --file=makefile-valgrind
