@@ -18,8 +18,8 @@ typedef enum mes {
     JANEIRO = 1, FEVEREIRO, MARCO, ABRIL, MAIO, JUNHO, JULHO, AGOSTO, SETEMBRO, OUTUBRO, NOVEMBRO, DEZEMBRO
 } Mes;
 
-int _05_aux_guarda_ficheiro(Compras mod_compras, char *cod_cli);
-int _11_aux_cria_CSV(COMPRAS_NUM_CLIENTES_MENSAIS n_clientes_meses, int n_compras[]);
+static int _05_aux_guarda_ficheiro(Compras mod_compras, char *cod_cli);
+static int _11_aux_cria_CSV(COMPRAS_NUM_CLIENTES_MENSAIS n_clientes_meses, int n_compras[]);
 
 extern CatClientes catalogo_clientes;
 extern CatProdutos catalogo_produtos;
@@ -1539,7 +1539,7 @@ int _14_clientes_prods_fantasma() {
  * FUNCOES AUXILIARES
  */
 
-int _05_aux_guarda_ficheiro(Compras mod_compras, char *cod_cli) {
+static int _05_aux_guarda_ficheiro(Compras mod_compras, char *cod_cli) {
     int estado = QUERIE_5;
     int i = 0, total_vendas = 0, escolha=0;
     FILE *fich = NULL;
@@ -1616,7 +1616,7 @@ int _05_aux_guarda_ficheiro(Compras mod_compras, char *cod_cli) {
     return estado;
 }
 
-int _11_aux_cria_CSV(COMPRAS_NUM_CLIENTES_MENSAIS n_clientes_meses, int n_compras[]) {
+static int _11_aux_cria_CSV(COMPRAS_NUM_CLIENTES_MENSAIS n_clientes_meses, int n_compras[]) {
     int estado = QUERIE_11;
     int i = 0, escolha = 0;
     FILE *fich = NULL;

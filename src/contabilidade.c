@@ -37,19 +37,17 @@ struct iterador_cont {
 };
 
 
-CONT_FICHA_PRODUTO inicializa_ficha_produto(char *cod_prod);
-CONT_FICHA_PRODUTO it_cont_fich_produto_proximo_noclone(IT_CONT it);
-CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src);
-void free_ficha_prod(CONT_FICHA_PRODUTO prod);
-CONT_FICHA_PRODUTO codigo_to_ficha(char *cod_prod);
-CONT_FICHA_PRODUTO codigo_to_ficha_noclone(char *cod_prod);
-CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod);
-int cont_compara_ficha_por_cod_avl(const void *avl_a, const void *avl_b, void *avl_param);
-int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b, void *param);
-void cont_free_string_ad(void *item);
-void free_ficha_prod_avl(void *item, void *avl_param);
-void free_ficha_prod_ad(void *item);
-void troca_meses(int *mes1, int *mes2);
+static CONT_FICHA_PRODUTO inicializa_ficha_produto(char *cod_prod);
+static CONT_FICHA_PRODUTO it_cont_fich_produto_proximo_noclone(IT_CONT it);
+static CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src);
+static void free_ficha_prod(CONT_FICHA_PRODUTO prod);
+static CONT_FICHA_PRODUTO codigo_to_ficha(char *cod_prod);
+static CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod);
+static int cont_compara_ficha_por_cod_avl(const void *avl_a, const void *avl_b, void *avl_param);
+static int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b, void *param);
+static void free_ficha_prod_avl(void *item, void *avl_param);
+static void free_ficha_prod_ad(void *item);
+static void troca_meses(int *mes1, int *mes2);
 
 
 
@@ -701,7 +699,7 @@ void free_it_cont_fich_prod(IT_CONT it){
  * FUNCOES AUXILIARES PRIVADAS AO MODULO 
  */
 
-CONT_FICHA_PRODUTO inicializa_ficha_produto(char* cod_prod) {
+static CONT_FICHA_PRODUTO inicializa_ficha_produto(char* cod_prod) {
     int i, j;
     CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) malloc(sizeof (struct cont_ficha_produto));
     char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
@@ -719,11 +717,11 @@ CONT_FICHA_PRODUTO inicializa_ficha_produto(char* cod_prod) {
     return prod;
 }
 
-CONT_FICHA_PRODUTO it_cont_fich_produto_proximo_noclone(IT_CONT it) {
+static CONT_FICHA_PRODUTO it_cont_fich_produto_proximo_noclone(IT_CONT it) {
     return avl_t_next(it->traverser);
 }
 
-CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src){
+static CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src){
     int i,j;
     CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) malloc(sizeof (struct cont_ficha_produto));
     char *copia = (char*) malloc(sizeof (char)*(strlen(src->cod_produto) + 1));
@@ -741,14 +739,14 @@ CONT_FICHA_PRODUTO cont_ficha_prod_clone(CONT_FICHA_PRODUTO src){
     return prod;
 }
  
-void free_ficha_prod(CONT_FICHA_PRODUTO prod) {
+static void free_ficha_prod(CONT_FICHA_PRODUTO prod) {
     if(prod != NULL)
         free(prod->cod_produto);
     
     free(prod);
 }
 
-CONT_FICHA_PRODUTO codigo_to_ficha(char* cod_prod) {
+static CONT_FICHA_PRODUTO codigo_to_ficha(char* cod_prod) {
     CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) malloc(sizeof (struct cont_ficha_produto));
     char *copia = (char*) malloc(sizeof (char)*(strlen(cod_prod) + 1));
     strcpy(copia, cod_prod);
@@ -756,13 +754,7 @@ CONT_FICHA_PRODUTO codigo_to_ficha(char* cod_prod) {
     return prod;
 }
 
-CONT_FICHA_PRODUTO codigo_to_ficha_noclone(char* cod_prod) {
-    CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) malloc(sizeof (struct cont_ficha_produto));
-    prod->cod_produto = cod_prod;
-    return prod;
-}
-
-CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod){
+static CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_prod){
     CONT_FICHA_PRODUTO nodo_aux = codigo_to_ficha(cod_prod);
     CONT_FICHA_PRODUTO res = (CONT_FICHA_PRODUTO) avl_find(cont->avl_produtos, nodo_aux);
     free(nodo_aux->cod_produto);
@@ -770,13 +762,13 @@ CONT_FICHA_PRODUTO cont_procura_ficha_com_cod_avl(Contabilidade cont, char *cod_
     return res;
 }
 
-int cont_compara_ficha_por_cod_avl(const void *avl_a, const void *avl_b, void *avl_param){
+static int cont_compara_ficha_por_cod_avl(const void *avl_a, const void *avl_b, void *avl_param){
     CONT_FICHA_PRODUTO a = (CONT_FICHA_PRODUTO) avl_a;
     CONT_FICHA_PRODUTO b = (CONT_FICHA_PRODUTO) avl_b;
     return strcmp(a->cod_produto, b->cod_produto);
 }
 
-int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b, void *param){
+static int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b, void *param){
     int res=0;
     CONT_FICHA_PRODUTO a = (CONT_FICHA_PRODUTO) avl_a;
     CONT_FICHA_PRODUTO b = (CONT_FICHA_PRODUTO) avl_b;
@@ -788,23 +780,19 @@ int cont_compara_ficha_por_vendas_ad(void *avl_a, void *avl_b, void *param){
     return res;
 }
 
-void cont_free_string_ad(void *item){
-    free(item);
-}
-
-void free_ficha_prod_avl(void *item, void *avl_param) {
+static void free_ficha_prod_avl(void *item, void *avl_param) {
     CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) item;
     free(prod->cod_produto);
     free(prod);
 }
 
-void free_ficha_prod_ad(void *item) {
+static void free_ficha_prod_ad(void *item) {
     CONT_FICHA_PRODUTO prod = (CONT_FICHA_PRODUTO) item;
     free(prod->cod_produto);
     free(prod);
 }
 
-void troca_meses(int *mes1 , int *mes2){
+static void troca_meses(int *mes1 , int *mes2){
     int temp = *mes1;
     *mes1 = *mes2;
     *mes2 = temp;

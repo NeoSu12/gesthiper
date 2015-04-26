@@ -20,9 +20,9 @@ struct ad_paginador{
     int elems_por_pag;
 };
 
-ARRAY_DINAMICO ad_inicializa_gc(int);
-void ad_realloc_if_needed(ARRAY_DINAMICO);
-void quicksort(void **, ad_compara_elems *, int, void *);
+static ARRAY_DINAMICO ad_inicializa_gc(int);
+static void ad_realloc_if_needed(ARRAY_DINAMICO);
+static void quicksort(void **, ad_compara_elems *, int, void *);
 
 
 /*
@@ -306,7 +306,7 @@ void ad_ordena(ARRAY_DINAMICO ad, ad_compara_elems *f_comparacao, void *param) {
  * FUNCOES PRIVADAS AO MODULO
  */
 
-ARRAY_DINAMICO ad_inicializa_gc(int capacidade){
+static ARRAY_DINAMICO ad_inicializa_gc(int capacidade){
     ARRAY_DINAMICO array_d = (ARRAY_DINAMICO) malloc(sizeof(struct array_dinamico));
     
     array_d->elementos = (void **) malloc(sizeof(void *) * capacidade);
@@ -320,7 +320,7 @@ ARRAY_DINAMICO ad_inicializa_gc(int capacidade){
     return array_d;
 }
 
-void ad_realloc_if_needed(ARRAY_DINAMICO ad){
+static void ad_realloc_if_needed(ARRAY_DINAMICO ad){
     int nova_cap;
     void **new_ptr;
     
@@ -335,7 +335,7 @@ void ad_realloc_if_needed(ARRAY_DINAMICO ad){
     }
 }
 
-void quicksort(void **elems, ad_compara_elems *f_comparacao, int n, void *param){
+static void quicksort(void **elems, ad_compara_elems *f_comparacao, int n, void *param){
     int i, j;
     void *p, *temp;
     

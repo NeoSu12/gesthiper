@@ -19,18 +19,12 @@ extern CatProdutos catalogo_produtos;
 extern Contabilidade contabilidade;
 extern Compras mod_compras;
 
-/*VARIAVEIS TEMPORARIAS PARA TESTE*/
-int cliente_errado = 0, produto_errado = 0;
-FILE *fich_info_compras;
 
-void leitura_clientes(FILE *, char *);
-void leitura_produtos(FILE *, char *);
-void leitura_compras(FILE *, char *);
-int compra_valida(COMPRA);
-int compra_valida_debug(COMPRA);
-void mostra_compra(COMPRA);
-void mostra_numero_codigos();
-void mostra_ajuda();
+static void leitura_clientes(FILE *, char *);
+static void leitura_produtos(FILE *, char *);
+static void leitura_compras(FILE *, char *);
+static int compra_valida(COMPRA);
+static void mostra_ajuda();
 
 int leitura_ficheiros(int argc, char **argv) {
     FILE *f_clientes = NULL;
@@ -107,7 +101,7 @@ int leitura_ficheiros(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void leitura_clientes(FILE *f_cli, char *nf) {
+static void leitura_clientes(FILE *f_cli, char *nf) {
     int clientes_validos = 0, total_linhas_clientes = 0;
     clock_t ci, cf;
     char *cliente, *linha_cliente;
@@ -139,7 +133,7 @@ void leitura_clientes(FILE *f_cli, char *nf) {
     free(linha_cliente);
 }
 
-void leitura_produtos(FILE *f_prod, char *nf) {
+static void leitura_produtos(FILE *f_prod, char *nf) {
     int produtos_validos = 0, total_linhas_produtos = 0;
     clock_t ci, cf;
     char *produto, *linha_produto;
@@ -172,7 +166,7 @@ void leitura_produtos(FILE *f_prod, char *nf) {
     free(linha_produto);
 }
 
-void leitura_compras(FILE *f_comp, char *nf) {
+static void leitura_compras(FILE *f_comp, char *nf) {
     COMPRA compra;
     int compras_validas = 0, total_linhas_compras = 0;
     clock_t ci, cf;
@@ -244,7 +238,7 @@ void leitura_compras(FILE *f_comp, char *nf) {
     free(linha_compra);
 }
 
-int compra_valida(COMPRA compra) {
+static int compra_valida(COMPRA compra) {
     return cat_existe_cliente(catalogo_clientes, get_cod_cliente(compra))
             && cat_existe_produto(catalogo_produtos, get_cod_produto(compra))
             && get_mes(compra) >= 1 && get_mes(compra) <= 12
@@ -253,53 +247,8 @@ int compra_valida(COMPRA compra) {
             && (get_promo(compra) == 'N' || get_promo(compra) == 'P');
 }
 
-int compra_valida_debug(COMPRA compra) {
-    int res = 1;
 
-    if (!cat_existe_cliente(catalogo_clientes, get_cod_cliente(compra))) {
-        res = 0;
-        cliente_errado++;
-    }
-
-    if (res != 0) {
-        if (!cat_existe_produto(catalogo_produtos, get_cod_produto(compra))) {
-            res = 0;
-            produto_errado++;
-        }
-    }
-
-    return res;
-}
-
-void mostra_compra(COMPRA compra) {
-    printf("Produto: %s | ", get_cod_produto(compra));
-    printf("Preco: %5.2f | ", get_preco_unit(compra));
-    printf("Quantidade: %2d | ", get_quantidade(compra));
-    printf("Promo: %c | ", get_promo(compra));
-    printf("Cliente: %s | ", get_cod_cliente(compra));
-    printf("Mes: %2d\n", get_mes(compra));
-
-}
-
-void mostra_numero_codigos() {
-    char letra = 'A';
-    int tot_prod = 0, tot_cli = 0;
-    printf("----------------------------\n");
-    printf("Nº DE CODIGOS COMECADOS POR...\n");
-    printf("CLIENTES\tPRODUTOS\n");
-    for (letra = 'A'; letra <= 'Z'; letra++) {
-        printf("%c: %5d\t%c: %5d\n",
-                letra, cat_total_clientes_letra(catalogo_clientes, letra),
-                letra, cat_total_produtos_letra(catalogo_produtos, letra));
-        tot_cli += cat_total_clientes_letra(catalogo_clientes, letra);
-        tot_prod += cat_total_produtos_letra(catalogo_produtos, letra);
-
-    }
-    printf("Tot: %d\tTot:%d\n", tot_cli, tot_prod);
-    printf("----------------------------\n");
-}
-
-void mostra_ajuda(){
+static void mostra_ajuda(){
         fprintf(stderr, "\tModo de executar:\n");
         fprintf(stderr, "\t./gesthiper - (Caso os ficheiros de clientes, produtos e compras estejam na directoria)\n");
         fprintf(stderr, "\tOU\n");

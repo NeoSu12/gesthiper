@@ -33,10 +33,10 @@ struct cat_paginador_lista_clientes{
  * FUNÇÕES PRIVADAS AO MÓDULO
  */
 
-int cat_compara_clientes_avl(const void *avl_a, const void *avl_b, void *avl_param);
-void cat_free_cliente_avl(void *item, void *param);
-void cat_free_cliente_ad(void *item);
-int cat_calcula_indice_cliente(char l);
+static int cat_compara_clientes_avl(const void *avl_a, const void *avl_b, void *avl_param);
+static void cat_free_cliente_avl(void *item, void *param);
+static void cat_free_cliente_ad(void *item);
+static int cat_calcula_indice_cliente(char l);
 
 /*
  * CATALOGO CLIENTES
@@ -409,19 +409,19 @@ void free_it_cat_cliente(IT_CAT_CLIENTES it){
  * Funções (privadas) auxiliares ao módulo.
  */
 
-int cat_compara_clientes_avl(const void *avl_a, const void *avl_b, void *avl_param) {
+static int cat_compara_clientes_avl(const void *avl_a, const void *avl_b, void *avl_param) {
     return strcmp((char *) avl_a, (char *) avl_b);
 }
 
-void cat_free_cliente_avl(void *item, void *param) {
+static void cat_free_cliente_avl(void *item, void *param) {
     free(item);
 }
 
-void cat_free_cliente_ad(void *item) {
+static void cat_free_cliente_ad(void *item) {
     free(item);
 }
 
-int cat_calcula_indice_cliente(char l) {
+static int cat_calcula_indice_cliente(char l) {
     int res = 0;
     char letra = toupper(l);
 

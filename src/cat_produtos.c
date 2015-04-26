@@ -34,10 +34,10 @@ struct cat_paginador_lista_produtos{
  * FUNÇÕES PRIVADAS AO MÓDULO
  */
 
-int cat_compara_produtos_avl(const void *avl_a, const void *avl_b, void *avl_param);
-void cat_free_produto_avl(void *item, void *param);
-void cat_free_produto_ad(void *item);
-int cat_calcula_indice_produto(char l);
+static int cat_compara_produtos_avl(const void *avl_a, const void *avl_b, void *avl_param);
+static void cat_free_produto_avl(void *item, void *param);
+static void cat_free_produto_ad(void *item);
+static int cat_calcula_indice_produto(char l);
 
 /*
  * CATALOGO PRODUTOS
@@ -412,19 +412,19 @@ void free_it_cat_produto(IT_CAT_PRODUTOS it){
  * Funções (privadas) auxiliares ao módulo.
  */
 
-int cat_compara_produtos_avl(const void *avl_a, const void *avl_b, void *avl_param) {
+static int cat_compara_produtos_avl(const void *avl_a, const void *avl_b, void *avl_param) {
     return strcmp((char *) avl_a, (char *) avl_b);
 }
 
-void cat_free_produto_avl(void *item, void *param) {
+static void cat_free_produto_avl(void *item, void *param) {
     free(item);
 }
 
-void cat_free_produto_ad(void *item) {
+static void cat_free_produto_ad(void *item) {
     free(item);
 }
 
-int cat_calcula_indice_produto(char l) {
+static int cat_calcula_indice_produto(char l) {
     int res = 0;
     char letra = toupper(l);
 

@@ -5,9 +5,9 @@
 #include "headers/interface.h"
 #include "headers/queries.h"
 
-int face_catalogos();
-int face_contabilidade();
-int face_compras();
+static int face_catalogos();
+static int face_contabilidade();
+static int face_compras();
 
 void interface() {
     char r[50];
@@ -56,7 +56,7 @@ void interface() {
 
 }
 
-int face_catalogos() {
+static int face_catalogos() {
     char r[50];
     int estado=FACE_CATALOGOS;
     int leitura=0;
@@ -102,7 +102,7 @@ int face_catalogos() {
     return estado;
 }
 
-int face_contabilidade() {
+static int face_contabilidade() {
     char r[50];
     int estado=FACE_CONTABILIDADE;
     int leitura=0;
@@ -145,7 +145,7 @@ int face_contabilidade() {
     return estado;
 }
 
-int face_compras() {
+static int face_compras() {
     char r[50];
     int estado=FACE_COMPRAS;
     int leitura=0;
